@@ -1,4 +1,5 @@
 //# OPTIONS --explicit
+enum Representation = text | tokens | ast | ir
 0..* claferCompiler : claferLib 1..1 {}
 0..* claferIG : claferLib 1..1 {}
 0..* claferMOO : claferLib 1..1 {
@@ -11,11 +12,6 @@ abstract 0..* claferLib 0..* {
   0..* optimizer 1..1 {}
   1..1 generator : Generator 1..1 {}
 }
-abstract 0..* Representation 0..* {}
-0..* text : Representation 1..1 {}
-0..* tokens : Representation 1..1 {}
-0..* ast : Representation 1..1 {}
-0..* ir : Representation 1..1 {}
 abstract 0..* io 0..* {
   0..* input -> Representation 1..1 {}
   0..* output -> Representation 1..1 {}

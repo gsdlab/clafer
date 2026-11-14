@@ -1,5 +1,6 @@
 //# OPTIONS --explicit
 [((#express) >= 1) <=> ((#downX) >= 1)]
+enum Command = motorUp | motorDown | motorStop
 abstract 0..* Feature 0..* {}
 0..* express : Feature 0..1 {}
 abstract 0..* Component 0..* {
@@ -8,10 +9,6 @@ abstract 0..* Component 0..* {
     0..* output 0..1 {}
   }
 }
-abstract 0..* Command 0..* {}
-0..* motorUp : Command 1..1 {}
-0..* motorDown : Command 1..1 {}
-0..* motorStop : Command 1..1 {}
 abstract 0..* Request 0..* {}
 0..* up : Request 1..1 {}
 0..* down : Request 1..1 {}

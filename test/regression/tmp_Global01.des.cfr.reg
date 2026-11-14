@@ -6,4 +6,4 @@
   }
 }
 
-assert [G (!(((#a.b) >= 1) => (G ((#a.b.c) = 0))))]
+assert [never (((#a.b) >= 1) => (never ((#a.b.c) >= 1)))]

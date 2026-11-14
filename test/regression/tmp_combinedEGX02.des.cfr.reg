@@ -5,4 +5,4 @@ final 1..1 a 1..1 {
   0..* c 0..1 {}
 }
 
-assert [(G ((#a.b) = 0)) || (F (((#a.b) >= 1) && (F ((#a.c) >= 1))))]
+assert [sometime ((#a.c) >= 1) after ((#a.b) >= 1)]

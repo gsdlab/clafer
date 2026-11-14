@@ -69,7 +69,8 @@ data CClafer = CClafer
     { ccUid      :: UID
     , ccParent   :: UID           -- ^ "clafer" for a top-level abstract clafer, "root" for a top-level concrete one
     , ccAbstract :: Bool
-    , ccModifiers :: [String]     -- ^ its temporal modifiers, e.g., initial, final, finalref, which chocosolver does not read
+    , ccModifiers :: [String]     -- ^ its temporal modifiers, e.g., initial, final, finalref, which chocosolver does not read,
+                                  --   and enum for a clafer of an enumeration (rich explicit model)
     , ccCard     :: Maybe Interval   -- ^ only if not 0..*
     , ccGCard    :: Maybe Interval   -- ^ only if not 0..*
     , ccLinked   :: Bool          -- ^ whether it has a super clafer or a reference in the IR
@@ -169,8 +170,8 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
 
     -- the temporal modifiers of a clafer: final, which implies finalref and finaltarget, or the
     -- modifiers of its own reference or of the reference it inherits
-    temporalModifiers' IClaferModifiers{_initial, _final, _finalReferences} ref' =
-        [ "initial" | _initial ] ++ [ "final" | _final ] ++
+    temporalModifiers' IClaferModifiers{_initial, _final, _finalReferences, _enum} ref' =
+        [ "enum" | _enum ] ++ [ "initial" | _initial ] ++ [ "final" | _final ] ++
         [ refModifierKeyword m | not _final, m <- nub (maybe [] _refModifiers ref' ++ _finalReferences) ]
     refModifierKeyword FinalRef = "finalref"
     refModifierKeyword FinalTarget = "finaltarget"
@@ -405,4 +406,6 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     mapFunc "ifthenelse" = "ifThenElse"
     -- the temporal operators, which chocosolver does not solve, by their names
     mapFunc op' | op' `elem` ltlOps = op'
+    -- the patterns and transitions of the rich explicit model, which the backends get lowered
+    mapFunc op' | op' `elem` richTemporalOps = op'
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'

@@ -1,4 +1,5 @@
 //# OPTIONS --explicit
+enum Currency = USD | EUR | CAD
 abstract 0..* Element 0..* {}
 abstract 0..* End : Element 0..* {
   0..* attainable 0..1 {}
@@ -209,9 +210,5 @@ abstract 0..* PotentialImpact : Element 0..* {
 abstract 0..* Metric : Element 0..* {}
 abstract 0..* KeyPerformanceIndicator : Metric 0..* {}
 abstract 0..* CriticalSuccessFactor : Metric 0..* {}
-abstract 0..* Currency 0..* {}
-0..* USD : Currency 1..1 {}
-0..* EUR : Currency 1..1 {}
-0..* CAD : Currency 1..1 {}
 abstract 0..* OrganizationUnit 0..* {}
 abstract 0..* BusinessProcess 0..* {}

@@ -1,4 +1,6 @@
 //# OPTIONS --explicit
+enum VisibilityKind = package | private | protected | public
+enum AggregationKind = composite | none | shared
 abstract 0..* Boolean 0..* {}
 abstract 0..* Integer 0..* {}
 abstract 0..* String 0..* {}
@@ -84,11 +86,6 @@ abstract 0..* Feature : NamedElement 0..* {
   0..* isStatic 0..1 {}
   0..* featuringClassifier -> Classifier 0..* {}
 }
-abstract 0..* VisibilityKind 0..* {}
-0..* package : VisibilityKind 1..1 {}
-0..* private : VisibilityKind 1..1 {}
-0..* protected : VisibilityKind 1..1 {}
-0..* public : VisibilityKind 1..1 {}
 abstract 0..* LiteralBoolean : LiteralSpecification 0..* {
   0..* LiteralBoolean__value 0..1 {}
 }
@@ -148,10 +145,6 @@ abstract 0..* Association : Classifier 0..* {
   0..* memberEnd -> Property 2..* {}
 }
 abstract 0..* ExtensionEnd : Property 0..* {}
-abstract 0..* AggregationKind 0..* {}
-0..* composite : AggregationKind 1..1 {}
-0..* none : AggregationKind 1..1 {}
-0..* shared : AggregationKind 1..1 {}
 abstract 0..* GeneralizationSet : NamedElement 0..* {
   [all x : this.powertype | this in x.dref.powertypeExtent.dref]
   [all x : this.GeneralizationSet__generalization | this in x.dref.generalizationSet.dref]

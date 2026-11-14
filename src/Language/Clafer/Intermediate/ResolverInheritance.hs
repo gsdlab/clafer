@@ -99,11 +99,10 @@ resolveNClafer allClafers ancestors' abstractClafers parent clafer =
     return $ clafer
       { _super = super'
       , _parentUID = parentUID'
-      , _modifiers = IClaferModifiers
-          (_isAbstract clafer)
-          (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
-          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
-          (_finalReferences $ _modifiers clafer)
+      , _modifiers = (_modifiers clafer)
+          { _initial = _isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer')  -- the clafer is declared as initial or inherits it
+          , _final = _isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer')        -- the clafer is declared as final or inherits it
+          }
       , _elements = elements'
       }
 

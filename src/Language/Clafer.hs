@@ -135,7 +135,7 @@ import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
-import           Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
+import           Language.Clafer.Intermediate.Core (Semantics (..), lowerToCore)
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
@@ -315,7 +315,7 @@ runValidate args' fo
     run $ validateGraph ++ fo
   | Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo = do
     putStrLn ("=========== Compiling the explicit model " ++ fo ++ " =============")
-    validateClafer fo
+    validateClafer (core args') fo
   | otherwise = return []
   where
   path = tooldir args' ++ "/"
@@ -324,13 +324,13 @@ runValidate args' fo
     code <- system command
     return [ fo | code /= ExitSuccess ]
 
--- | The explicit model compiles to itself: clafer -m clafer on it prints it (its first line,
---   //# OPTIONS --explicit, gives the options).
-validateClafer :: FilePath -> IO [String]
-validateClafer fo = do
+-- | The explicit model, or its core (--core), compiles to itself: clafer -m clafer on it prints
+--   it (its first line, //# OPTIONS --explicit, gives the options).
+validateClafer :: Bool -> FilePath -> IO [String]
+validateClafer core' fo = do
   clafer' <- getExecutablePath
   explicit <- readFile fo
-  (code, out, err) <- readProcessWithExitCode clafer' ["-s", "-m", "clafer", "-o", fo] ""
+  (code, out, err) <- readProcessWithExitCode clafer' (["-s", "-m", "clafer", "-o", fo] ++ [ "--core" | core' ]) ""
   case code of
     -- the console output ends with one more newline
     ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') explicit -> return []
@@ -608,8 +608,11 @@ generate =
       (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
-      -- Choco solves static models only, where := is =
-      chocoModule = lowerInitializers Static iModule
+      -- the core of the model, which the backends get; Choco solves static models only, where := is =
+      coreModule = lowerToCore (if staticClaferSubset then Static else Temporal) iModule
+      chocoModule = lowerToCore Static iModule
+      -- the explicit model keeps the modeling intent; its core (--core) is what the backends get
+      explicitModule = if core cargs then coreModule else iModule
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
@@ -630,8 +633,7 @@ generate =
               then
                  let
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
-                    -- the initializers that the generator does not interpret become constraints
-                    (imod,strMap) = astrModule $ lowerInitializers (if staticClaferSubset then Static else Temporal) iModule
+                    (imod,strMap) = astrModule coreModule
                     (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
                     -- the clafers whose UIDs cannot be Alloy names get names of their own
                     names = alloyNames imod
@@ -693,7 +695,7 @@ generate =
                then [ (Mode.Clafer,
                   CompilerResult {
                    extension = "des.cfr",
-                   outputCode = fst $ genExplicitModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                   outputCode = fst $ genExplicitModule (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
                                   (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,

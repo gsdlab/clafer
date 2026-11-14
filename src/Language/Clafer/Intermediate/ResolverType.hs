@@ -325,6 +325,15 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   resolveTExp e@(IReal _) = runListT $ runExceptT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
+  -- a behavioral pattern or a transition: formulas, each of which may be a set, which holds
+  -- when it is not empty
+  resolveTExp e@IFunExp {_op, _exps} | _op `elem` richTemporalOps =
+    runListT $ runExceptT $ do
+      args' <- mapM (lift . ListT . resolveTPExp) _exps
+      unless (all (isTBoolean . typeOf) args') $
+        throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ intercalate ", " (map showType args'))
+      return (TBoolean, e{_exps = args'})
+
   resolveTExp e@IFunExp {_op, _exps = [arg]} =
     runListT $ runExceptT $ do
       arg' <- lift $ ListT $ resolveTPExp arg

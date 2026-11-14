@@ -125,6 +125,7 @@ data IClaferModifiers
   , _finalReferences :: [IReferenceModifier]
     -- ^ declared as "finalref" or "finaltarget" without a reference of its own: the modifiers of
     --   the reference that the clafer inherits (#109)
+  , _enum :: Bool     -- ^ declared by an enum, @enum E = a | b@: the abstract clafer E and its literals
   } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)

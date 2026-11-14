@@ -45,7 +45,16 @@ desugarModule mURL (Module _ declarations) = if isDynamicModule staticModule
     staticModule = desugarWith False
     desugarWith dynamic' = IModule
       (fromMaybe "" mURL)
-      (declarations >>= desugarEnums dynamic' >>= desugarDeclaration dynamic')
+      (declarations >>= desugarTopDeclaration dynamic')
+
+-- | A declaration; the clafers of an enumeration are marked as such, so that the explicit model
+--   keeps the enumeration ('_enum').
+desugarTopDeclaration :: Bool -> Declaration -> [IElement]
+desugarTopDeclaration dynamic' decl@EnumDecl{} = map markEnum $ desugarEnums dynamic' decl >>= desugarDeclaration dynamic'
+  where
+  markEnum (IEClafer c) = IEClafer c{_modifiers = (_modifiers c){_enum = True}}
+  markEnum e = e
+desugarTopDeclaration dynamic' decl = desugarDeclaration dynamic' decl
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
@@ -146,7 +155,7 @@ desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' refer
 
 desugarModifiers :: Abstract -> [TempModifier] -> Reference -> IClaferModifiers
 desugarModifiers    abstract'    tmods           reference' =
-  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods) inherited
+  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods) inherited False
   where
   -- finalref or finaltarget of a clafer that inherits its reference, e.g., `finalref motor : engine`
   inherited = case reference' of
@@ -234,46 +243,35 @@ desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
       TransitionEmpty _ -> []
       -- the constraint spans the clafer's name and its transition, e.g., green --> yellow; its
       -- source is the instance of the clafer
-      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' thisIdent) arrow e)]
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarExp $ TransitionExp s' (mkClaferIdExp s' thisIdent) arrow e)]
 
-desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
-desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
-
--- | The transitions as in Juodisius et al., Clafer: Lightweight Modeling of Structure,
---   Behaviour, and Variability (2019), section 6.1: if the precondition holds in a state,
---   the postcondition holds in the next state (-->), or the precondition and the context
---   instance last until the postcondition holds (-->>); a guard strengthens the precondition.
---
---   Change: a chain of transitions is a sequence, e.g., a scenario
---   @[ initially (green --> yellow --> red) ]@; only its first precondition is a condition,
---   so @a --> b --> c@ is @a => X (b && X c)@, not @a => X (b => X c)@.
-desugarTrans' :: Span -> Exp -> TransArrow -> Exp -> Exp
-desugarTrans' s e1 arrow e2 = EImplies s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
-
--- | The rest of a chain of transitions: the states follow each other.
-desugarSequence :: Exp -> Exp
-desugarSequence (TransitionExp s e1 arrow e2) = EAnd s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
-desugarSequence e = e
-
-precondition :: Span -> Exp -> TransArrow -> Exp
-precondition s e1 arrow = case arrow of
-      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
-      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
-      _ -> e1
-
--- | The step from the source @e1@ to the target @e2@.
-step :: Span -> Exp -> TransArrow -> Exp -> Exp
-step s e1 arrow e2 = case arrow of
-      SyncTransArrow _ -> multiStep
-      GuardedSyncTransArrow _ _ -> multiStep
-      NextTransArrow _ -> LtlX s e2
-      GuardedNextTransArrow _ _ -> LtlX s e2
+-- | A transition, which the IR keeps; "Language.Clafer.Intermediate.Core" gives its meaning.
+--   The arguments are the source, the guard, if any, and the target, which is a transition
+--   again in a chain, e.g., @a --> b --> c@. A transition @-->>@ whose source is not @this@ also
+--   has @this@, the context instance, which lasts with the source until the target holds.
+desugarTransition :: Span -> Exp -> TransArrow -> Exp -> IExp
+desugarTransition s e1 arrow e2 = case arrow of
+    NextTransArrow _ -> dop iTrans [e1, e2]
+    GuardedNextTransArrow _ (TransGuard _ g) -> dop iTransGuarded [e1, g, e2]
+    SyncTransArrow _ -> dop iTransSync $ [e1, e2] ++ this'
+    GuardedSyncTransArrow _ (TransGuard _ g) -> dop iTransSyncGuarded $ [e1, g, e2] ++ this'
   where
-    this' = mkClaferIdExp s thisIdent
-    -- the source of a clafer's transition is this
-    multiStep = LtlU s (if isThis e1 then this' else EAnd s this' e1) e2
+    dop = desugarOp desugarExp
+    this' = [ mkClaferIdExp s thisIdent | not (isThis e1) ]
     isThis (ClaferId _ (Path _ [ModIdIdent _ i])) = transIdent i == thisIdent
     isThis _ = False
+
+-- | A behavioral pattern, which the IR keeps ('patternOp'); "Language.Clafer.Intermediate.Core"
+--   gives its meaning.
+desugarPattern :: String -> [Exp] -> PatternScope -> IExp
+desugarPattern kind args scope = desugarOp desugarExp (patternOp kind scopeName) (args ++ scopeArgs)
+  where
+    (scopeName, scopeArgs) = case scope of
+      PatScopeEmpty _ -> ("", [])
+      PatScopeBefore _ r -> ("before", [r])
+      PatScopeAfter _ q -> ("after", [q])
+      PatScopeBetweenAnd _ q r -> ("between", [q, r])
+      PatScopeAfterUntil _ q r -> ("after until", [q, r])
 
 
 desugarFinality :: [TempModifier] -> Bool
@@ -427,77 +425,15 @@ desugarExp :: Exp -> PExp
 desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
 
 
+-- | The temporal keywords that are LTL operators, e.g., @eventually@ for @F@.
 translateTmpPatterns :: Exp -> Exp
 translateTmpPatterns e = case e of
-  TmpPatNever _ p scope -> case scope of
-    PatScopeEmpty _ ->            g $ not' p
-    PatScopeBefore _ r ->         f r ==> (not' p `u` r)
-    PatScopeAfter _ q ->          g(q ==> g (not' p))
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (not' p `w` r))
-  TmpPatSometime _ p scope -> case scope of
-    PatScopeEmpty _ ->            f p
-    PatScopeBefore _ r ->         not' r `w` (p & not' r)
-    PatScopeAfter _ q ->          g (not' q) || f (q & f p)
-    PatScopeBetweenAnd _ q r ->   g ( (q & not' r) ==> (not' r `w` (p & not' r)) )
-    PatScopeAfterUntil _ q r ->   g ( (q & not' r) ==> (not' r `u` (p & not' r)) )
-  TmpPatLessOrOnce _ p scope -> case scope of
-                                  -- (!P W (P W []!P))
-    PatScopeEmpty _ ->            not' p `w` (p `w` g (not' p))
-                                  -- <> R -> ((!P & !R) U ((R | (P & !R)) U ( R | (!P U R))))
-    PatScopeBefore _ r ->         f r ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r)))))
-                                  -- <>Q -> (!Q U (Q & (!P W (P W []!P))))
-    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` (p `w` g (not' p))) ))
-                                  -- []((Q & <>R) -> ((!P & !R) U (R | ((P & !R) U (R | (!P U R))))))
-    PatScopeBetweenAnd _ q r ->   g((q & f r) ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r))))))
-                                  -- [](Q -> ((!P & !R) U (R | ((P & !R) U (R | (!P W R) | []P)))))
-    PatScopeAfterUntil _ q r ->   g(q ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `w` r) || g p)))))
-  TmpPatAlways _ p scope -> case scope of
-    PatScopeEmpty _ ->            g p
-    PatScopeBefore _ r ->         f r ==> (p `u` r)
-    PatScopeAfter _ q ->          g (q ==> g p)
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r ) ==> (p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (p `w` r))
-  TmpPatPrecede _ s p scope -> case scope of
-    PatScopeEmpty _ ->            not' p `w` s
-    PatScopeBefore _ r ->         f r ==> (not' p `u` (s || r))
-                                  -- from the first q: Dwyer's []!Q | <>(Q & (!P W S)) may pick a later q
-    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` s)))
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` (s || r)))
-    PatScopeAfterUntil _ q r ->   g ((q & not' r) ==> (not' p `w` (s || r)))
-  TmpPatFollow _ s p scope -> case scope of
-    PatScopeEmpty _ ->            g(p ==> f s)
-    PatScopeBefore _ r ->         f r ==> ((p ==> (not' r `u` (s & not' r))) `u` r)
-    PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
-                                  -- every p up to r: []((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))
-    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> ((p ==> (not' r `u` (s & not' r))) `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> ((p==> (not' r `u` (s & not' r))) `w` r))
-  {-TmpInitially s exp' -> -}
-    {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
-        {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
-    {-in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'-}
   TmpEventually s exp' -> LtlF s exp'
   TmpWUntil s exp0 exp1 -> LtlW s exp0 exp1
   TmpUntil s exp0 exp1 -> LtlU s exp0 exp1
   TmpGlobally s exp' -> LtlG s exp'
   TmpNext s exp' -> LtlX s exp'
-  TransitionExp s exp0 arrow exp1 -> desugarTrans' s exp0 arrow exp1
   _ -> e
-  where
-    infixr 4 `u`
-    infixr 4 `w`
-    infixl 3 &
-    infixl 2 ||
-    infixr 1 ==>
-    w = LtlW span'
-    u = LtlU span'
-    (==>) e1 e2 = EImplies span' e1 e2
-    e1 & e2 = EAnd span' e1 e2
-    e1 || e2 = EOr span' e1 e2
-    f = LtlF span'
-    g = LtlG span'
-    not' = ENeg span'
-    span' = getSpan e
 
 
 desugarExp' :: Exp -> IExp
@@ -558,14 +494,14 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   ERange _ exp0 exp'        -> dop iRange        [exp0, exp']
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
   ClaferId _ name  -> desugarName name
-  TransitionExp{} -> showPatErr
+  TransitionExp s e1 arrow e2 -> desugarTransition s e1 arrow e2
   LetExp _ vb e -> desugarExp' $ desugarLet vb e
-  TmpPatNever{} -> showPatErr
-  TmpPatSometime{} -> showPatErr
-  TmpPatLessOrOnce{} -> showPatErr
-  TmpPatAlways{} -> showPatErr
-  TmpPatPrecede{} -> showPatErr
-  TmpPatFollow{} -> showPatErr
+  TmpPatNever _ p scope -> desugarPattern "never" [p] scope
+  TmpPatSometime _ p scope -> desugarPattern "sometime" [p] scope
+  TmpPatLessOrOnce _ p scope -> desugarPattern "lonce" [p] scope
+  TmpPatAlways _ p scope -> desugarPattern "always" [p] scope
+  TmpPatPrecede _ s p scope -> desugarPattern "precede" [s, p] scope
+  TmpPatFollow _ s p scope -> desugarPattern "follow" [s, p] scope
   TmpUntil{} -> showPatErr
   TmpWUntil{} -> showPatErr
   TmpEventually{} -> showPatErr
@@ -634,7 +570,7 @@ desugarOp f op' exps' =
       else IFunExp op' $ map (trans.f) exps'
     where
       mappedList = map f exps'
-      trans = if op' `elem` ([iNot, iIfThenElse] ++ logBinOps ++ ltlUnOps)
+      trans = if op' `elem` ([iNot, iIfThenElse] ++ logBinOps ++ ltlUnOps ++ richTemporalOps)
           then desugarPath else id
 
 sugarExp :: PExp -> Exp
@@ -659,6 +595,7 @@ sugarExp' x = case x of
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
   IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
+  IFunExp op' exps' | op' `elem` richTemporalOps -> sugarRich op' (map sugarExp exps')
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)
     else if op' `elem` binOps then (sugarOp op') (exps''!!0) (exps''!!1)
@@ -712,6 +649,29 @@ sugarExp' x = case x of
   sugarTerOp op''
     | op'' == iIfThenElse    = EImpliesElse noSpan
     | otherwise            = error $ show op'' ++ "is not an op"
+  sugarRich op'' args'
+    | op'' == iTrans, [a, b] <- args' = TransitionExp noSpan a (NextTransArrow noSpan) b
+    | op'' == iTransGuarded, [a, g, b] <- args' = TransitionExp noSpan a (GuardedNextTransArrow noSpan $ TransGuard noSpan g) b
+    | op'' == iTransSync, (a : b : _) <- args' = TransitionExp noSpan a (SyncTransArrow noSpan) b
+    | op'' == iTransSyncGuarded, (a : g : b : _) <- args' = TransitionExp noSpan a (GuardedSyncTransArrow noSpan $ TransGuard noSpan g) b
+    | Just (kind, scope) <- patternOf op'' = sugarPattern kind scope args'
+    | otherwise = error $ show op'' ++ " is not an op"
+  sugarPattern kind scope args' =
+    let (own, scopeArgs) = splitAt (if kind `elem` ["precede", "follow"] then 2 else 1) args'
+        scope' = case (scope, scopeArgs) of
+          ("before", [r]) -> PatScopeBefore noSpan r
+          ("after", [q]) -> PatScopeAfter noSpan q
+          ("between", [q, r]) -> PatScopeBetweenAnd noSpan q r
+          ("after until", [q, r]) -> PatScopeAfterUntil noSpan q r
+          _ -> PatScopeEmpty noSpan
+    in case (kind, own) of
+      ("never", [p]) -> TmpPatNever noSpan p scope'
+      ("sometime", [p]) -> TmpPatSometime noSpan p scope'
+      ("lonce", [p]) -> TmpPatLessOrOnce noSpan p scope'
+      ("always", [p]) -> TmpPatAlways noSpan p scope'
+      ("precede", [s, p]) -> TmpPatPrecede noSpan s p scope'
+      ("follow", [s, p]) -> TmpPatFollow noSpan s p scope'
+      _ -> error $ "Desugarer.sugarPattern: " ++ kind
 
 
 desugarPath :: PExp -> PExp

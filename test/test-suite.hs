@@ -734,10 +734,33 @@ case_AbsentReference = do
 -- The value of an initializer with temporal operators is evaluated in the context of the parent
 -- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
 -- guard, and it navigates from the parent, also after the parent disappeared.
+-- | The explicit model keeps the enumerations, initializers, behavioral patterns and
+--   transitions; its core (--core) has them lowered, as the backends get them
+--   (doc/rich-and-core-explicit.md).
+case_RichAndCoreExplicit :: Assertion
+case_RichAndCoreExplicit = do
+    let model = [ "enum Color = red | green", "light -> Color", "p ?", "q ?", "r ?"
+                , "Box ?", "    on ?", "    off ?", "    x -> integer := 3", "    [ on --> off --> on ]"
+                , "[ never p between q and r ]" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- explicit core'
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    has False "enum Color = red | green"
+    has False "0..* x -> int 1..1 := 3 {}"
+    has False "[((#this.on) >= 1) --> ((#this.off) >= 1) --> ((#this.on) >= 1)]"
+    has False "[never ((#p) >= 1) between ((#q) >= 1) and ((#r) >= 1)]"
+    has True "abstract final 0..* Color 0..* {}"
+    has True "[initially (this.dref = 3)]"
+    has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
+    has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
+
 case_InitialValueTemporalContext :: Assertion
 case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
     hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x)).@r_flag))"
     hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
-    hasAlloy (model "some flag") "((some (self_.(@p_x)).@r_flag) => 1 else 2)"
+    hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

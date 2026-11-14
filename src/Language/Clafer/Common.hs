@@ -147,7 +147,7 @@ createUidIClaferMap    iModule  = foldl'
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    defaultModifiers = IClaferModifiers False True True []
+    defaultModifiers = IClaferModifiers False True True [] False
     rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
     -- integers are decimals, decimals and doubles are reals; integers also convert to doubles (see TypeSystem)
     integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
@@ -410,9 +410,6 @@ iInitially    = "initially"
 iFinally :: String
 iFinally    = "finally"
 
--- | Marks the value @e@ of an initializer @x -> T := e@ that the desugarer moved from the
---   context of the parent into the context of @x@. The name resolver resolves @e@ in the
---   context of the parent, where it is written, and removes the marker; no other phase sees it.
 iCSet :: String
 iCSet         = "#"
 
@@ -498,6 +495,45 @@ ltlBinOps = [iW, iU]
 ltlUnOps :: [String]
 ltlUnOps = [iX, iG, iF, iInitially, iFinally]
 
+-- | The behavioral patterns of Dwyer et al.'s catalogue: @never@, @sometime@, @lonce@ (at most
+--   once), @always@, @s must precede p@ and @s must follow p@.
+patternKinds :: [String]
+patternKinds = ["never", "sometime", "lonce", "always", "precede", "follow"]
+
+-- | The scopes of a pattern: globally (no keyword), @before r@, @after q@, @between q and r@
+--   and @after q until r@.
+patternScopes :: [String]
+patternScopes = ["", "before", "after", "between", "after until"]
+
+-- | The operator of a pattern in a scope, e.g., @never before@ for @never p before r@, which
+--   the IR keeps (the rich explicit model) and "Language.Clafer.Intermediate.Core" lowers to
+--   LTL. Its arguments are those of the pattern, @p@, or @s@ and @p@, then those of the scope.
+patternOp :: String -> String -> String
+patternOp kind ""    = kind
+patternOp kind scope = kind ++ " " ++ scope
+
+-- | The pattern and the scope of an operator, if it is a pattern's.
+patternOf :: String -> Maybe (String, String)
+patternOf op' = lookup op' [ (patternOp k s, (k, s)) | k <- patternKinds, s <- patternScopes ]
+
+patternOps :: [String]
+patternOps = [ patternOp k s | k <- patternKinds, s <- patternScopes ]
+
+-- | The transitions, which the IR keeps: @a --> b@, @a -[g]-> b@, @a -->> b@ and @a -[g]->> b@.
+iTrans, iTransGuarded, iTransSync, iTransSyncGuarded :: String
+iTrans            = "-->"
+iTransGuarded     = "-[]->"
+iTransSync        = "-->>"
+iTransSyncGuarded = "-[]->>"
+
+transitionOps :: [String]
+transitionOps = [iTrans, iTransGuarded, iTransSync, iTransSyncGuarded]
+
+-- | The temporal operators of the rich IR, which "Language.Clafer.Intermediate.Core" lowers;
+--   their arguments and results are formulas.
+richTemporalOps :: [String]
+richTemporalOps = patternOps ++ transitionOps
+
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
 
@@ -568,7 +604,7 @@ propertyKeywords =
 
 -- | Whether the expression applies a temporal operator, e.g., @always@ or @X@.
 isTempOperator :: IExp -> Bool
-isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
+isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps ++ richTemporalOps)
 isTempOperator _               = False
 
 -- | Whether the clafer is declared @initial@ or @final@.

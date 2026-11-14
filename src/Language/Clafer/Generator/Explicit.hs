@@ -32,11 +32,14 @@ import Language.Clafer.Common
 import Language.Clafer.Generator.ChocoModel
 import Language.Clafer.Intermediate.Intclafer
 
--- | The explicit form of the model chocosolver solves, and its scope file: a Clafer model with
---   every name a UID, every card, group card, this, parent and dref written out, which starts
---   with @\/\/# OPTIONS --explicit@ (i.e., -f -k -l --ss=none) and compiles to itself; and
---   every scope, as chocosolver's @AstPrinter@ and @ScopeFile@ print them. The [choco| |]
---   escapes, which are JavaScript, are left out.
+-- | The explicit form of the model, and its scope file: a Clafer model with every name a UID,
+--   every card, group card, this, parent and dref written out, which starts with
+--   @\/\/# OPTIONS --explicit@ (i.e., -f -k -l --ss=none) and compiles to itself; and every
+--   scope, as chocosolver's @AstPrinter@ and @ScopeFile@ print them. The [choco| |] escapes,
+--   which are JavaScript, are left out.
+--   The explicit model keeps the enumerations, initializers, behavioral patterns and
+--   transitions; its core, from the IR that "Language.Clafer.Intermediate.Core" lowers, is
+--   what the backends solve (for a static model, what chocosolver solves).
 --   A temporal model has its temporal modifiers and operators, which chocosolver does not
 --   read, and its trace length among the options.
 genExplicitModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> Maybe Integer -> (Result, String)
@@ -50,7 +53,8 @@ explicitModel traceLength CModel{cmElements} =
     -- the model declares itself explicit, for clafer and chocosolver
     "//# OPTIONS --explicit" ++ maybe "" (\tl -> " --tl=" ++ show tl) traceLength ++ "\n"
     ++ concat [ "[" ++ exExp e ++ "]\n" | CEConstraint e <- cmElements ]
-    ++ concat [ exClafer superMap "" c | CEClafer c <- cmElements ]
+    ++ concat [ exEnum c | CEClafer c <- cmElements, isEnum c, ccAbstract c ]
+    ++ concat [ exClafer superMap "" c | CEClafer c <- cmElements, not (isEnum c) ]
     ++ (if null objectives && null assertions then "" else "\n")
     ++ concat [ "<< " ++ (if isMax then "max " else "min ") ++ exExp e ++ " >>\n" | (isMax, e) <- objectives ]
     ++ concat [ "assert [" ++ exExp e ++ "]\n" | e <- assertions ]
@@ -61,6 +65,13 @@ explicitModel traceLength CModel{cmElements} =
     objectives = [ (isMax, e) | CEObjective isMax e <- allElements ]
     assertions = [ e | CEAssert e <- allElements ]
     superMap = Map.fromList [ (ccUid c, c) | CEClafer c <- allElements ]
+    -- an enumeration, with its literals in their order
+    exEnum c = "enum " ++ ccUid c ++ " = "
+        ++ intercalate " | " [ ccUid l | CEClafer l <- cmElements, isEnum l, ccSuper l == Just (ccUid c) ] ++ "\n"
+
+-- | Whether the clafer is an enumeration or one of its literals.
+isEnum :: CClafer -> Bool
+isEnum c = "enum" `elem` ccModifiers c
 
 -- | A clafer with its block: its group card (its own, otherwise its super clafer's, which it
 --   inherits), its super clafer, its own reference, its card (0..* if abstract), then its
@@ -69,7 +80,7 @@ exClafer :: Map.Map UID CClafer -> String -> CClafer -> Result
 exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard, ccSuper, ccRef, ccRefConstraints, ccElements} =
     indent
     ++ (if ccAbstract then "abstract " else "")
-    ++ concatMap (++ " ") ccModifiers
+    ++ concatMap (++ " ") (filter (/= "enum") ccModifiers)
     ++ exCard (inheritedGCard ccGCard ccSuper) ++ " "
     ++ ccUid
     ++ maybe "" (" : " ++) ccSuper
@@ -125,6 +136,9 @@ exExp (CQuant q [] set) = case q of
 exExp (CQuant q decls' body') = exQuant q ++ " " ++ intercalate ", " (map exDecl decls') ++ " | " ++ exExp body'
   where
     exDecl (CDecl isDisj' locals set) = (if isDisj' then "disj " else "") ++ intercalate "; " locals ++ " : " ++ exExp set
+exExp (CFun f args')
+    | Just (kind, scope) <- patternOf f = exPattern kind scope args'
+    | f `elem` transitionOps = exTransition f args'
 exExp (CFun f args') = case (f, args') of
     ("not", [a])       -> "!" ++ exOperand a
     -- -1 is a constant, so the negation of a number is -(1)
@@ -151,6 +165,35 @@ exExp (CFun f args') = case (f, args') of
         , ("lessThan", "<"), ("lessThanEqual", "<="), ("greaterThan", ">"), ("greaterThanEqual", ">=")
         , ("equal", "="), ("notEqual", "!="), ("$in", "in"), ("notIn", "not in")
         , ("union", "++"), ("diff", "--"), ("inter", "**"), ("U", "U"), ("W", "W") ]
+
+-- | A behavioral pattern, e.g., @s must precede p after q until r@.
+exPattern :: String -> String -> [CExp] -> String
+exPattern kind scope args' = pat ++ exScope scope scopeArgs
+  where
+    (own, scopeArgs) = splitAt (if kind `elem` ["precede", "follow"] then 2 else 1) args'
+    pat = case (kind, own) of
+      (_, [s, p]) -> exOperand s ++ " must " ++ kind ++ " " ++ exOperand p
+      (_, [p])    -> kind ++ " " ++ exOperand p
+      _           -> error $ "Explicit.exPattern: " ++ kind
+    exScope "" [] = ""
+    exScope "before" [r] = " before " ++ exOperand r
+    exScope "after" [q] = " after " ++ exOperand q
+    exScope "between" [q, r] = " between " ++ exOperand q ++ " and " ++ exOperand r
+    exScope "after until" [q, r] = " after " ++ exOperand q ++ " until " ++ exOperand r
+    exScope s _ = error $ "Explicit.exPattern: scope " ++ s
+
+-- | A transition, whose target may be a chain of transitions; the context instance of @-->>@
+--   is not written.
+exTransition :: String -> [CExp] -> String
+exTransition f args' = case (f, args') of
+    (_, [a, b]) | f == iTrans -> exOperand a ++ " --> " ++ target b
+    (_, [a, g, b]) | f == iTransGuarded -> exOperand a ++ " -[" ++ exOperand g ++ "]-> " ++ target b
+    (_, a : b : _) | f == iTransSync -> exOperand a ++ " -->> " ++ target b
+    (_, a : g : b : _) | f == iTransSyncGuarded -> exOperand a ++ " -[" ++ exOperand g ++ "]->> " ++ target b
+    _ -> error $ "Explicit.exTransition: " ++ f
+  where
+    target b@(CFun f' _) | f' `elem` transitionOps = exExp b
+    target b = exOperand b
 
 exQuant :: IQuant -> String
 exQuant INo = "no"
