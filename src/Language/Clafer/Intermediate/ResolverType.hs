@@ -191,6 +191,7 @@ resolveTElement    TAReferences  _         (IEClafer iclafer) =
                   else Just $ oRef{_ref=r'}
 resolveTElement    TAReferences  _         iec@IEConstraint{} = return iec
 resolveTElement    TAReferences  _         ieg@IEGoal{} = return ieg
+resolveTElement    TAReferences  _         iei@IEInitializer{} = return iei
 
 -- Phase two: only process constraints and goals
 resolveTElement    TAExpressions  _         (IEClafer iclafer) =
@@ -207,6 +208,17 @@ resolveTElement    TAExpressions parent'   (IEConstraint _isHard _pexp) =
       return pexp'
 resolveTElement    TAExpressions parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
+-- the equation x = e of the initializer of x, a constraint of the parent of x (the root for a
+-- top-level clafer), where e is written
+resolveTElement    TAExpressions claf'   (IEInitializer k s pexp') =
+  do
+    uidIClaferMap' <- asks iUIDIClaferMap
+    parentUID' <- _parentUID <$> claferWithUid uidIClaferMap' claf'
+    let context' = if parentUID' == baseClafer then rootIdent else parentUID'
+    pexp'' <- resolveTConstraint context' pexp'
+    unless (isTBoolean $ typeOf pexp'') $
+      throwError $ SemanticErr (_inPos pexp'') ("An initializer requires a value of the type of its reference, but got '" ++ showType pexp'' ++ "'")
+    return $ IEInitializer k s pexp''
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
 resolveTConstraint curThis' constraint =
@@ -325,7 +337,6 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (isTBoolean t) >> return TBoolean
             | _op `elem` ltlUnOps = test (isTBoolean t) >> return TBoolean
             | _op == iCSet = return TInteger
-            | _op == iInitValue = return t
             -- a sum of decimals is a decimal; a product of decimals is not supported
             | _op == iSumSet = test (isTInteger t || isTDecimal t) >> return (if isTDecimal t then TDecimal else TInteger)
             | _op == iProdSet = test (isTInteger t) >> return TInteger

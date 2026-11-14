@@ -126,6 +126,7 @@ jsLinks pUID (CEConstraint e) = jsVar pUID ++ ".addConstraint(" ++ jsExp e ++ ")
 jsLinks _ (CEAssert e) = "assert(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective True e) = "max(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective False e) = "min(" ++ jsExp e ++ ");\n"
+jsLinks _ (CEInitializer _ _ e) = error $ "[bug] Choco: an initializer that was not lowered to a constraint, with the value " ++ jsExp e
 
 prop :: String -> Maybe String -> String
 prop name = maybe "" (\value -> "." ++ name ++ "(" ++ value ++ ")")

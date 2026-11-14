@@ -77,6 +77,9 @@ resolveRootModule (imodule, _)
     return $ IEClafer c{_elements = elements'}
   rootElement ctx (IEConstraint isHard' pexp) = IEConstraint isHard' <$> rootConstraint ctx pexp
   rootElement ctx (IEGoal isMaximize' pexp) = IEGoal isMaximize' <$> rootPExp ctx Unsplit pexp
+  -- the equation of an initializer is in the context of the parent of the clafer
+  rootElement ctx (IEInitializer k s pexp) = IEInitializer k s <$> rootConstraint parentCtx pexp
+    where parentCtx = ctx >>= \c -> if _parentUID c `elem` [rootIdent, baseClafer] then Nothing else findIClafer uidMap (_parentUID c)
 
   rootConstraint :: Maybe IClafer -> PExp -> Resolve PExp
   rootConstraint ctx@(Just c) pexp

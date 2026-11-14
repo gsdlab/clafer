@@ -1,8 +1,6 @@
 //# OPTIONS --explicit
-[((#numberOne) >= 1) => (numberOne.dref = 1)]
-[((#alice) >= 1) => (alice.dref = "Alice")]
-0..* numberOne -> int 1..1 {}
-0..* alice -> string 1..1 {}
+0..* numberOne -> int 1..1 = 1 {}
+0..* alice -> string 1..1 = "Alice" {}
 0..* likertScaleVal -> int 1..1 {
   [((((this.dref = 1) || (this.dref = 2)) || (this.dref = 3)) || (this.dref = 4)) || (this.dref = 5)]
 }

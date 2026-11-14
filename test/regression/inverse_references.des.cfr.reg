@@ -20,8 +20,7 @@ abstract 0..* Machine 0..* {
   }
 }
 abstract 0..* Task 0..* {
-  [((#this.total_free) >= 1) => (this.total_free.dref = (#Machine.isFree))]
-  0..* total_free -> int 1..1 {}
+  0..* total_free -> int 1..1 = #Machine.isFree {}
 }
 0..* MyTask : Task 1..1 {
   0..* GoogleCA : Machine 1..1 {

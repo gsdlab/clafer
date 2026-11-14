@@ -13,8 +13,7 @@ abstract 0..* root__options 0..* {
   }
 }
 abstract 0..* comp 0..* {
-  [((#this.version) >= 1) => (this.version.dref = (1 + 2))]
-  0..* version -> int 1..1 {}
+  0..* version -> int 1..1 = 1 + 2 {}
 }
 abstract 0..* ECU : comp 0..* {}
 abstract 0..* root__display : comp 0..* {

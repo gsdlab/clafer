@@ -74,7 +74,12 @@ exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard
     ++ ccUid
     ++ maybe "" (" : " ++) ccSuper
     ++ maybe "" (\(isSet', target) -> (if isSet' then " -> " else " ->> ") ++ exTarget target) ccRef
-    ++ " " ++ (if ccAbstract then "0..*" else exCard ccCard)
+    -- an abstract clafer has no multiplicity of its own, but a written * makes its initializer
+    -- a set initializer (kbak/clafer-semantics#170), so the multiplicity of an abstract clafer
+    -- with a per-instance initializer is left out
+    ++ (if ccAbstract then (if perInstanceInit then "" else " 0..*") else " " ++ exCard ccCard)
+    -- the initializer as written, with its value in the context of the parent
+    ++ concat [ (if k then " = " else " := ") ++ exExp e | CEInitializer k _ e <- ccElements ]
     ++ (if null constraints && null subClafers then " {}\n"
         else " {\n"
              ++ concat [ indent' ++ "[" ++ exExp e ++ "]\n" | e <- constraints ]
@@ -84,6 +89,7 @@ exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard
     indent' = indent ++ "  "
     constraints = ccRefConstraints ++ [ e | CEConstraint e <- ccElements ]
     subClafers = [ c | CEClafer c <- ccElements ]
+    perInstanceInit = not $ null [ () | CEInitializer _ False _ <- ccElements ]
     inheritedGCard g@(Just _) _ = g
     inheritedGCard Nothing (Just s) | Just CClafer{ccGCard = g, ccSuper = s'} <- Map.lookup s superMap = inheritedGCard g s'
     inheritedGCard _ _ = Nothing

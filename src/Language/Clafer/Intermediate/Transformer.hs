@@ -35,6 +35,7 @@ transElement :: IElement -> IElement
 transElement (IEClafer clafer)           = IEClafer $ transClafer clafer
 transElement (IEConstraint isHard' pexp) = IEConstraint isHard' $ transPExp False pexp
 transElement (IEGoal isMaximize' pexp)   = IEGoal isMaximize' $ transPExp False pexp
+transElement (IEInitializer k s pexp)    = IEInitializer k s $ transPExp False pexp
 
 transClafer :: IClafer -> IClafer
 transClafer = I.elements . traversed %~ transElement

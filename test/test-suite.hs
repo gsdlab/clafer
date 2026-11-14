@@ -652,23 +652,27 @@ case_InitialValue = do
         has model expected = do
             x <- explicit model
             (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
-    -- a static model: the same outputs as with =, and no assertion
+    -- a static model: the same Alloy and Choco outputs as with =, and no assertion; the explicit
+    -- form keeps the initializers as written
     case (output [Alloy, Choco, Clafer] $ static' ":=", output [Alloy, Choco, Clafer] $ static' "=") of
         (Right a, Right b) -> do
-            a == b @? ("differs from =:\n" ++ unlines a)
+            take 2 a == take 2 b @? ("differs from =:\n" ++ unlines a)
             not (any ("assert" `isInfixOf`) a) @? ("an assertion:\n" ++ unlines a)
             not ("--tl" `isInfixOf` last a) @? ("temporal:\n" ++ last a)
+            ("0..* x -> int 1..1 := 10 {}" `isInfixOf` last a) @? ("not :=:\n" ++ last a)
+            ("0..* x -> int 1..1 = 10 {}" `isInfixOf` last b) @? ("not =:\n" ++ last b)
         (Left errs', _) -> assertFailure $ show errs'
         (_, Left errs') -> assertFailure $ show errs'
-    -- a temporal model: in the context of x, with the value resolved in the context of the parent
+    -- a temporal model: the initializers as written, with their values in the context of the
+    -- parent (explicit initializers)
     let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
                    , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := A.y"
                    , "[ F some A.x ]" ]
-    has temporal "0..* x -> int 0..1 {\n    [initially (this.dref = (this.parent.A__y.dref + 1))]"
-    has temporal "0..* z -> int 1..1 {\n    [initially (this.dref = this.parent.A__y.dref)]"
-    has temporal "[initially (((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2)))]"
+    has temporal "0..* x -> int 0..1 := this.A__y.dref + 1 {"
+    has temporal "0..* z -> int 1..1 := this.A__y.dref {}"
+    has temporal "0..* zs -> int 0..* := 1 ++ 2 {}"
     -- a finalref reference keeps the value it starts with, also when the value of A.y changes
-    has temporal "finalref 0..* f -> int 0..1 {\n  [initially (this.dref = A.A__y.dref)]"
+    has temporal "finalref 0..* f -> int 0..1 := A.A__y.dref {}"
     x <- explicit temporal
     not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)
 
@@ -734,7 +738,6 @@ case_InitialValueTemporalContext :: Assertion
 case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
-    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x :> alive_Box)).@r_flag))"
+    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x)).@r_flag))"
     hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
-    -- without temporal operators, the value is the same as before
-    hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"
+    hasAlloy (model "some flag") "((some (self_.(@p_x)).@r_flag) => 1 else 2)"

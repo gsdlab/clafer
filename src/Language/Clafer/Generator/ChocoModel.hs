@@ -60,6 +60,10 @@ data CElement
     | CEConstraint CExp
     | CEAssert CExp               -- ^ an assertion, quantified over its clafer if nested
     | CEObjective Bool CExp       -- ^ maximize, or minimize
+    | CEInitializer Bool Bool CExp  -- ^ the initializer of the clafer, @=@ or @:=@, whether a set
+                                  --   initializer, and its value in
+                                  --   the context of the parent; the Choco output has none
+                                  --   ("Language.Clafer.Intermediate.Initializers")
 
 data CClafer = CClafer
     { ccUid      :: UID
@@ -158,6 +162,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
           where
             c = claferWithUid u
     genElement _ (IEGoal isMax PExp{_exp=IFunExp _ [pexp]}) = Just $ CEObjective isMax $ genConstraintPExp pexp
+    genElement _ (IEInitializer k s PExp{_exp=IFunExp _ [_, value]}) = Just $ CEInitializer k s $ genConstraintPExp value
     genElement _ _ = Nothing
 
     thisLocal = "this_"
@@ -337,10 +342,6 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         CJoin (genConstraintPExp e1) _sident
     genConstraintExp (IFunExp "." [_, _]) =
         error "Did not rewrite all joins to left joins."
-    -- the value of an initializer with temporal operators, which the explicit form shows as it
-    -- is: its context is the parent (gsdlab/clafer#123), which only the temporal output keeps
-    genConstraintExp (IFunExp op' [arg]) | op' == iInitValue =
-        genConstraintPExp arg
     genConstraintExp (IFunExp "-" [arg]) =
         CFun "minus" [genConstraintPExp arg]
     genConstraintExp (IFunExp "-" [arg1, arg2]) =

@@ -3,17 +3,12 @@
 0..* A 1..1 {
   [F ((this.x.dref = 5) && (this.x.x__y.dref = 7))]
   0..* A__y -> int 1..1 {}
-  0..* x -> int 0..1 {
-    [initially (this.dref = (this.parent.A__y.dref + 1))]
+  0..* x -> int 0..1 := this.A__y.dref + 1 {
     0..* x__y -> int 1..1 {}
   }
-  0..* z -> int 1..1 {
-    [initially (this.dref = this.parent.A__y.dref)]
-  }
+  0..* z -> int 1..1 := this.A__y.dref {}
 }
-abstract 0..* Val -> int 0..* {
-  [initially (this.dref = 2)]
-}
+abstract 0..* Val -> int := 2 {}
 0..* v1 : Val 1..1 {}
 0..* B 1..1 {
   0..* v2 : Val 1..1 {}

@@ -135,6 +135,7 @@ import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
@@ -607,6 +608,8 @@ generate =
       (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
+      -- Choco solves static models only, where := is =
+      chocoModule = lowerInitializers Static iModule
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
@@ -626,13 +629,14 @@ generate =
          then if hasNoDecimalLiterals && hasNoRealLiterals && hasNoReferenceToDecimal && hasNoReferenceToReal && hasNoProductOperator
               then
                  let
-                    (imod,strMap) = astrModule iModule
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
+                    -- the initializers that the generator does not interpret become constraints
+                    (imod,strMap) = astrModule $ lowerInitializers (if staticClaferSubset then Static else Temporal) iModule
                     (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
                     -- the clafers whose UIDs cannot be Alloy names get names of their own
                     names = alloyNames imod
                     imodA = toAlloyNames names imod
-                    genvA = if Map.null names then genv else genv{uidClaferMap = createUidIClaferMap imodA}
+                    genvA = genv{uidClaferMap = createUidIClaferMap imodA}
                     scopesA = [ (Map.findWithDefault u u names, s) | (u, s) <- scopes ]
                     alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats
@@ -751,7 +755,7 @@ generate =
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs) otherTokens',
+                          outputCode = genCModule (chocoModule, genv{uidClaferMap = createUidIClaferMap chocoModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs) otherTokens',
                           statistics = stats,
                           claferEnv  = env,
                           mappingToAlloy = [],

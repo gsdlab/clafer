@@ -65,6 +65,7 @@ import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer hiding (FinalRef, FinalTarget)
 import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
+import Language.Clafer.Intermediate.Initializers (initializerValue)
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
 data GenEnv = GenEnv
@@ -72,7 +73,6 @@ data GenEnv = GenEnv
   , uidIClaferMap :: UIDIClaferMap
   , allClafers :: [IClafer]   -- ^ the clafers of the model, without the root
   , forScopes :: String
-  , contextInstance :: String  -- ^ the context instance, @this@ unless in the value of an initializer
   }
 
 -- | Alloy 6 code generation
@@ -86,7 +86,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherT
            { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
-  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' "this"
+  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'
 
   -- a scope bounds the instance identities across the trace, which may be reused when an
   -- instance reappears; the multiplicities bound the existing instances in each snapshot
@@ -353,10 +353,32 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
 --   for the whole fact, so they are not in the signature fact. The bounds of an interval are two
 --   facts, which are removed one by one.
 genFacts :: GenEnv -> IClafer -> [Concat]
-genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts
+genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts ++ initialValues
   where
   uid' = _uid c
   userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint True pexp <- _elements c ]
+  -- the initial value of each instance (:=, kbak/clafer-semantics#164): its first state has the
+  -- value, which is written in the context of the parent and keeps its meaning there, with its
+  -- temporal operators (gsdlab/clafer#123): it is generated in the context of the parent, with
+  -- the parent of the instance, also after it disappeared, as the context instance. The other
+  -- initializers are constraints of the parent ("Language.Clafer.Intermediate.Initializers").
+  initialValues = [ (IrPExp $ _pid eq, initialValue eq) | IEInitializer False False eq <- _elements c ]
+  initialValue eq = cconcat
+    [ CString $ "(" ++ appearsNow genEnv [uid'] ++ ") implies ((this."
+    , genPExp' genEnv [uid'] $ drefOf $ _exps $ _exp eq
+    , CString ") = "
+    , bindTo parentInstance $ bracketed (genPExp genEnv parentPath) $ initializerValue eq
+    , CString ")" ]
+  -- a constant or a name as it is, as the generator writes a constraint
+  bracketed f v = case _exp v of
+    IInt _ -> f v
+    IClaferId{} -> f v
+    _ -> brArg f v
+  drefOf (PExp{_exp = IFunExp _ [_, dref]} : _) = dref
+  drefOf es =error $ "[bug] AlloyLtl.genFacts: an initializer whose equation is not on dref: " ++ show es
+  (parentPath, parentInstance) = case parentOf genEnv c of
+    Just p | not (isRoot p) -> ([_uid p], "(this." ++ fixedParentRel genEnv c ++ ")")
+    _ -> ([rootIdent], rootIdent)
   childCards c' = case fromJust $ _card c' of
     (1, 1)  -> [(ExactCard child False, CString $ "one " ++ rel)]
     (0, 1)  -> [(ExactCard child False, CString $ "lone " ++ rel)]
@@ -583,7 +605,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
 
 -- | The context instance, as long as it exists.
 thisAlive :: GenEnv -> [String] -> String
-thisAlive genEnv (ctx:_) | ctx /= rootIdent = "(" ++ contextInstance genEnv ++ " & " ++ aliveName ctx ++ ")"
+thisAlive _ (ctx:_) | ctx /= rootIdent = "(this & " ++ aliveName ctx ++ ")"
 thisAlive _ _ = rootIdent
 
 -- | Whether the parent of the context instance exists, unless the parent is the root, which
@@ -592,12 +614,12 @@ parentExists :: GenEnv -> [String] -> Maybe String
 parentExists genEnv (ctx:_)
   | Just c <- findIClafer (uidIClaferMap genEnv) ctx
   , any (maybe False (not . isRoot) . parentOf genEnv) $ concreteSubs genEnv c
-  = Just $ "some " ++ contextInstance genEnv ++ "." ++ parentRel genEnv ctx
+  = Just $ "some this." ++ parentRel genEnv ctx
 parentExists _ _ = Nothing
 
 -- | Whether the context instance appears now (its first snapshot), or the trace begins.
 appearsNow :: GenEnv -> [String] -> String
-appearsNow genEnv (ctx:_) | ctx /= rootIdent = "not before " ++ contextInstance genEnv ++ " in " ++ aliveName ctx
+appearsNow _ (ctx:_) | ctx /= rootIdent = "not before this in " ++ aliveName ctx
 appearsNow _ _ = "not before some " ++ rootIdent
 
 -- 3-May-2012 Rafael Olaechea.
@@ -626,14 +648,6 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [PExp{_exp=IClaferId{
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
   | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
   | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive genEnv resPath ++ " and after no " ++ thisAlive genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
-  -- the value of an initializer of the context clafer x, with temporal operators: it is
-  -- evaluated in the context of the parent of x, where it is written (gsdlab/clafer#123). Its
-  -- obligations last as long as the parent of the parent, and initially and finally refer to
-  -- the lifetime of the parent. The names in it are already paths from this, the instance of x.
-  | op' == iInitValue = case resPath of
-      ctx : rest | Just c <- findIClafer (uidIClaferMap genEnv) ctx, Just p <- parentOf genEnv c ->
-        brArg (genPExp' genEnv{contextInstance = "(" ++ contextInstance genEnv ++ "." ++ fixedParentRel genEnv c ++ ")"} (_uid p : rest)) (pushNegations True exp')
-      _ -> brArg (genPExp' genEnv resPath) (pushNegations True exp')
   -- the obligations hold while the parent of the context instance exists
   | Just p <- parentExists genEnv resPath, op' == iX =
       Concat (IrPExp pid') [CString $ "after (not " ++ p ++ " or ", e, CString ")"]

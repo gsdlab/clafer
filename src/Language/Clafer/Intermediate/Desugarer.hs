@@ -87,6 +87,7 @@ sugarDeclaration (IEConstraint True constraint) =
 sugarDeclaration  (IEConstraint False assertion) =
       ElementDecl (_inPos assertion) $ SubAssertion (_inPos assertion) $ sugarAssertion assertion
 sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal isMaximize'
+sugarDeclaration  (IEInitializer _ _ pexp) = error $ "Desugarer.sugarDeclaration: an initializer outside a clafer at " ++ show (_inPos pexp)
 
 
 desugarClafer :: Bool -> Clafer -> [IElement]
@@ -135,11 +136,10 @@ desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' refer
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
                           crd'' (0, -1)
                           elements'')]
-  ++ parentInit
   where
     iClaferModifiers = desugarModifiers abstract' tmods' reference'
     crd'' = desugarCard crd'
-    (ownInit, parentInit) = desugarInit dynamic' crd'' id' init'
+    ownInit = desugarInit crd'' id' init'
     -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
     -- as its parent, e.g., `on --> off` takes the traffic light from on to off
     elements'' = desugarElements dynamic' elements' ++ desugarClaferTrans claf' ++ ownInit
@@ -178,7 +178,12 @@ getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId 
 sugarClafer :: IClafer -> Clafer
 sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements') =
     Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
+      (sugarSuper super') (sugarReference reference') (sugarCard crd') init' (TransitionEmpty s) (sugarElements elements')
+  where
+    -- the initializer, with the value of its equation x = e
+    init' = case [ (k, e) | IEInitializer k _ PExp{_exp = IFunExp _ [_, e]} <- elements' ] of
+      (k, e) : _ -> InitSome s (if k then InitConstant s else InitDefault s) (sugarExp e)
+      [] -> InitEmpty s
 
 desugarSuper :: Super -> Maybe PExp
 desugarSuper (SuperEmpty _) = Nothing
@@ -201,47 +206,25 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
     AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
     _ -> Nothing
 
--- | The constraints of the initializer of the clafer @x@: those in the context of @x@, and those
---   in the context of its parent. All are hard constraints.
---
---   * @x -> T = e@ is @[ some x => x.dref = e ]@ in the context of the parent; in a dynamic
---     model, it holds in every state.
---   * @x -> T := e@ is the initial value of the reference. In a static model, which has a single
---     state, it is the same as @=@. In a dynamic model, every lifetime of @x@ starts with the
---     value: @[ initially this.dref = e ]@ in the context of @x@. The value @e@ is written in the
---     context of the parent, so the name resolver resolves it there ('iInitValue'): @this@
---     stays the parent, and a sibling @y@ stays the sibling even if @x@ has a child @y@. So
---     does a @final@ or @finalref@ reference: it keeps the value that @e@ has when its lifetime
---     starts, also when @e@ changes later, which @=@ would contradict.
---   * A set initializer, @xs -> T * := e@, whose cardinality allows more than one instance,
---     constrains the set of the instances under the parent, so it stays in the context of the
---     parent: @[ initially (some xs => xs.dref = e) ]@. The instances created later are not
---     initialized.
-desugarInit :: Bool -> Maybe Interval -> PosIdent -> Init -> ([IElement], [IElement])
-desugarInit _ _ _ (InitEmpty _) = ([], [])
-desugarInit dynamic' crd id' (InitSome s inithow exp') = case inithow of
-    InitDefault _ | dynamic' -> if isSet
-      then ([], [ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s implIExp ] ])
-      else ([ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s ownIExp ] ], [])
-    _ -> ([], [ IEConstraint True (pExpDefPid s implIExp) ])
+-- | The initializer of the clafer @x@, kept as written (see 'IEInitializer'): @x -> T = e@ or
+--   @x -> T := e@ is the equation @x = e@, which the name resolver and the type checker treat as a
+--   constraint of the parent, where @e@ is written. Whether it is a set initializer depends on
+--   the multiplicity written for @x@, which is known only here: an abstract clafer has none, and
+--   its default (@0..*@) is not a written @*@ (kbak/clafer-semantics#170). The backends give it
+--   its meaning ("Language.Clafer.Intermediate.Initializers").
+desugarInit :: Maybe Interval -> PosIdent -> Init -> [IElement]
+desugarInit _ _ (InitEmpty _) = []
+desugarInit crd id' (InitSome s inithow exp') =
+    [ IEInitializer (isConstant' inithow) isSet $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
   where
-    -- this.dref = initvalue(<exp'>)
-    ownIExp :: IExp
-    ownIExp = IFunExp iEq
-      [ pExpDefPid s $ IFunExp iJoin [ mkPLClaferId s thisIdent False NoBind, mkPLClaferId s drefIdent False NoBind ]
-      , pExpDefPid s $ IFunExp iInitValue [ desugarExp exp' ] ]
+    isConstant' (InitConstant _) = True
+    isConstant' (InitDefault _) = False
     -- more than one instance of x under a parent instance
     isSet = case crd of
       Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
       Nothing -> False
     cId :: PExp
     cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
-    -- <id> = <exp'>
-    assignIExp :: IExp
-    assignIExp = (IFunExp "=" [cId, desugarExp exp'])
-    -- some <id> => <assignIExp>
-    implIExp :: IExp
-    implIExp = (IFunExp "=>" [ pExpDefPid s $ IDeclPExp ISome [] cId, pExpDefPid s assignIExp ])
     getIdent (PosIdent y) = y
 
 
@@ -372,7 +355,10 @@ desugarElements dynamic' (ElementsList _ es)  = es >>= desugarElement dynamic'
 
 
 sugarElements :: [IElement] -> Elements
-sugarElements x = ElementsList noSpan $ map sugarElement x
+sugarElements x = ElementsList noSpan $ map sugarElement [ e | e <- x, not (isInitializer e) ]
+  where
+  isInitializer IEInitializer{} = True
+  isInitializer _ = False
 
 
 desugarElement :: Bool -> Element -> [IElement]
@@ -394,6 +380,7 @@ sugarElement x = case x of
   IEConstraint True constraint -> Subconstraint noSpan $ sugarConstraint constraint
   IEConstraint False assertion -> SubAssertion noSpan $ sugarAssertion assertion
   IEGoal isMaximize' goal -> Subgoal noSpan $ sugarGoal goal isMaximize'
+  IEInitializer _ _ pexp -> error $ "Desugarer.sugarElement: an initializer is part of its clafer, at " ++ show (_inPos pexp)
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of
@@ -672,8 +659,6 @@ sugarExp' x = case x of
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
   IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
-  -- the value of an initializer, which keeps its context ('iInitValue')
-  IFunExp op' [value] | op' == iInitValue -> sugarExp' $ _exp value
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)
     else if op' `elem` binOps then (sugarOp op') (exps''!!0) (exps''!!1)

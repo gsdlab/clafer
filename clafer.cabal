@@ -105,6 +105,7 @@ library
                       , Language.Clafer.Generator.Html
                       , Language.Clafer.Generator.Stats
                       , Language.Clafer.Intermediate.Desugarer
+                      , Language.Clafer.Intermediate.Initializers
                       , Language.Clafer.Intermediate.Intclafer
                       , Language.Clafer.Intermediate.Resolver
                       , Language.Clafer.Intermediate.ResolverInheritance

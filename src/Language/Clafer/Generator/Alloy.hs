@@ -85,6 +85,8 @@ genDeclaration genEnv x = case x of
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
   IEGoal _ _ -> CString ""
+  -- the static generator gets the initializers as constraints ("Language.Clafer.Intermediate.Initializers")
+  IEInitializer{} -> error "[bug] Alloy.genDeclaration: an initializer that was not lowered to a constraint"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -261,6 +263,7 @@ of Connection are nested under all Systems anyway.
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
         : (genSetUniquenessConstraint (uidIClaferMap genEnv) c')
     IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
+    IEInitializer{} -> error "[bug] Alloy.getConst: an initializer that was not lowered to a constraint"
 
 
 -- | The targets of the instances of a set reference under one parent are distinct (see

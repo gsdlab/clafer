@@ -197,6 +197,7 @@ resolveNElement allClafers ancestors' abstractClafers parent x = case x of
   IEClafer clafer  -> IEClafer <$> resolveNClafer allClafers ancestors' abstractClafers parent clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 -- | The abstract clafer with the name. An ambiguous name is an error which shows the
 --   paths of the candidates, e.g., @A.A__T@ and @B.B__T@, and two candidates in the same
@@ -248,6 +249,7 @@ resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveOClafer env clafer
   IEConstraint _ _ -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 
 -- | Resolve inherited and default cardinalities
@@ -292,6 +294,7 @@ analyzeElement env x = case x of
   IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
   IEConstraint _ _ -> x
   IEGoal _ _ -> x
+  IEInitializer{} -> x
 
 -- | Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
@@ -316,6 +319,7 @@ unrollabeDeclaration x = case x of
                         else Nothing
   IEConstraint _ _ -> Nothing
   IEGoal _ _ -> Nothing
+  IEInitializer{} -> Nothing
 
 unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer = (getSuper clafer) ++ deps
@@ -390,6 +394,7 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 -- -----------------------------------------------------------------------------
 
