@@ -30,6 +30,7 @@ import Data.Functor.Identity (Identity)
 import Language.ClaferT
 
 import Language.Clafer.Front.LexClafer
+import Language.Clafer.Front.ParClafer (layoutSeparator, isLayoutSeparator)
 import qualified Data.Map as Map
 import Data.Maybe
 
@@ -95,10 +96,10 @@ resolve env@(LEnv st lastNl) (t:ts)
     t' >>=  return . (indent:) . (:r)
   | isJust lastNl && newLev == head st = do
     r <- resolve (LEnv st Nothing) ts
-    t' >>= return . (:r)
+    t' >>= return . (layoutSeparator:) . (:r)
   | isJust lastNl = do
     r <- resolve (LEnv st' Nothing) ts
-    t' >>= return . (replicate (length st - length st') dedent ++) . (:r)
+    t' >>= return . (replicate (length st - length st') dedent ++) . (layoutSeparator:) . (:r)
   | otherwise = do
     r <- resolve env ts
     t' >>= return . (:r)
@@ -226,9 +227,14 @@ adjust (t:ts) = ((updToken (t:ts)) >>= adjust) >>= (return . (t:))
 updToken :: (Monad m) => [Token] -> ClaferT m [Token]
 updToken (t0:t1:ts)
   | isLayoutOpen t1 || isLayoutClose t1 = addToken (nextPos t0) sym ts
+  -- the separator of sibling lines has no characters, so the tokens after it keep their positions
+  | isLayoutSeparator t1 = return (PT (nextPos t0) sepTok : ts)
   | otherwise = return (t1:ts)
   where
   sym = if isLayoutOpen t1 then "{" else "}"
+  sepTok = case layoutSeparator of
+    PT _ t -> t
+    Err _    -> error "LayoutResolver.updToken: the layout separator is not a token"
   -- | Get the position immediately to the right of the given token.
   nextPos :: Token -> Position
   nextPos t = Pn (g + s) l (c + s + 1)

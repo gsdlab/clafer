@@ -1,0 +1,15 @@
+// Clafers named after the keywords of DOT (node, edge, graph, digraph, subgraph, strict, in
+// any case): the graph output quotes the labels of the reference edges and the node ids, so
+// that dot draws the graph. dot refused `label=Edge` for the reference of Edge.
+
+abstract Node
+    abstract Edge -> Node ?
+N1 : Node
+    E1 : Edge -> N2
+N2 : Node
+graph
+    node -> N1
+    edge -> N2 ?
+xor digraph
+    subgraph -> Node
+    strict

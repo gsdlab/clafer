@@ -1,0 +1,10 @@
+// An instance has a reference only while it exists, as it has children only while it exists
+// (gsdlab/clafer#122, reading A of kbak/clafer-semantics#168). So an obligation on the value of
+// an instance holds only if the instance exists: x must exist in the second state to have the
+// value 7 there. A value that x would have after it disappears is not a value.
+
+x -> integer ?
+    [ initially X (this.dref = 7) ]
+[ initially some x ]
+
+assert [ initially X some x ]

@@ -1,0 +1,16 @@
+// set_reference_keys.cfr as a temporal model (gsdlab/clafer#121, gsdlab/clafer#125): the keys
+// hold in every state.
+
+Target 2
+
+abstract Ref -> Target
+r : Ref 2
+a : Ref
+c : Ref
+[ G (a.dref = c.dref) ]
+
+abstract BagRef ->> Target
+b : BagRef 2
+[ G (one b.dref) ]
+
+assert [ G (#r.dref = 2) ]

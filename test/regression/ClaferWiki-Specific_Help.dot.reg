@@ -7,7 +7,7 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "A" [label="abstract A" URL="#A" tooltip="abstract A&#10;  c -&gt; C *&#10;"];
-"A" -> "C" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c];
+"A" -> "C" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="c"];
 "A1" [label="A1 : A" URL="#A1" tooltip="A1 : A&#10;  [ # c = 2 ]&#10;"];
 "B" [label="abstract B : A" URL="#B" tooltip="abstract B : A&#10;"];
 "C" [label="abstract C" URL="#C" tooltip="abstract C&#10;"];

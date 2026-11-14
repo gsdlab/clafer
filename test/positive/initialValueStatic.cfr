@@ -1,0 +1,10 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164). A
+// static model has a single state, so := is the same as =: [ some x => x.dref = e ] in the
+// context of the parent. An initializer does not make a model temporal.
+
+A 2
+    x -> integer := 10
+    y -> integer ? := x + 1
+    zs -> integer 0..2 := 1, 2
+abstract Val -> integer := 2
+v1 : Val

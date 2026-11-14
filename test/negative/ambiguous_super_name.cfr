@@ -1,0 +1,8 @@
+// The name T of the super is ambiguous: it is not unique, with the paths A.A__T and B.B__T (#115).
+// It is not a duplicate definition, since the two T are in different namespaces.
+
+A
+    abstract T
+B
+    abstract T
+x : T

@@ -1,0 +1,10 @@
+//# OPTIONS --explicit --tl=10
+[initially (((#Box) >= 1) && (X ((#Box) = 0)))]
+0..* Box 0..1 {
+  0..* flag 0..1 {}
+  0..* x -> int 1..1 {
+    [initially (this.dref = (if (X ((#this.parent.flag) >= 1)) then 1 else 2))]
+  }
+}
+
+assert [initially (Box.x.dref = 2)]

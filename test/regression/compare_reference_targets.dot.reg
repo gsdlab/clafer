@@ -8,7 +8,7 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "Port" [label="abstract Port" URL="#Port" tooltip="abstract Port&#10;"];
 "B" [label="abstract B" URL="#B" tooltip="abstract B&#10;  a -&gt; Port&#10;"];
-"B" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=a];
+"B" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="a"];
 "p1" [label="p1 : Port" URL="#p1" tooltip="p1 : Port&#10;"];
 "p2" [label="p2 : Port" URL="#p2" tooltip="p2 : Port&#10;"];
 "sys" [label="sys" URL="#sys" tooltip="sys&#10;  b1 : B&#10;  b2 : B&#10;    [ this.a = parent.b1.a ]&#10;    [ this.a != sys.b1.a || a = sys.b1.a ]&#10;"];

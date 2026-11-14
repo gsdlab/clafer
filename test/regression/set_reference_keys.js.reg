@@ -1,0 +1,20 @@
+scope({$BagRef:2, $Ref:4, $Target:2, $b:2, $r:2});
+defaultScope(1);
+stringLength(16);
+
+$Target = Clafer("Target").withCard(2, 2);
+$Ref = Abstract("Ref");
+$r = Clafer("r").withCard(2, 2);
+$a = Clafer("a").withCard(1, 1);
+$c = Clafer("c").withCard(1, 1);
+$BagRef = Abstract("BagRef");
+$b = Clafer("b").withCard(2, 2);
+$r.extending($Ref);
+$a.extending($Ref);
+$c.extending($Ref);
+$b.extending($BagRef);
+$Ref.refToUnique($Target);
+$BagRef.refTo($Target);
+Constraint(equal(joinRef(global($a)), joinRef(global($c))));
+Constraint(one(joinRef(global($b))));
+assert(equal(card(joinRef(global($r))), constant(2)));

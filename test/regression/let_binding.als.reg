@@ -1,0 +1,31 @@
+open util/integer
+pred show {}
+
+
+fact { 2 <= #xs and #xs <= 2 }
+sig xs
+{ xs_ref : one Int }
+
+fact {  all disj x, y : xs | (x.@xs_ref) != (y.@xs_ref)  }
+one sig a
+{ a_ref : one Int }
+
+one sig b
+{ b_ref : one Int }
+
+one sig A
+{ r_v : one v }
+
+one sig v
+{ v_ref : one Int }
+
+sig ys
+{ ys_ref : one Int }
+
+fact {  all disj x, y : ys | (x.@ys_ref) != (y.@ys_ref)  }
+fact { (#xs) = 2 }
+fact { ((a.@a_ref).plus[(b.@b_ref)]) > 2 }
+fact { ((A.@r_v).@v_ref) = 3 }
+fact { (#ys) = 1 }
+fact { all  a_1 : ys | (a.@a_ref) = (a_1.@ys_ref) }
+fact { some  t : ys | (t.@ys_ref) = 4 }

@@ -5,7 +5,6 @@ pred show {}
 abstract sig x
 { x_ref : one Int }
 
-fact {  all disj x, y : x | (x.@x_ref) != (y.@x_ref)  }
 one sig A extends x
 {}
 

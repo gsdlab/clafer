@@ -62,9 +62,9 @@ $AndroidPhone4__HSPA = $AndroidPhone4.addChild("AndroidPhone4__HSPA").withCard(1
 $AndroidPhone4__CPU = $AndroidPhone4.addChild("AndroidPhone4__CPU").withCard(2, 2);
 $AndroidPhone4__input = $AndroidPhone4.addChild("AndroidPhone4__input").withCard(1, 1);
 $AndroidPhone4__input__touchscreen = $AndroidPhone4__input.addChild("AndroidPhone4__input__touchscreen").withCard(1, 1);
-$AndroidDevice1__display__AMOLED.addConstraint(none(join(join(joinParent(joinParent($this())), $AndroidDevice1__input), $AndroidDevice1__input__keyboard)));
 $AndroidPhone.extending($AndroidDevice);
+$AndroidPhone4.extending($AndroidPhone);
+$AndroidDevice1__display__AMOLED.addConstraint(none(join(join(joinParent(joinParent($this())), $AndroidDevice1__input), $AndroidDevice1__input__keyboard)));
 $AndroidPhone.addConstraint(some(join($this(), $AndroidDevice__GSM)));
 $AndroidPhone.addConstraint(lessThan(card(join($this(), $AndroidDevice__CPU)), constant(4)));
 $AndroidDevice__display__AMOLED.addConstraint(none(join(join(joinParent(joinParent($this())), $AndroidDevice__input), $AndroidDevice__input__keyboard)));
-$AndroidPhone4.extending($AndroidPhone);

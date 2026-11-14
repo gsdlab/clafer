@@ -1,0 +1,11 @@
+//# OPTIONS --explicit
+abstract 0..* Station 0..* {
+  abstract 0..* Link -> Station 0..* {}
+}
+0..* S1 : Station 1..1 {
+  0..* L1 : Link -> S2 1..1 {}
+}
+0..* S2 : Station 1..1 {
+  0..* L2 : Link -> S3 1..1 {}
+}
+0..* S3 : Station 1..1 {}

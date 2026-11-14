@@ -1,0 +1,10 @@
+digraph "tmp_initialValue07"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Box" [label="Box ?" URL="#Box" tooltip="Box ?&#10;  flag ?&#10;  x -&gt; integer := if X some flag then 1 else 2&#10;"];
+}

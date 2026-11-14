@@ -1,0 +1,19 @@
+// The targets of a set reference (->) are distinct among the instances of a clafer under one
+// parent, also when the clafer inherits the reference (gsdlab/clafer#121): the two instances of
+// r refer to the two targets. Instances of different clafers may share a target, also when they
+// inherit the reference from the same top-level abstract clafer (gsdlab/clafer#125), as in
+// chocosolver; so may the instances of a bag reference (->>).
+
+Target 2
+
+abstract Ref -> Target
+r : Ref 2
+a : Ref
+c : Ref
+[ a.dref = c.dref ]
+
+abstract BagRef ->> Target
+b : BagRef 2
+[ one b.dref ]
+
+assert [ #r.dref = 2 ]

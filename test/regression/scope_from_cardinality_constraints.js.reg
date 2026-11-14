@@ -7,6 +7,6 @@ $leg = $Animal.addChild("leg");
 $Dog = Clafer("Dog");
 $Spider = Clafer("Spider");
 $Dog.extending($Animal);
-$Dog.addConstraint(equal(card(join($this(), $leg)), constant(4)));
 $Spider.extending($Animal);
+$Dog.addConstraint(equal(card(join($this(), $leg)), constant(4)));
 $Spider.addConstraint(equal(card(join($this(), $leg)), constant(8)));

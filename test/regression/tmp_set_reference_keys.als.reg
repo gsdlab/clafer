@@ -1,0 +1,71 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_Target : set Target
+, var r_r : set r
+, var r_a : set a
+, var r_c : set c
+, var r_b : set b }
+{ always (all disj x, y : this.@r_r | (x.@Ref_ref) != (y.@Ref_ref)) }
+fact { always (2 <= #(root.@r_Target)) }
+fact { always (#(root.@r_Target) <= 2) }
+fact { always (2 <= #(root.@r_r)) }
+fact { always (#(root.@r_r) <= 2) }
+fact { always (one root.@r_a) }
+fact { always (one root.@r_c) }
+fact { always (2 <= #(root.@r_b)) }
+fact { always (#(root.@r_b) <= 2) }
+fact { always (always ((alive_a.@Ref_ref) = (alive_c.@Ref_ref))) }
+fact { always (always (one alive_b.@BagRef_ref)) }
+
+assert assertAt_16_10 { always (always ((#(alive_r.@Ref_ref)) = 2)) }
+check assertAt_16_10 for 1 but 2 BagRef, 4 Ref, 2 Target, 2 b, 2 r, 10 steps
+
+
+
+sig Target
+{ p_Target : lone root }
+fun alive_Target : set Target { root.@r_Target }
+fact { always ~@r_Target in @p_Target }
+
+
+abstract sig Ref
+{ var Ref_ref : set Target }
+{ always (this in alive_Ref implies (one this.@Ref_ref))
+  always (this in alive_Ref implies (this.@Ref_ref in alive_Target))
+  always (this not in alive_Ref implies no this.@Ref_ref) }
+fun alive_Ref : set Ref { alive_r + alive_a + alive_c }
+
+sig r extends Ref
+{ p_r : lone root }
+fun alive_r : set r { root.@r_r }
+fact { always ~@r_r in @p_r }
+
+
+sig a extends Ref
+{ p_a : lone root }
+fun alive_a : set a { root.@r_a }
+fact { always ~@r_a in @p_a }
+
+
+sig c extends Ref
+{ p_c : lone root }
+fun alive_c : set c { root.@r_c }
+fact { always ~@r_c in @p_c }
+
+
+abstract sig BagRef
+{ var BagRef_ref : set Target }
+{ always (this in alive_BagRef implies (one this.@BagRef_ref))
+  always (this in alive_BagRef implies (this.@BagRef_ref in alive_Target))
+  always (this not in alive_BagRef implies no this.@BagRef_ref) }
+fun alive_BagRef : set BagRef { alive_b }
+
+sig b extends BagRef
+{ p_b : lone root }
+fun alive_b : set b { root.@r_b }
+fact { always ~@r_b in @p_b }
+
+

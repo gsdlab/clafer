@@ -48,7 +48,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
 import Control.Applicative
-import Data.List (find, intersperse, genericSplitAt)
+import Data.List (find, intersperse, genericSplitAt, nub)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Char (isSpace)
@@ -304,7 +304,22 @@ printPosIdentRef (PosIdent (p, id')) irMap True
 
 printSuper :: Super -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSuper (SuperEmpty _) _ _ _ _ = ""
-printSuper (SuperSome _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printOperand 26 setExp indent irMap html comments
+printSuper (SuperSome _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ case setExp of
+  -- a path, e.g., `Person.Head`, resolves as a whole to the clafer it names: its last name
+  -- links to that clafer
+  -- links to that clafer, and each name before it to the clafer with the name if only one has it
+  EJoin s left (ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))])) | html, Just uid' <- uidAt s ->
+    printPrefix left ++ "." ++ link uid' n
+  _ -> printOperand 26 setExp indent irMap html comments
+  where
+    uidAt s = listToMaybe [ u | IRPExp PExp{_exp = IClaferId{_sident = u}} <- fromMaybe [] $ Map.lookup s irMap ]
+    link uid' n = "<a href=\"#" ++ uid' ++ "\"><span class=\"reference\">" ++ n ++ "</span></a>"
+    printPrefix (EJoin _ l r) = printPrefix l ++ "." ++ printPrefix r
+    printPrefix e@(ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))])) =
+      case nub [ _uid c | IRClafer c <- concat (Map.elems irMap), _ident c == n ] of
+        [uid'] -> link uid' n
+        _      -> printOperand 27 e indent irMap html comments
+    printPrefix e = printOperand 27 e indent irMap html comments
 
 printReference :: Reference -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printReference (ReferenceEmpty _) _ _ _ _ = ""
@@ -350,10 +365,10 @@ printDecl (Decl _ locids setExp) indent irMap html comments =
     printLocId (LocIdIdent _ (PosIdent (_, ident'))) = ident'
 
 printVarBinding :: VarBinding-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printVarBinding (VarBinding _ locid name) indent irMap html comments =
+printVarBinding (VarBinding _ locid exp') indent irMap html comments =
   printLocId locid ++
   while html "<span class=\"keyword\">" ++ " = " ++ while html "</span>" ++
-  printName name indent irMap html comments
+  printOperand 16 exp' indent irMap html comments
   where
     printLocId :: LocId -> String
     printLocId (LocIdIdent _ (PosIdent (_, ident'))) = ident'

@@ -11,7 +11,7 @@ edge [fontname=Sans fontsize=11];
 "fast" [label="fast : Port" URL="#fast" tooltip="fast : Port&#10;  [ speed = 10 ]&#10;"];
 "Component" [label="abstract Component" URL="#Component" tooltip="abstract Component&#10;  abstract link -&gt; Port *&#10;    latency -&gt; integer&#10;    speed -&gt; integer&#10;    [ this.dref.speed >= this.speed ]&#10;    [ all t : this.dref | t.speed >= latency ]&#10;"];
 "link" [label="abstract link -> Port *" URL="#link" tooltip="abstract link -&gt; Port *&#10;  latency -&gt; integer&#10;  speed -&gt; integer&#10;  [ this.dref.speed >= this.speed ]&#10;  [ all t : this.dref | t.speed >= latency ]&#10;"];
-"link" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=link];
+"link" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="link"];
 "cam" [label="cam : Component" URL="#cam" tooltip="cam : Component&#10;  l : link -&gt; Hub.p 1&#10;    [ this.dref.speed = 3 ]&#10;    [ dref.name = 1 ]&#10;  [ l.dref.speed = 3 ]&#10;"];
 "b" [label="b -&gt;&gt; Port 2" URL="#b" tooltip="b -&gt;&gt; Port 2&#10;  [ this.dref.speed.dref = 3 ]&#10;"];
 "b" -> "Port" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];

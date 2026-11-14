@@ -1,0 +1,7 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// An optional level, created after the first state, starts with the value 3, which may change
+// afterwards: [ initially this.dref = 3 ] in the context of level.
+
+level -> integer ? := 3
+[ initially no level ]
+[ F some level ]

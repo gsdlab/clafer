@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/refine_reference_to_later_clafer.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Station">Station</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="Link">Link</span><span class="keyword"> -> </span><a href="#Station"><span class="reference">Station</span></a> ?</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="S1">S1</span><span class="keyword"> : </span><a href="#Station"><span class="reference">Station</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="L1">L1</span><span class="keyword"> : </span><a href="#Link"><span class="reference">Link</span></a><span class="keyword"> -> </span><a href="#S2"><span class="reference">S2</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="S2">S2</span><span class="keyword"> : </span><a href="#Station"><span class="reference">Station</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="L2">L2</span><span class="keyword"> : </span><a href="#Link"><span class="reference">Link</span></a><span class="keyword"> -> </span><a href="#S3"><span class="reference">S3</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="S3">S3</span><span class="keyword"> : </span><a href="#Station"><span class="reference">Station</span></a></div>
+
+</body>
+</html>

@@ -10,6 +10,8 @@ $f = $e.addChild("f").withCard(0, 1);
 $g = Clafer("g").withCard(1, 1);
 $h = Clafer("h").withCard(1, 1);
 $b.refToUnique($e);
+$f.refToUnique($g);
+$g.refToUnique($h);
 $b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), $f))), global($h)));
 $b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), $f))), global($h)));
 $b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), $f))), global($h)));
@@ -25,5 +27,3 @@ $c.addConstraint(equal(joinRef(join(joinRef(join(joinParent($this()), $b)), $f))
 $c.addConstraint(equal(joinRef(join(joinRef(join(joinParent($this()), $b)), $f)), global($g)));
 $c.addConstraint(equal(joinRef(join(joinRef(join(joinParent($this()), $b)), $f)), global($g)));
 $c.addConstraint(equal(joinRef(joinRef(join(joinRef(join(joinParent($this()), $b)), $f))), global($h)));
-$f.refToUnique($g);
-$g.refToUnique($h);

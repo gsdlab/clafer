@@ -1,0 +1,11 @@
+digraph "tmp_initialValue05"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"xs" [label="xs -&gt; integer 0..3  := 1, 2" URL="#xs" tooltip="xs -&gt; integer 0..3  := 1, 2&#10;"];
+"A" [label="A 2" URL="#A" tooltip="A 2&#10;  ys -&gt; integer * := 1, 2&#10;  [ F some this.ys ]&#10;"];
+}

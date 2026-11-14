@@ -1,0 +1,30 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_r : set r }
+fact { always (one root.@r_r) }
+fact { always (always ((alive_r.@r_ref) = 1)) }
+
+assert assertAt_9_10 { always (always (all  q : alive_Ref | (q.@Ref_ref) = 1)) }
+check assertAt_9_10 for 1 but 10 steps
+
+
+
+abstract sig Ref
+{ var Ref_ref : set Int }
+{ always (this in alive_Ref implies (one this.@Ref_ref))
+  always (this not in alive_Ref implies no this.@Ref_ref) }
+fun alive_Ref : set Ref { alive_r }
+
+sig r extends Ref
+{ p_r : lone root
+, var r_ref : set Int }
+{ always (this in alive_r implies (one this.@r_ref))
+  always (this in alive_r implies (this.@r_ref in this.@Ref_ref))
+  always (this not in alive_r implies no this.@r_ref) }
+fun alive_r : set r { root.@r_r }
+fact { always ~@r_r in @p_r }
+
+

@@ -1,0 +1,30 @@
+open util/integer
+pred show {}
+
+
+abstract sig Station
+{ r_Link : lone Link }
+
+abstract sig Link
+{ Link_ref : one Station }
+{ one @r_Link.this }
+
+one sig S1 extends Station
+{ r_L1 : one L1 }
+{ r_L1 in r_Link }
+
+one sig L1 extends Link
+{ L1_ref : one S2 }
+{ L1_ref in Link_ref }
+
+one sig S2 extends Station
+{ r_L2 : one L2 }
+{ r_L2 in r_Link }
+
+one sig L2 extends Link
+{ L2_ref : one S3 }
+{ L2_ref in Link_ref }
+
+one sig S3 extends Station
+{}
+

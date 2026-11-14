@@ -1,0 +1,25 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_x : set x }
+fact { always (lone root.@r_x) }
+fact { always ((not before some root) implies (some alive_x)) }
+
+assert assertAt_10_10 { always ((not before some root) implies (after (some alive_x))) }
+check assertAt_10_10 for 1 but 10 steps
+
+
+
+sig x
+{ p_x : lone root
+, var x_ref : set Int }
+{ always (this in alive_x implies (one this.@x_ref))
+  always (this not in alive_x implies no this.@x_ref) }
+fun alive_x : set x { root.@r_x }
+fact { always ~@r_x in @p_x }
+
+fact { all self_ : x | always (self_ in alive_x implies ((not before self_ in alive_x) implies (after ((self_.@x_ref) = 7)))) }
+
+

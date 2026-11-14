@@ -1,0 +1,14 @@
+//# OPTIONS --explicit
+[(#xs) = 2]
+[(a.dref + b.dref) > 2]
+[A.v.dref = 3]
+[(#ys) = 1]
+[all a_1 : ys | a.dref = a_1.dref]
+[some t : ys | t.dref = 4]
+0..* xs -> int 2..2 {}
+0..* a -> int 1..1 {}
+0..* b -> int 1..1 {}
+0..* A 1..1 {
+  0..* v -> int 1..1 {}
+}
+0..* ys -> int 0..* {}

@@ -11,14 +11,14 @@ edge [fontname=Sans fontsize=11];
 "electric" [label="electric : Engine" URL="#electric" tooltip="electric : Engine&#10;"];
 "Car" [label="abstract Car" URL="#Car" tooltip="abstract Car&#10;  abstract engine -&gt; Engine&#10;  xor gear&#10;    initial park --&gt; drive&#10;    drive&#10;"];
 "engine" [label="abstract engine -> Engine" URL="#engine" tooltip="abstract engine -&gt; Engine&#10;"];
-"engine" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=engine];
+"engine" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="engine"];
 "tesla" [label="tesla : Car" URL="#tesla" tooltip="tesla : Car&#10;  final motor : engine&#10;"];
 "leaf" [label="leaf : Car" URL="#leaf" tooltip="leaf : Car&#10;  finalref motor2 : engine&#10;"];
 "bolt" [label="bolt : Car" URL="#bolt" tooltip="bolt : Car&#10;  finaltarget motor3 : engine&#10;"];
 "mini" [label="mini : Car" URL="#mini" tooltip="mini : Car&#10;  motor4 : engine&#10;"];
 "volt" [label="volt : Car" URL="#volt" tooltip="volt : Car&#10;  finalref finaltarget motor5 : engine&#10;"];
 "prius" [label="prius : Car" URL="#prius" tooltip="prius : Car&#10;  finaltarget finalref motor6 -&gt; Engine&#10;"];
-"prius" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=motor6];
+"prius" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="motor6"];
 "garage" [label="garage" URL="#garage" tooltip="garage&#10;  spare : Engine&#10;"];
 "corolla" [label="corolla : Car" URL="#corolla" tooltip="corolla : Car&#10;  finalref motor7 -&gt; garage.spare++gas&#10;"];
 }

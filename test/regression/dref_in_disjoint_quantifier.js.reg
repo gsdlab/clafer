@@ -5,5 +5,5 @@ stringLength(16);
 $Car = Clafer("Car").withCard(4, 4);
 $owner = $Car.addChild("owner").withCard(1, 1);
 $Person = Clafer("Person").withCard(4, 4);
-Constraint(all([disjDecl([$_c1 = local("c1"), $_c2 = local("c2")], global($Car))], notEqual(joinRef(join($_c1, $owner)), joinRef(join($_c2, $owner)))));
 $owner.refToUnique($Person);
+Constraint(all([disjDecl([$_c1 = local("c1"), $_c2 = local("c2")], global($Car))], notEqual(joinRef(join($_c1, $owner)), joinRef(join($_c2, $owner)))));

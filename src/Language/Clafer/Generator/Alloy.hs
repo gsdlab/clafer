@@ -27,7 +27,7 @@ import Control.Applicative
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import qualified Data.StringMap as SMap
+import qualified Data.Map as Map
 import Prelude
 
 import Language.Clafer.Common
@@ -81,7 +81,7 @@ genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
 -- 07th Mayo 2012 Rafael Olaechea
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
-  IEClafer clafer'  -> (genClafer genEnv [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint clafer')
+  IEClafer clafer'  -> (genClafer genEnv [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint (uidIClaferMap genEnv) clafer')
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
   IEGoal _ _ -> CString ""
@@ -259,26 +259,18 @@ of Connection are nested under all Systems anyway.
          else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
         )
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
-        : (genSetUniquenessConstraint c')
+        : (genSetUniquenessConstraint (uidIClaferMap genEnv) c')
     IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
 
 
-genSetUniquenessConstraint :: IClafer -> [Concat]
-genSetUniquenessConstraint c =
-    (case _reference c of
-      Just (IReference True _ _) ->
-        (case _card c of
-            Just (lb,  ub) -> if (lb > 1 || ub > 1 || ub == -1)
-              then [ CString $ (
-                        (case isTopLevel c of
-                          False -> "all disj x, y : this.@" ++ (genRelName $ _uid c)
-                          True  -> " all disj x, y : "       ++ (_uid c)))
-                      ++ " | (x.@" ++ genRefName (_uid c) ++ ") != (y.@" ++ genRefName (_uid c) ++ ") "
-                   ]
-              else []
-            _ -> [])
-      _ -> []
-    )
+-- | The targets of the instances of a set reference under one parent are distinct (see
+--   'setReferenceKey'): a top-level clafer has the root as its parent.
+genSetUniquenessConstraint :: UIDIClaferMap -> IClafer -> [Concat]
+genSetUniquenessConstraint uidIClaferMap' c = case setReferenceKey uidIClaferMap' c of
+  Just s ->
+    [ CString $ (if isTopLevel c then " all disj x, y : " ++ _uid c else "all disj x, y : this.@" ++ genRelName (_uid c))
+        ++ " | (x.@" ++ genRefName (_uid s) ++ ") != (y.@" ++ genRefName (_uid s) ++ ") " ]
+  Nothing -> []
 
 genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
 genParentSubrelationConstriant    uidIClaferMap'   headClafer =
@@ -610,7 +602,7 @@ parentRel uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
   _ -> "~@" ++ genRelName uid'
   where
   subRels = [ genRelName $ _uid c'
-            | c' <- SMap.elems uidIClaferMap'
+            | c' <- Map.elems uidIClaferMap'
             , not $ isTopLevel c'
             , _uid c' /= rootIdent
             , uid' `elem` map _uid (tail $ findHierarchy getSuper uidIClaferMap' c') ]

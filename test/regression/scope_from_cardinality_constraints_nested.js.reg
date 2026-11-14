@@ -10,6 +10,6 @@ $SnakeOwner = Clafer("SnakeOwner").withCard(1);
 $DogOwner = Clafer("DogOwner").withCard(1);
 $Pet.extending($Animal);
 $SnakeOwner.extending($Owner);
-$SnakeOwner.addConstraint(none(join(join($this(), $Pet), $leg)));
 $DogOwner.extending($Owner);
+$SnakeOwner.addConstraint(none(join(join($this(), $Pet), $leg)));
 $DogOwner.addConstraint(equal(card(join(join($this(), $Pet), $leg)), constant(4)));

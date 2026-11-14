@@ -1,0 +1,5 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// A mandatory x has the value 1 in the first state, and the value changes later.
+
+x -> integer := 1
+[ F x = 2 ]

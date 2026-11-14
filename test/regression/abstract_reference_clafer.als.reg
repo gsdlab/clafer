@@ -18,7 +18,6 @@ abstract sig NewBorn
 { NewBorn_ref : one Person }
 { ((((this.@NewBorn_ref).@r_age).@age_ref) = 0) && (no (this.@NewBorn_ref).@r_married) }
 
-fact {  all disj x, y : NewBorn | (x.@NewBorn_ref) != (y.@NewBorn_ref)  }
 one sig Alice extends Person
 {}
 

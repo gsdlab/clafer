@@ -1,0 +1,20 @@
+// let v = e in body is body with e for v (#114). The bound expression may be any expression
+// above "in", e.g., a sum or a navigation. A quantifier which binds v again hides it, and
+// one which binds a name used in e is renamed, so that e keeps its meaning.
+
+xs -> integer 2
+a -> integer
+b -> integer
+A
+    v -> integer
+ys -> integer *
+
+[ let t = xs in #t = 2 ]
+[ let s = a + b in s > 2 ]
+[ let w = A.v in w = 3 ]
+// the inner t hides the outer one
+[ let t = a in let t = ys in #t = 1 ]
+// the variable a is renamed: all a_1 : ys | a.dref = a_1.dref
+[ let t = a in all a : ys | t = a ]
+// t is hidden by the variable t
+[ let t = a in some t : ys | t = 4 ]

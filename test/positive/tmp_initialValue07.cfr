@@ -1,0 +1,12 @@
+// The value of an initializer is written in the context of the parent, and keeps its temporal
+// meaning there (gsdlab/clafer#123): X (some flag) is about the next state of the Box, an
+// obligation that lasts as long as the parent of Box, the root. A Box that disappears in the
+// next state has no flag then, so x starts at 2. In the context of x, the obligation would
+// lapse with the Box, and x would start at 1.
+
+Box ?
+    flag ?
+    x -> integer := if X (some flag) then 1 else 2
+[ initially (some Box && X no Box) ]
+
+assert [ initially (Box.x = 2) ]

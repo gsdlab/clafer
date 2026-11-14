@@ -70,7 +70,6 @@ sig Plug__speed
 { Plug__speed_ref : one Int }
 { one @r_Plug__speed.this }
 
-fact {  all disj x, y : Plug | (x.@Plug_ref) != (y.@Plug_ref)  }
 one sig plug extends Plug
 {}
 

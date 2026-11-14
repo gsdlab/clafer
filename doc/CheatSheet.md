@@ -86,15 +86,22 @@ opt
 ```
 
 A clafer inherits group cardinality, children, and reference of its super clafer.
+The super clafer is abstract, given by its name or by a path to it.
+A name is the nearest abstract clafer with the name, a sibling or a child that the parent inherits, or else the only one in the model.
+In a path, e.g., `Person.Head`, the first name is a clafer, and each next name is a child of the previous clafer: its own or, if it has none with the name, an inherited one.
+So under `Ella : Person`, `Ella.Head` is `Person.Head`, unless Ella redefines `Head`, e.g., with `abstract Head : Head`, a new abstract clafer that extends `Person.Head` and can add children.
+A path also tells apart abstract clafers with the same name, e.g., `Person.Head` and `Dog.Head`.
 
 `<super>`:
 ```
 : <name>
+: <name>.<name>...
 ```
 
 Instances of a reference clafer point to instances from the target set expression.
 When declared using `->` (set), the instances pointed to cannot repeat per each instance of its parent,
 whereas duplicate values are allowed when declared using `->>` (bag).
+This holds for the instances of each clafer, also one that inherits the reference: under `abstract Ref -> T`, the instances of `r : Ref 2` under one parent point to different targets, while `a : Ref` and `b : Ref` may point to the same one.
 Where a value is expected, a reference clafer stands for its target: `[ speed = 3 ]` is `[ speed.dref = 3 ]`.
 A comparison (`=`, `!=`, `in`, `not in`), an intersection (`**`) or a difference (`--`) of two reference clafers is of their targets: `this.a = parent.b.a` is `this.a.dref = parent.b.a.dref`, since the instances of `a` under different parents are never the same.
 To compare the instances themselves, compare `this` or a variable, or write `dref` on one side.
@@ -126,12 +133,43 @@ Useful shorthands are
 ```
 
 Reference clafers can be given values using an initializer:
-constant using `=` and default using `:=` (no backend currently supports default).
+a constant using `=`, and an initial value using `:=`.
 
 `<initializer>`:
 ```
 = <set expression>
 := <set expression>
+```
+
+`x -> integer ? = 10` is the constraint `[ some x => x.dref = 10 ]` in the parent's context: an optional `x` stays optional, and in a temporal model the value holds in every state.
+`x -> integer ? := 10` gives the value that `x` starts with ([initial-value.md](initial-value.md)):
+
+* In a static model, which has a single state, `:=` is the same as `=`. An initializer does not make a model temporal.
+* In a temporal model, every lifetime of `x` starts with the value, and the value may change afterwards: `[ initially this.dref = 10 ]` in the context of `x`. The value is written in the parent's context and keeps its meaning there: `this` is the parent, and a name `y` is the sibling `y` even if `x` has a child `y`.
+* A set initializer, `xs -> integer * := 1, 2`, constrains the instances under the parent, so it stays in the parent's context: `[ initially (some xs => xs.dref = 1, 2) ]`. The instances created later are not initialized.
+* A `final` or `finalref` reference keeps the value it starts with: with `finalref x -> integer := y`, `x` takes the value of `y` when its lifetime starts, and keeps it when `y` changes, which `= y` would contradict. With a constant, `:=` is the same as `=` there.
+
+`:=` is not a default value in the sense of "unless something else is required": with `[ x = 5 ]`, `x -> integer := 10` has no instance.
+
+An initializer of an abstract clafer holds for all its subclafers, and a subclafer cannot replace it.
+As for the other redefinitions, the subclafer's own initializer is added to the inherited one, so it can only strengthen it:
+
+* `= 2` under `:= 2` strengthens the initial value to the value in every state.
+* `:= 2` under `= 2` repeats the value, which `=` fixes in every state, and `:= 3` under `= 2` has no instance. Both hold, and the compiler warns that a `:=` does not redefine an inherited `=`.
+* Another value, `:= 3` or `= 3` under `:= 2`, has no instance.
+
+An inherited initializer keeps its clock, which the abstract clafer's own multiplicity decides ([kbak/clafer-semantics#170](https://github.com/kbak/clafer-semantics/issues/170)):
+
+* Without a multiplicity, `abstract Val -> integer := 1` initializes each instance when it is born, also one born later.
+* With `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
+
+To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
+
+```
+abstract Val -> integer
+abstract DefaultVal : Val := 2
+useDefault : DefaultVal      // starts with 2
+override : Val := 3          // starts with 3
 ```
 
 #### Examples
@@ -469,6 +507,7 @@ xor machine
 A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
 What a constraint requires of later states (`X`, `F`, `G`, `U`) lasts while the parent of its context exists, also after the context itself is gone, e.g., `[ req=down --> movingDown ]` in the state `movingUp` leads to `movingDown`.
 To make a constraint last longer, place it higher in the hierarchy, or at the top level.
+An instance has a value only while it exists, so a requirement on the value of an instance in a later state, e.g., `[ X (this.dref = 7) ]`, also requires the instance to exist then.
 This holds for negated obligations too: the negations are pushed inside the temporal operators first (`!F a` is `G !a`, `!X a` is `X !a`, `!(a U b)` is `!b W (!a && !b)`), so `[ !(F error) ]`, like `[ G !error ]`, lets the parent disappear.
 So a formula and its negation can both hold, on a lifetime that ends before their obligations are due, e.g., `F error` and `!(F error)`.
 Under `one` and `lone`, the negation stays classical.
@@ -668,9 +707,9 @@ The following table provides versions in which support for a given feature was a
 </tr>
 
 <tr>
-<td>Default initializer <code>:=</code></td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>Initial value <code>:=</code></td>
+<td>0.5.8</td>
+<td>0.5.8 (static models)</td>
 </tr>
 
 <tr>

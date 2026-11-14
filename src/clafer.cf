@@ -156,7 +156,7 @@ PatScopeEmpty.      PatternScope ::= ;
 
 Decl.           Decl ::= [LocId] ":" Exp21 ;
 
-VarBinding.     VarBinding ::= LocId "=" Name ;
+VarBinding.     VarBinding ::= LocId "=" Exp16 ;
 
 QuantNo.        Quant ::= "no" ;
 QuantNot.       Quant ::= "not" ;
@@ -168,6 +168,12 @@ EnumIdIdent.    EnumId ::= PosIdent ;
 ModIdIdent.     ModId  ::= PosIdent ;
 LocIdIdent.     LocId  ::= PosIdent ;
 
+-- The layout resolver inserts a separator token (TS "" 101, layoutSeparator in ParClafer.y)
+-- between the lines of siblings, so that, e.g., a group cardinality 2..3 at the start of a
+-- line is not the cardinality of the clafer on the line before. It is not a symbol of the
+-- grammar, so that a model cannot contain it: ParClafer.y has the token L_sep and the rules
+--   ListDeclaration : ListDeclaration L_sep   and   ListElement : ListElement L_sep
+-- which must be added again after the grammar is regenerated.
 separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;
 separator           Element     ""  ;

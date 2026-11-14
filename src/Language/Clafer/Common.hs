@@ -29,8 +29,6 @@ import           Data.Data.Lens (biplate)
 import           Data.List
 import qualified Data.Map as Map
 import           Data.Maybe
-import           Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 import           Data.Tree
 import           Prelude
 
@@ -139,12 +137,12 @@ toClafers = mapMaybe elemToClafer
 -- -----------------------------------------------------------------------------
 -- UID -> IClafer map construction functions
 
-type UIDIClaferMap = StringMap IClafer
+type UIDIClaferMap = Map.Map UID IClafer
 
 createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl'
-    (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
-    (SMap.singleton rootIdent rootClafer)
+    (\accumMap' claf -> Map.insert (_uid claf) claf accumMap')
+    (Map.singleton rootIdent rootClafer)
     (integerClafer : intClafer : stringClafer : decimalClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
@@ -165,7 +163,7 @@ createUidIClaferMap    iModule  = foldl'
 -- functions using the UID -> IClafer map
 
 findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
-findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+findIClafer    uidIClaferMap    uid' = Map.lookup uid' uidIClaferMap
 
 isTopLevelByUID :: UIDIClaferMap -> UID -> Maybe Bool
 isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClaferMap uid')
@@ -182,6 +180,25 @@ findHierarchy    sFun                     uidIClaferMap    clafer   = go [] claf
     | otherwise          = case sFun c of
         []           -> [c]  -- no super and no reference
         supersOrRefs -> c : concatMap (go (_uid c : path)) (mapMaybe (findIClafer uidIClaferMap) supersOrRefs)
+
+-- | The set reference whose targets the instances of the clafer under one parent may not share
+--   (@->@, Juodisius et al. 5, Definition 3.4 with erratum T11), as the clafer that declares it:
+--   the clafer itself or, for a concrete clafer, the nearest super clafer with a reference
+--   (gsdlab/clafer#121). The key is local to the parent: a top-level abstract clafer has none,
+--   and its subclafers have one each, also across their parents (gsdlab/clafer#125). A clafer
+--   with at most one instance per parent needs none, and neither does a bag reference (@->>@).
+setReferenceKey :: UIDIClaferMap -> IClafer -> Maybe IClafer
+setReferenceKey uidIClaferMap' c = case (declared, _card c) of
+  (Just s, Just (lb, ub))
+    | lb > 1 || ub > 1 || ub == -1
+    , maybe False _isSet (_reference s)
+    , not (_isAbstract c && isTopLevel c) -> Just s
+  _ -> Nothing
+  where
+  declared = case _reference c of
+    Just _ -> Just c
+    Nothing | _isAbstract c -> Nothing
+            | otherwise -> listToMaybe [ s | s <- drop 1 $ findHierarchy getSuper uidIClaferMap' c, isJust (_reference s) ]
 
 -- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
@@ -393,6 +410,12 @@ iInitially    = "initially"
 iFinally :: String
 iFinally    = "finally"
 
+-- | Marks the value @e@ of an initializer @x -> T := e@ that the desugarer moved from the
+--   context of the parent into the context of @x@. The name resolver resolves @e@ in the
+--   context of the parent, where it is written, and removes the marker; no other phase sees it.
+iInitValue :: String
+iInitValue  = "initvalue"
+
 iCSet :: String
 iCSet         = "#"
 
@@ -468,6 +491,10 @@ iIn           = "in"
 
 iNin :: String
 iNin          = "not in"
+
+-- | Whether the expression has temporal operators (X, F, G, U, W, initially, finally).
+hasLtlOps :: PExp -> Bool
+hasLtlOps pexp = not $ null [ () | IFunExp op' _ <- universeOn biplate pexp :: [IExp], op' `elem` ltlOps ]
 
 ltlOps :: [String]
 ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]

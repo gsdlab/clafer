@@ -26,7 +26,6 @@ import Control.Monad
 import Control.Monad.State
 import Data.List (mapAccumL)
 import qualified Data.Map as Map
-import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -57,7 +56,7 @@ nameModule skipResolver imodule = (imodule', genv'')
     paths = concatMap (claferPaths []) $ _mDecls imodule
     uids = if skipResolver then map last paths else assignUIDs paths
     named = snd $ mapAccumL withUIDs uids $ _mDecls imodule
-    (decls', genv') = runState (mapM (nameElement "root") named) $ GEnv Map.empty 0 Map.empty [] SMap.empty
+    (decls', genv') = runState (mapM (nameElement "root") named) $ GEnv Map.empty 0 Map.empty [] Map.empty
     imodule' = imodule{_mDecls = decls'}
     genv'' = genv'{uidClaferMap = createUidIClaferMap imodule'}
 

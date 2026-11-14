@@ -5,7 +5,7 @@ $Person = Abstract("Person");
 $married = $Person.addChild("married").withCard(0, 1);
 $child = $Person.addChild("child");
 $Alice = Clafer("Alice").withCard(1, 1);
-$child.refToUnique($Person);
 $Alice.extending($Person);
+$child.refToUnique($Person);
 $Alice.addConstraint(none(join($this(), $married)));
 $Alice.addConstraint(none(join($this(), $child)));

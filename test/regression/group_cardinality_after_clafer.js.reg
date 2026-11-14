@@ -1,0 +1,17 @@
+defaultScope(1);
+stringLength(16);
+
+$a = Clafer("a").withCard(1, 1);
+$b = Clafer("b").withCard(1, 1).withGroupCard(2, 3);
+$c = $b.addChild("c").withCard(0, 1);
+$d = $b.addChild("d").withCard(0, 1);
+$e = $b.addChild("e").withCard(0, 1);
+$f = Clafer("f").withCard(1, 1);
+$g = $f.addChild("g").withCard(1, 1);
+$h = $f.addChild("h").withCard(1, 1).withGroupCard(1, 2);
+$i = $h.addChild("i").withCard(0, 1);
+$j = $h.addChild("j").withCard(0, 1);
+$k = $h.addChild("k").withCard(0, 1);
+$l = Clafer("l").withCard(1, 1).withGroupCard(1);
+$m = $l.addChild("m").withCard(0, 1);
+$n = $l.addChild("n").withCard(0, 1);

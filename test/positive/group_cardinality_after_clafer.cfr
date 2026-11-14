@@ -1,0 +1,18 @@
+// A group cardinality at the start of a line is the group cardinality of the clafer on the
+// line (#117): 2..3 is the group cardinality of b, whose children are optional, not the
+// cardinality of a, which is mandatory. The same after a nested clafer, and at a dedent.
+
+a
+2..3 b
+  c
+  d
+  e
+f
+  g
+  1..2 h
+    i
+    j
+    k
+1..* l
+  m
+  n

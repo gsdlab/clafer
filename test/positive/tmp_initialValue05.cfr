@@ -1,0 +1,11 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// A set initializer constrains the set of the instances under the parent, so it stays in the
+// context of the parent: [ initially (some xs => xs.dref = 1, 2) ]. The instances created later
+// are not initialized.
+
+xs -> integer 0..3 := 1, 2
+[ F xs.dref = 3 ]
+
+A 2
+    ys -> integer * := 1, 2
+    [ F some this.ys ]

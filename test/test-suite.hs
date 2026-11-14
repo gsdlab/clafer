@@ -31,6 +31,7 @@ import Data.String (fromString)
 import Language.Clafer
 import Language.Clafer.Import
 import Language.Clafer.QNameUID
+import Language.Clafer.ClaferArgs (ClaferMode (Clafer))
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
@@ -257,6 +258,35 @@ case_UnsatisfiableGroupRejected = do
     ("of bare cannot be satisfied" `isInfixOf` errorsOf (groupsModel ++ "bare : Empty\n")) @? "Inherited xor over no children compiled"
     ("of tooFew cannot be satisfied" `isInfixOf` errorsOf "3..* tooFew\n   x ?\n   y 0..1\n") @? "3..* over two optional children compiled"
     compiles "2..* many\n   x *\n" @? "2..* over x * rejected"
+
+{-
+An ambiguous name of a super is not unique, with the paths of the candidates
+(#115); two candidates in the same namespace are a duplicate definition.
+-}
+case_AmbiguousSuperName :: Assertion
+case_AmbiguousSuperName = do
+    let
+        errorsOf model' = either show (const "") $ compileOneFragment defaultClaferArgs model'
+        ambiguous = errorsOf "A\n    abstract T\nB\n    abstract T\nx : T\n"
+        duplicate = errorsOf "abstract T\nabstract T\nx : T\n"
+    all (`isInfixOf` ambiguous) ["clafer \\\"T\\\" is not unique", "A.A__T", "B.B__T"] @? "Wrong error for an ambiguous super: " ++ ambiguous
+    ("cannot be defined because the name should be unique in the same namespace" `isInfixOf` duplicate) @? "Wrong error for a duplicate super: " ++ duplicate
+
+{-
+A group cardinality at the start of a line belongs to the clafer on that line,
+not to the clafer on the line before, which has no cardinality (#117).
+-}
+case_GroupCardinalityOnNextLine :: Assertion
+case_GroupCardinalityOnNextLine = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "a\n2..3 b\n  c\n  d\nf\n  g\n  1..2 h\n    i\n"
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        cardOf name = [ _card c | c <- clafers, _ident c == name ]
+        gcardOf name = [ _interval <$> _gcard c | c <- clafers, _ident c == name ]
+    map cardOf ["a", "b", "f", "g", "h"] == replicate 5 [Just (1, 1)] @? "Wrong cardinalities: " ++ show (map cardOf ["a", "b", "f", "g", "h"])
+    map gcardOf ["b", "h"] == [[Just (2, 3)], [Just (1, 2)]] @? "Wrong group cardinalities: " ++ show (map gcardOf ["b", "h"])
+    map cardOf ["c", "d", "i"] == replicate 3 [Just (0, 1)] @? "Children not optional: " ++ show (map cardOf ["c", "d", "i"])
 
 {-
 A child without a multiplicity is mandatory under the default group (no group
@@ -605,3 +635,106 @@ case_SelfInheritanceReported =
     case compileOneFragment defaultClaferArgs "abstract A : A\nb : A" of
         Left errs' -> ("inherits from itself" `isInfixOf` show errs') @? "Unexpected errors\n" ++ show errs'
         Right _ -> assertFailure "abstract A : A compiled"
+
+-- The initializer := is the initial value of a reference (kbak/clafer-semantics#164): the same as
+-- = in a static model, and the value in the first state of each lifetime of the clafer in a
+-- temporal model. It is no longer an assertion (#116).
+case_InitialValue :: Assertion
+case_InitialValue = do
+    let
+        output modes' model = fmap (\r -> map (\m -> outputCode $ fromJust $ Map.lookup m r) modes') $ compileOneFragment defaultClaferArgs{mode = modes'} $ unlines model
+        static' how = [ "A 2", "    x -> integer " ++ how ++ " 10", "    y -> integer ? " ++ how ++ " x + 1"
+                      , "    zs -> integer 0..2 " ++ how ++ " 1, 2", "abstract Val -> integer " ++ how ++ " 2", "v1 : Val" ]
+        explicit model = case output [Clafer] model of
+            Right [x] -> return x
+            Right _ -> assertFailure "no explicit model" >> return ""
+            Left errs' -> assertFailure (show errs') >> return ""
+        has model expected = do
+            x <- explicit model
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    -- a static model: the same outputs as with =, and no assertion
+    case (output [Alloy, Choco, Clafer] $ static' ":=", output [Alloy, Choco, Clafer] $ static' "=") of
+        (Right a, Right b) -> do
+            a == b @? ("differs from =:\n" ++ unlines a)
+            not (any ("assert" `isInfixOf`) a) @? ("an assertion:\n" ++ unlines a)
+            not ("--tl" `isInfixOf` last a) @? ("temporal:\n" ++ last a)
+        (Left errs', _) -> assertFailure $ show errs'
+        (_, Left errs') -> assertFailure $ show errs'
+    -- a temporal model: in the context of x, with the value resolved in the context of the parent
+    let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
+                   , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := A.y"
+                   , "[ F some A.x ]" ]
+    has temporal "0..* x -> int 0..1 {\n    [initially (this.dref = (this.parent.A__y.dref + 1))]"
+    has temporal "0..* z -> int 1..1 {\n    [initially (this.dref = this.parent.A__y.dref)]"
+    has temporal "[initially (((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2)))]"
+    -- a finalref reference keeps the value it starts with, also when the value of A.y changes
+    has temporal "finalref 0..* f -> int 0..1 {\n  [initially (this.dref = A.A__y.dref)]"
+    x <- explicit temporal
+    not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)
+
+-- The Alloy output of a model, static or temporal.
+alloyOf :: [String] -> Either String String
+alloyOf model = case compileOneFragment defaultClaferArgs{mode = [Alloy]} $ unlines model of
+    Right r -> Right $ outputCode $ fromJust $ Map.lookup Alloy r
+    Left errs' -> Left $ show errs'
+
+hasAlloy :: [String] -> String -> Assertion
+hasAlloy model expected = case alloyOf model of
+    Right alloy -> (expected `isInfixOf` alloy) @? (expected ++ " not in\n" ++ alloy)
+    Left errs' -> assertFailure errs'
+
+lacksAlloy :: [String] -> String -> Assertion
+lacksAlloy model unexpected = case alloyOf model of
+    Right alloy -> not (unexpected `isInfixOf` alloy) @? (unexpected ++ " in\n" ++ alloy)
+    Left errs' -> assertFailure errs'
+
+-- A := under an inherited = is reported as an initializer that does not redefine the =, not as
+-- one without effect: an equal value repeats it, another one leaves no instance, which forces an
+-- optional clafer to be absent (#124).
+case_InitializerUnderInheritedConstant :: Assertion
+case_InitializerUnderInheritedConstant =
+    forM_ ["r : Ref := 2", "r : Ref := 3", "r : Ref ? := 3"] $ \sub ->
+        case compileOneFragment defaultClaferArgs{mode = [Alloy]} (unlines [ "abstract Ref -> integer = 2", sub ]) of
+            Right r -> do
+                let stats = statistics $ fromJust $ Map.lookup Alloy r
+                ("the initializer ':=' of r does not redefine the initializer '=' of Ref, which r inherits: both hold" `isInfixOf` stats) @? (sub ++ ": " ++ stats)
+                not ("no effect" `isInfixOf` stats) @? (sub ++ ": " ++ stats)
+            Left errs' -> assertFailure $ sub ++ ": " ++ show errs'
+
+-- A reference that refines an inherited one has the target of the inherited one in the temporal
+-- output, as in the static one (#120).
+case_RefinedReferenceTemporal :: Assertion
+case_RefinedReferenceTemporal =
+    hasAlloy [ "abstract Ref -> integer", "r : Ref -> integer", "[ G (r.dref = 1) ]" ]
+        "always (this in alive_r implies (this.@r_ref in this.@Ref_ref))"
+
+-- The set reference keys (#121, #125): per parent, for the reference a concrete clafer inherits
+-- too, and none for a top-level abstract clafer, in both outputs; none for a bag reference.
+case_SetReferenceKeys :: Assertion
+case_SetReferenceKeys = do
+    let model = [ "Target 2", "abstract Ref -> Target", "r : Ref 2", "a : Ref", "c : Ref"
+                , "abstract BagRef ->> Target", "b : BagRef 2" ]
+    hasAlloy model "all disj x, y : r | (x.@Ref_ref) != (y.@Ref_ref)"
+    lacksAlloy model "all disj x, y : Ref"
+    lacksAlloy model "all disj x, y : b"
+    hasAlloy (model ++ ["[ G some r ]"]) "all disj x, y : this.@r_r | (x.@Ref_ref) != (y.@Ref_ref)"
+    lacksAlloy (model ++ ["[ G some r ]"]) "all disj x, y : this.@r_b"
+
+-- An instance has no reference while it does not exist (#122).
+case_AbsentReference :: Assertion
+case_AbsentReference = do
+    hasAlloy [ "x -> integer ?", "[ G some x ]" ] "always (this not in alive_x implies no this.@x_ref)"
+    -- an inherited reference: the instances of the abstract clafer are those of its subclafers
+    hasAlloy [ "abstract Ref -> integer", "r : Ref ?", "[ G some r ]" ] "always (this not in alive_Ref implies no this.@Ref_ref)"
+
+-- The value of an initializer with temporal operators is evaluated in the context of the parent
+-- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
+-- guard, and it navigates from the parent, also after the parent disappeared.
+case_InitialValueTemporalContext :: Assertion
+case_InitialValueTemporalContext = do
+    let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
+                      , "[ initially (some P.Box && X no P.Box) ]" ]
+    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x :> alive_Box)).@r_flag))"
+    hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
+    -- without temporal operators, the value is the same as before
+    hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

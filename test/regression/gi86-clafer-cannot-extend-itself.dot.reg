@@ -9,11 +9,11 @@ edge [fontname=Sans fontsize=11];
 "FunctionalArchitecture" [label="abstract FunctionalArchitecture" URL="#FunctionalArchitecture" tooltip="abstract FunctionalArchitecture&#10;"];
 "Deployment" [label="abstract Deployment" URL="#Deployment" tooltip="abstract Deployment&#10;  abstract fa -&gt; FunctionalArchitecture&#10;"];
 "Deployment__fa" [label="abstract fa -> FunctionalArchitecture" URL="#Deployment__fa" tooltip="abstract fa -&gt; FunctionalArchitecture&#10;"];
-"Deployment__fa" -> "FunctionalArchitecture" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=Deployment__fa];
+"Deployment__fa" -> "FunctionalArchitecture" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="Deployment__fa"];
 "PowerWindowFAA" [label="abstract PowerWindowFAA : FunctionalArchitecture" URL="#PowerWindowFAA" tooltip="abstract PowerWindowFAA : FunctionalArchitecture&#10;"];
 "PowerWindowDpl" [label="abstract PowerWindowDpl : Deployment" URL="#PowerWindowDpl" tooltip="abstract PowerWindowDpl : Deployment&#10;  abstract fa : fa -&gt; PowerWindowFAA&#10;"];
 "PowerWindowDpl__fa" [label="abstract fa : fa -> PowerWindowFAA" URL="#PowerWindowDpl__fa" tooltip="abstract fa : fa -&gt; PowerWindowFAA&#10;"];
-"PowerWindowDpl__fa" -> "PowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=PowerWindowDpl__fa];
+"PowerWindowDpl__fa" -> "PowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="PowerWindowDpl__fa"];
 "System" [label="System" URL="#System" tooltip="System&#10;  DriverPowerWindowFAA : PowerWindowFAA&#10;  DriverPowerWindowDpl : PowerWindowDpl&#10;    fa : fa -&gt; DriverPowerWindowFAA&#10;"];
-"System" -> "DriverPowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=fa];
+"System" -> "DriverPowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="fa"];
 }

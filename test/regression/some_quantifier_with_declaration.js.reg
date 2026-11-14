@@ -5,6 +5,6 @@ $A = Abstract("A");
 $b = $A.addChild("b");
 $c = $b.addChild("c").withCard(0, 1);
 $a1 = Clafer("a1").withCard(1, 1);
-$A.addConstraint(some([decl([$_b1 = local("b1")], join($this(), $b))], some(join($_b1, $c))));
 $a1.extending($A);
+$A.addConstraint(some([decl([$_b1 = local("b1")], join($this(), $b))], some(join($_b1, $c))));
 assert(some(join(join(global($A), $b), $c)));

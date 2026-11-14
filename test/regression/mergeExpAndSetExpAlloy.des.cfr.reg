@@ -19,7 +19,7 @@ abstract 0..* Person 0..* {
 }
 0..* Ella : Person 1..1 {
   [(#this.likes) = 0]
-  0..* h 1..1 {}
+  0..* h : Person__Head 1..1 {}
 }
 0..* heads -> Person__Head 0..* {}
 0..* friend -> Person 2..2 {

@@ -9,5 +9,5 @@ edge [fontname=Sans fontsize=11];
 "A" [label="abstract A" URL="#A" tooltip="abstract A&#10;  b ?&#10;"];
 "A1" [label="A1 : A" URL="#A1" tooltip="A1 : A&#10;  [  ! b ]&#10;"];
 "C" [label="C" URL="#C" tooltip="C&#10;  b ?&#10;  [ C.b ]&#10;  a -&gt; A&#10;    [ b ]&#10;    d&#10;      b ?&#10;"];
-"C" -> "A" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=a];
+"C" -> "A" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="a"];
 }

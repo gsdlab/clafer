@@ -6,7 +6,7 @@ $Measurable = Abstract("Measurable");
 $performance = $Measurable.addChild("performance").withCard(1, 1);
 $D = Clafer("D").withCard(1, 1);
 $C = Clafer("C").withCard(1, 1);
-$performance.refToUnique(Int);
 $D.extending($Measurable);
 $C.extending($Measurable);
+$performance.refToUnique(Int);
 Constraint(equal(joinRef(join(global($C), $performance)), minus(joinRef(join(global($D), $performance)))));

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/path_super.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Person">Person</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="Person__Head">Head</span>
+    <div class="indent">
+    <span class="claferDecl" id="hair">hair</span> ?</div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="Ella">Ella</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="h1">h1</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>.<a href="#Person__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="h2">h2</span><span class="keyword"> : </span><a href="#Ella"><span class="reference">Ella</span></a>.<a href="#Person__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#h1"><span class="reference">h1</span></a>.<a href="#hair"><span class="reference">hair</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#h2"><span class="reference">h2</span></a>.<a href="#hair"><span class="reference">hair</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="Bob">Bob</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="Bob__Head">Head</span><span class="keyword"> : </span><a href="#Person__Head"><span class="reference">Head</span></a>
+    <div class="indent">
+    <span class="claferDecl" id="redHair">redHair</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="h3">h3</span><span class="keyword"> : </span><a href="#Bob"><span class="reference">Bob</span></a>.<a href="#Bob__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="h4">h4</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>.<a href="#Person__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="h5">h5</span><span class="keyword"> : </span><a href="#Bob__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#h3"><span class="reference">h3</span></a>.<a href="#redHair"><span class="reference">redHair</span></a> &amp;&amp; <span class="keyword">some</span> <a href="#h3"><span class="reference">h3</span></a>.<a href="#hair"><span class="reference">hair</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#h4"><span class="reference">h4</span></a>.<a href="#hair"><span class="reference">hair</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#h5"><span class="reference">h5</span></a>.<a href="#redHair"><span class="reference">redHair</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Dog">Dog</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="Dog__Head">Head</span>
+    <div class="indent">
+    <span class="claferDecl" id="ears">ears</span> 2</div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="Rex">Rex</span><span class="keyword"> : </span><a href="#Dog"><span class="reference">Dog</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="h6">h6</span><span class="keyword"> : </span><a href="#Dog"><span class="reference">Dog</span></a>.<a href="#Dog__Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> # <a href="#h6"><span class="reference">h6</span></a>.<a href="#ears"><span class="reference">ears</span></a> = 2 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="B">B</span>
+    <div class="indent">
+    <span class="keyword">abstract</span> <span class="claferDecl" id="C">C</span>
+      <div class="indent">
+      <span class="claferDecl" id="x">x</span> ?</div>
+    </div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="D">D</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="b">b</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>.<a href="#B"><span class="reference">B</span></a>
+    <div class="indent">
+    <span class="claferDecl" id="c">c</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>.<a href="#B"><span class="reference">B</span></a>.<a href="#C"><span class="reference">C</span></a></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c"><span class="reference">c</span></a>.<a href="#x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+</body>
+</html>

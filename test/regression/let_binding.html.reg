@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/let_binding.cfr</div>
+
+<div>
+<span class="claferDecl" id="xs">xs</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> 2</div>
+
+
+<div>
+<span class="claferDecl" id="a">a</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="b">b</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="v">v</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="ys">ys</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> *</div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>t<span class="keyword"> = </span><a href="#xs"><span class="reference">xs</span></a><span class="keyword"> in </span># t = 2 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>s<span class="keyword"> = </span><a href="#a"><span class="reference">a</span></a> + <a href="#b"><span class="reference">b</span></a><span class="keyword"> in </span>s &gt; 2 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>w<span class="keyword"> = </span><a href="#A"><span class="reference">A</span></a>.<a href="#v"><span class="reference">v</span></a><span class="keyword"> in </span>w = 3 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>t<span class="keyword"> = </span>a<span class="keyword"> in </span><span class="keyword">let </span>t<span class="keyword"> = </span><a href="#ys"><span class="reference">ys</span></a><span class="keyword"> in </span># t = 1 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>t<span class="keyword"> = </span><a href="#a"><span class="reference">a</span></a><span class="keyword"> in </span>all a<span class="keyword"> : </span><a href="#ys"><span class="reference">ys</span></a> | t = a <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">let </span>t<span class="keyword"> = </span>a<span class="keyword"> in </span><span class="keyword">some</span> t<span class="keyword"> : </span><a href="#ys"><span class="reference">ys</span></a> | <a href="#t"><span class="reference">t</span></a> = 4 <span class="keyword">]</span></div>
+
+</body>
+</html>

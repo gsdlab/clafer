@@ -1,0 +1,14 @@
+digraph "let_binding"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"xs" [label="xs -&gt; integer 2" URL="#xs" tooltip="xs -&gt; integer 2&#10;"];
+"a" [label="a -&gt; integer" URL="#a" tooltip="a -&gt; integer&#10;"];
+"b" [label="b -&gt; integer" URL="#b" tooltip="b -&gt; integer&#10;"];
+"A" [label="A" URL="#A" tooltip="A&#10;  v -&gt; integer&#10;"];
+"ys" [label="ys -&gt; integer *" URL="#ys" tooltip="ys -&gt; integer *&#10;"];
+}

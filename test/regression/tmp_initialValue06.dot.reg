@@ -1,0 +1,13 @@
+digraph "tmp_initialValue06"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"A" [label="A" URL="#A" tooltip="A&#10;  y -&gt; integer&#10;  x -&gt; integer ? := y + 1&#10;    y -&gt; integer&#10;  z -&gt; integer := this.y&#10;  [ F (x = 5 &amp;&amp; x.y = 7) ]&#10;"];
+"Val" [label="abstract Val -&gt; integer := 2" URL="#Val" tooltip="abstract Val -&gt; integer := 2&#10;"];
+"v1" [label="v1 : Val" URL="#v1" tooltip="v1 : Val&#10;"];
+"B" [label="B" URL="#B" tooltip="B&#10;  v2 : Val&#10;"];
+}

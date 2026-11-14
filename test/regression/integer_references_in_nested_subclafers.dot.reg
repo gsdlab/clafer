@@ -8,7 +8,7 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "Person" [label="abstract Person" URL="#Person" tooltip="abstract Person&#10;  Age -&gt; integer&#10;"];
 "Team" [label="Team" URL="#Team" tooltip="Team&#10;  Contractor : Person&#10;    since -&gt; integer&#10;  Member -&gt; Person 2..*&#10;"];
-"Team" -> "Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=Member];
+"Team" -> "Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="Member"];
 "Alice" [label="Alice : Person" URL="#Alice" tooltip="Alice : Person&#10;"];
 "Bob" [label="Bob : Person" URL="#Bob" tooltip="Bob : Person&#10;"];
 }

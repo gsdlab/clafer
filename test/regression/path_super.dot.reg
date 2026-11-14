@@ -1,0 +1,21 @@
+digraph "path_super"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Person" [label="abstract Person" URL="#Person" tooltip="abstract Person&#10;  abstract Head&#10;    hair ?&#10;"];
+"Person__Head" [label="abstract Head" URL="#Person__Head" tooltip="abstract Head&#10;  hair ?&#10;"];
+"Ella" [label="Ella : Person" URL="#Ella" tooltip="Ella : Person&#10;  h1 : Person.Head&#10;  h2 : Ella.Head&#10;  [ some h1.hair &amp;&amp; no h2.hair ]&#10;"];
+"Bob" [label="Bob : Person" URL="#Bob" tooltip="Bob : Person&#10;  abstract Head : Head&#10;    redHair ?&#10;  h3 : Bob.Head&#10;  h4 : Person.Head&#10;  h5 : Head&#10;  [ some h3.redHair &amp;&amp; some h3.hair &amp;&amp; no h4.hair &amp;&amp; no h5.redHair ]&#10;"];
+"Bob__Head" [label="abstract Head : Head" URL="#Bob__Head" tooltip="abstract Head : Head&#10;  redHair ?&#10;"];
+"Dog" [label="abstract Dog" URL="#Dog" tooltip="abstract Dog&#10;  abstract Head&#10;    ears 2&#10;"];
+"Dog__Head" [label="abstract Head" URL="#Dog__Head" tooltip="abstract Head&#10;  ears 2&#10;"];
+"Rex" [label="Rex : Dog" URL="#Rex" tooltip="Rex : Dog&#10;  h6 : Dog.Head&#10;  [ # h6.ears = 2 ]&#10;"];
+"A" [label="abstract A" URL="#A" tooltip="abstract A&#10;  abstract B&#10;    abstract C&#10;      x ?&#10;"];
+"B" [label="abstract B" URL="#B" tooltip="abstract B&#10;  abstract C&#10;    x ?&#10;"];
+"C" [label="abstract C" URL="#C" tooltip="abstract C&#10;  x ?&#10;"];
+"D" [label="D : A" URL="#D" tooltip="D : A&#10;  b : A.B&#10;    c : A.B.C&#10;    [ some c.x ]&#10;"];
+}

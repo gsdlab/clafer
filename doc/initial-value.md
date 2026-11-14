@@ -1,11 +1,17 @@
 # The initializer `:=` as an initial value
 
-Status: proposal for a release after 0.5.7 (Nov 7, 2026). Not implemented. It changes the meaning
-of `:=` from a default, which no backend supports, to the initial value of a reference: the same
-as `=` in static models, and the value in the first state of each lifetime of the clafer in
-temporal models.
+Status: implemented in 0.5.8, as agreed in
+[kbak/clafer-semantics#164](https://github.com/kbak/clafer-semantics/issues/164). For
+redefinition, the decision is reading A, pure strengthening (see
+[Inheritance and redefinition](#inheritance-and-redefinition)).
+It changes the meaning of `:=` from a default, which no backend supports, to the initial value of
+a reference: the same as `=` in static models, and the value in the first state of each lifetime
+of the clafer in temporal models. True defaults, preferred unless something else is required,
+need soft constraints, a separate language extension left as future work. The sections up to
+[Implementation](#implementation) are the proposal; [What 0.5.8 does](#what-058-does) records the
+choices of the implementation.
 
-## Today
+## Before 0.5.8
 
 The grammar ([src/clafer.cf](../src/clafer.cf)) has two initializers of a reference clafer:
 
@@ -113,6 +119,20 @@ the meaning of `e`:
 
 Constants, enumeration literals and top-level clafers resolve the same in both contexts.
 
+The names are not the whole meaning: a temporal operator in `e` is bounded by the lifetime of the
+parent of its context instance (T2), and `initially` and `finally` refer to the lifetime of the
+context instance (T7). In the context of `x`, `X (some flag)` would lapse with the parent of `x`,
+and `initially` would refer to the lifetime of `x`. So 0.5.8 evaluates a value with temporal
+operators in the context of the parent ([gsdlab/clafer#123](https://github.com/gsdlab/clafer/issues/123)):
+the name resolver keeps the marker `initvalue` around it, and the temporal Alloy output takes the
+parent of `x`, also after it disappeared, as the context instance of the value. Under
+`Box ? / flag ? / x -> integer := if X (some flag) then 1 else 2`, a `Box` that disappears in the
+next state starts `x` at 2, since `flag` does not exist then; in the context of `x`, the
+obligation would lapse with the `Box`, and `x` would start at 1 (`tmp_initialValue07.cfr`). A
+value without temporal operators means the same in both contexts and has no marker. The explicit
+form (`-m clafer`) prints the value in the context of `x`, so it keeps the names but not the
+temporal context of such a value.
+
 ### Cases
 
 | Declaration | Static model | Temporal model |
@@ -120,7 +140,7 @@ Constants, enumeration literals and top-level clafers resolve the same in both c
 | `x -> integer := 10` | `[ some x => x.dref = 10 ]` (= `x -> integer = 10`) | `x` nested `[ initially this.dref = 10 ]` |
 | `x -> integer ? := 10` | as above | as above; `x` may be absent |
 | `xs -> integer * := 1, 2` | `[ some xs => xs.dref = 1, 2 ]` | `[ initially (some xs => xs.dref = 1, 2) ]` in the parent's context |
-| `finalref x -> integer := 10`, `final x …` | as `=` | the reference cannot change, so as `=`; a warning suggests `=` |
+| `finalref x -> integer := 10`, `final x …` | as `=` | as above (initially); the value then stays (see What 0.5.8 does) |
 | `x -> integer = 10` | unchanged | unchanged: every state |
 
 A set initializer constrains the set of all the instances of `xs` under the parent, so it stays
@@ -132,8 +152,26 @@ which `1, 2` does not give. The documentation should say so.
 
 An initializer in an abstract clafer applies to the instances of all its subclafers, as `=`
 does. A subclafer cannot replace it: its own initializer or constraint on the same reference is
-added to the inherited one, and two different initial values have no instance. Overriding would
-need redefinition to replace the inherited initializer, which is a separate change.
+added to the inherited one, and two different initial values have no instance.
+
+**Decision: reading A, pure strengthening** (#164). As for the other redefinitions, a subclafer
+must satisfy the inherited initializer, and every instance of it is a valid instance of the
+abstract clafer. A subclafer's own `:=` or `=` on the reference is added to the inherited
+initializer, never replaces it: under `abstract val -> integer := 2`, `fixed : val = 2`
+strengthens the initial value to the value in every state, while `= 3` or `:= 3` has no instance.
+A different value needs a different structure, e.g. an intermediate abstract clafer that holds the
+initializer, which the overriding clafer does not inherit. Reading B, a default guarded by the
+subclafers that redefine it (`initially (this not in override => this.dref = 2)`), is rejected:
+it is not monotone. 0.5.8 already behaves as reading A, since it keeps both the inherited and the
+own constraints; it reports a conflicting value as a model with no instance, not as an error.
+
+A `:=` cannot redefine an inherited `=`: that would weaken the value in every state to the
+value in the first state. Under `abstract val -> integer = 2` (or `-> 2`), `sub : val := 2`
+is a model with the same instances as `sub : val`. With another value, e.g., `:= 3`, `sub` has no
+instance: the model has none when `sub` is mandatory, and an optional `sub` stays absent. In both
+cases the compiler warns that the `:=` does not redefine the inherited `=`, and that both hold. The
+warning does not compare the values, so it does not claim that the `:=` is redundant
+(gsdlab/clafer#124).
 
 ### The explicit form
 
@@ -159,7 +197,8 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
    The second is simpler. The first keeps the desugarer independent of the rest of the model.
 2. Place the single-reference initializer in the clafer's own elements, and keep the
    expression's meaning as described above.
-3. Warn for `:=` on a `final` or `finalref` clafer.
+3. Warn for `:=` on a `final` or `finalref` clafer. (Not done: `:=` is not redundant there, see
+   What 0.5.8 does.)
 4. Documentation: the cheat sheet, and a short section in the temporal semantics errata, next to
    T7.
 
@@ -174,3 +213,36 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
 - A set initializer.
 - Negative: `:=` on a clafer that is not a reference, which `=` rejects with a type error
   (`x = 10`: "Function '=' cannot be performed on TClafer … = TInteger").
+
+## What 0.5.8 does
+
+- **Temporality:** the desugarer already desugars a model twice when it is dynamic (for the final
+  enumerations): first as a static model, in which `:=` is `=`, and again as a dynamic one if the
+  first result has a temporal operator or modifier. So an initializer does not make a model
+  temporal, and the IR needs no mark for initializers.
+- **Name resolution:** the desugarer puts `[ initially this.dref = initvalue(e) ]` in the elements
+  of `x`. `initvalue` is a mark that only the name resolver sees: it resolves `e` in the
+  environment of the parent, as for `=`, and then replaces `this` with `this.parent` (the root
+  for a top-level clafer). After name resolution, every relative name is a path from `this`, so
+  the rewritten `e` means the same in the context of `x`. The rules of the name resolver are
+  unchanged. E.g., in `A` with `y -> integer` and `x -> integer ? := y + 1` with a child
+  `y -> integer`, the explicit model has
+  `[initially (this.dref = (this.parent.A__y.dref + 1))]` in `x`.
+- **Sets:** an initializer is a set initializer when the multiplicity of `x` allows more than one
+  instance (an upper bound above 1, or `*`). An abstract clafer has no multiplicity of its own, so
+  the initializer of `abstract Val -> integer := 2` gives each instance of a subclafer its initial
+  value.
+- **`final`, `finalref`:** `:=` is an initial value as for any reference, and the modifier keeps
+  it: the reference has the value that `e` has when its lifetime starts, for the whole lifetime.
+  The proposal made `:=` the same as `=` here, which holds only for an `e` that does not change:
+  with `finalref x -> integer := y`, a `y` that is 2 when `x` appears and 3 later leaves `x` at 2,
+  whereas `= y` would contradict `finalref` (the review in
+  kbak/clafer-semantics#164). So there is no warning
+  either (`tmp_initialValue04.cfr`).
+- **Outputs:** `:=` is a hard constraint in every output; no initializer becomes an assertion.
+  Choco supports the static models, as for `=`.
+- **Tests:** `initialValueStatic.cfr` (the same outputs and instances as with `=`), and
+  `tmp_initialValue01.cfr` to `tmp_initialValue06.cfr`: an optional `level` created later, a
+  mandatory `x` whose value changes, a `level` whose parent is replaced, `finalref` and `final`
+  references, set initializers, and the name resolution (`this`, a sibling and a child with the
+  same name, an abstract clafer). `case_InitialValue` in the test suite compares the outputs.

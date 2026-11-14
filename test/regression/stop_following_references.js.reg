@@ -10,7 +10,7 @@ $a = $C.addChild("a").withCard(1, 1);
 $d = $a.addChild("d").withCard(1, 1);
 $d__b = $d.addChild("d__b").withCard(0, 1);
 $A1.extending($A);
+$a.refToUnique($A);
 $A1.addConstraint(none(join($this(), $A__b)));
 $C.addConstraint(some(join(global($C), $C__b)));
-$a.refToUnique($A);
 $a.addConstraint(some(join(join($this(), $d), $d__b)));

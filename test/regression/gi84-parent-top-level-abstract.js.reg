@@ -7,7 +7,7 @@ $Feature = Abstract("Feature");
 $FM = Clafer("FM").withCard(1, 1);
 $F1 = $FM.addChild("F1").withCard(1, 1);
 $F2 = $F1.addChild("F2").withCard(1, 1);
-$Feature.addConstraint($in(joinParent($this()), union(global($Feature), global($FeatureModel))));
 $FM.extending($FeatureModel);
 $F1.extending($Feature);
 $F2.extending($Feature);
+$Feature.addConstraint($in(joinParent($this()), union(global($Feature), global($FeatureModel))));

@@ -10,12 +10,12 @@ edge [fontname=Sans fontsize=11];
 "comp" [label="abstract comp" URL="#comp" tooltip="abstract comp&#10;  version -&gt; integer&#10;"];
 "ECU" [label="abstract ECU : comp" URL="#ECU" tooltip="abstract ECU : comp&#10;"];
 "root__display" [label="abstract display : comp" URL="#root__display" tooltip="abstract display : comp&#10;  server -&gt; ECU&#10;  `options&#10;  [ this.version >= server.version ]&#10;"];
-"root__display" -> "ECU" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=server];
+"root__display" -> "ECU" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="server"];
 "root__display" -> "root__options" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
 "root__options" [label="abstract options" URL="#root__options" tooltip="abstract options&#10;  xor size&#10;    small&#10;    large&#10;  cache ?&#10;    size -&gt; integer&#10;      fixed ?&#10;  [ small &amp;&amp; cache => fixed ]&#10;"];
 "plaECU" [label="abstract plaECU : ECU" URL="#plaECU" tooltip="abstract plaECU : ECU&#10;  `display 1..2&#10;    [ server = parent ]&#10;    [  ! options.cache ]&#10;"];
 "plaECU" -> "root__display" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
 "ECU1" [label="ECU1 : plaECU" URL="#ECU1" tooltip="ECU1 : plaECU&#10;"];
 "ECU2" [label="ECU2 : plaECU ?" URL="#ECU2" tooltip="ECU2 : plaECU ?&#10;  master -&gt; ECU1&#10;"];
-"ECU2" -> "ECU1" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=master];
+"ECU2" -> "ECU1" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="master"];
 }

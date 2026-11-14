@@ -1,0 +1,12 @@
+//# OPTIONS --explicit
+[((#Val) >= 1) => (Val.dref = 2)]
+0..* A 2..2 {
+  [((#this.x) >= 1) => (this.x.dref = 10)]
+  [((#this.y) >= 1) => (this.y.dref = (this.x.dref + 1))]
+  [((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2))]
+  0..* x -> int 1..1 {}
+  0..* y -> int 0..1 {}
+  0..* zs -> int 0..2 {}
+}
+abstract 0..* Val -> int 0..* {}
+0..* v1 : Val 1..1 {}
