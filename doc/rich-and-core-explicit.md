@@ -96,7 +96,7 @@ Verification, ICSE 1999), `never`, `sometime`, `lonce`, `always`, `s must preced
 The expansions are verified: for every pattern and scope, a nuXmv model checks that the
 formula of the core is equivalent, on all traces, to a reference written from the
 definition of the pattern with past-time operators. All 30 pairs of pattern and scope are
-equivalent; for example, `never p before r` is `F r => (no p U r)` in the core, and its
+equivalent ([`test/patterns/check-patterns.py`](../test/patterns/check-patterns.py)); for example, `never p before r` is `F r => (no p U r)` in the core, and its
 reference is `F r -> G (!(O r) -> !p)`: if r occurs, no p before its first occurrence.
 
 The patterns and transitions in the rich and the core explicit model of a constraint:
