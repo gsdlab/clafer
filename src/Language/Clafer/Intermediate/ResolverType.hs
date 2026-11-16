@@ -536,9 +536,9 @@ withType p t = p{_iType = Just t}
 
 liftError :: MonadError e m => ExceptT e m a -> ExceptT e m a
 liftError e =
-  liftCatch catchError e throwError
+  liftCatch' catchError e throwError
   where
-  liftCatch catchError' m h = ExceptT $ runExceptT m `catchError'` (runExceptT . h)
+  liftCatch' catchError' m h = ExceptT $ runExceptT m `catchError'` (runExceptT . h)
 
 {-
  -

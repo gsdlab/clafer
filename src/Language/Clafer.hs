@@ -284,11 +284,7 @@ save args'=
            alloyResult = Map.lookup Alloy resultsMap
            chocoResult = Map.lookup Choco resultsMap
         in
-           if (isNothing alloyResult)
-           then if (isNothing chocoResult)
-                then []
-                else scopesList $ fromJust chocoResult
-           else scopesList $ fromJust alloyResult
+           maybe (maybe [] scopesList chocoResult) scopesList alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
 summary graph result@CompilerResult{} = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
@@ -458,7 +454,7 @@ compile :: Monad m => IModule -> ClaferT m ()
 compile desugaredMod = do
     env <- getEnv
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) clafersWithKeyWords :: CErr Span)
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ "The model contains clafers with keywords as names in the following places:\n" ++ clafersWithKeyWords :: CErr Span)
     -- the multiplicities of the abstract clafers with :=, which have no meaning (#126)
     ast' <- getAst
     let unsupportedBounds = unsupportedInitializerBounds ast'
@@ -467,7 +463,7 @@ compile desugaredMod = do
     let (imodule, _, _) = ir
 
     let spanList = foldMapIR gt1 imodule
-    when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) spanList :: CErr Span)
+    when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ "The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n" ++ spanList :: CErr Span)
     let unsatisfiableGroups' = unsatisfiableGroups imodule
     unless (null unsatisfiableGroups') $ throwErrs unsatisfiableGroups'
     putEnv $ env{ cIr = Just ir }
@@ -837,17 +833,17 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
 showLargeScopes :: [ModelFile] -> [(IClafer, Integer, IClafer, Integer)] -> String
 showLargeScopes files = unlines . map showLargeScope
   where
-  showLargeScope (clafer, scope', target, targetScope) =
+  showLargeScope (claf, scope', target, targetScope) =
     let
-      Span (Pos l c) _ = _cinPos clafer
+      Span (Pos l c) _ = _cinPos claf
       (path, l') = modelPosition files l
-      name = _ident clafer
-      reference = name ++ " -> " ++ _ident target
-      card' = fromMaybe (0, -1) $ _card clafer
+      name = _ident claf
+      refText = name ++ " -> " ++ _ident target
+      card' = fromMaybe (0, -1) $ _card claf
     in
-      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ reference ++ " " ++ showInterval card'
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ refText ++ " " ++ showInterval card'
       ++ " is " ++ show scope' ++ ", since " ++ name ++ " may point to all " ++ show targetScope ++ " " ++ _ident target ++ " in each of its parents."
-      ++ " If fewer suffice, give it an upper bound, e.g., " ++ reference ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
+      ++ " If fewer suffice, give it an upper bound, e.g., " ++ refText ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
 
 -- | Warnings about the expressions compared with, subtracted from or intersected with themselves, at their positions in the files
 showRedundantExps :: [ModelFile] -> [PExp] -> String

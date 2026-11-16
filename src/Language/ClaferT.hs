@@ -253,7 +253,7 @@ instance ClaferErrPos Span where
   toErrPos = toErrPos . ErrModelSpan
 
 instance ClaferErrPos ErrPos where
-  toErrPos = return . id
+  toErrPos = return
 
 instance ClaferErrPos PartialErrPos where
   toErrPos (ErrFragPos frgId frgPos) =
@@ -288,7 +288,7 @@ instance ClaferErrPos p => Throwable (CErr p) where
 throwErrs :: (Monad m, Throwable t) => [t] -> ClaferT m a
 throwErrs throws =
   do
-    errors <- mapM (\e -> toErr e) throws
+    errors <- mapM toErr throws
     throwError $ ClaferErrs errors
 
 -- | Throw one error.

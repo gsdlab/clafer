@@ -52,7 +52,7 @@ data Ir
   | IRIQuant IQuant
   | IRIDecl IDecl
   | IRIGCard (Maybe IGCard)
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 data IType
   = TBoolean
@@ -71,7 +71,7 @@ data IType
   | TUnion
     { _un :: [IType]          -- ^ [IType] is a list of basic types (not union types)
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | each file contains exactly one mode. A module is a list of declarations
 data IModule
@@ -79,7 +79,7 @@ data IModule
     { _mName :: String -- ^ always empty (no syntax for declaring modules)
     , _mDecls :: [IElement] -- ^ List of top-level elements
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | @{"start": pos, "end": pos}@, where the end is exclusive; @null@ for 'noSpan'
 instance ToJSON Span where
@@ -112,7 +112,7 @@ data IClafer
     , _glCard :: Interval     -- ^ (o) global cardinality
     , _elements :: [IElement] -- ^ nested elements
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 isMutable :: IClafer -> Bool
 isMutable = not . _final . _modifiers
@@ -126,7 +126,7 @@ data IClaferModifiers
     -- ^ declared as "finalref" or "finaltarget" without a reference of its own: the modifiers of
     --   the reference that the clafer inherits (#109)
   , _enum :: Bool     -- ^ declared by an enum, @enum E = a | b@: the abstract clafer E and its literals
-  } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  } deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
 _isAbstract = _abstract . _modifiers
@@ -166,7 +166,7 @@ data IElement
     { _isMaximize :: Bool     -- ^ whether maximize or minimize
     , _cpexp :: PExp          -- ^ the expression
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | A type of reference.
 --   ->    values unique (set)
@@ -177,13 +177,13 @@ data IReference
     , _refModifiers :: [IReferenceModifier] -- ^ all of them: `finalref finaltarget` means both
     , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 data IReferenceModifier
   = FinalRefTarget
   | FinalRef
   | FinalTarget
-  deriving (Eq, Ord, Show, Data, Typeable,Generic,ToJSON)
+  deriving (Eq, Ord, Show, Data,Generic,ToJSON)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
@@ -192,7 +192,7 @@ data IGCard
   = IGCard
     { _isKeyword :: Bool    -- ^ whether given by keyword: xor, or, mux, opt
     , _interval :: Interval
-    } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+    } deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
@@ -208,14 +208,14 @@ data PExp
     , _inPos :: Span          -- ^ position in the input Clafer file
     , _exp :: IExp            -- ^ the actual expression
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | Embedes reference to a resolved Clafer
 {-type ClaferBinding = Maybe UID-}
 data ClaferBinding = GlobalBind UID
   | LocalBind CName
   | NoBind
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 data IExp
     -- | quantified expression with declarations
@@ -261,7 +261,7 @@ data IExp
     , _isTop :: Bool             -- ^ identifier refers to a top-level definition
     , _binding :: ClaferBinding  -- ^ the UID of the bound IClafer, if resolved
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -308,7 +308,7 @@ data IDecl
     , _decls :: [CName]  -- ^ a list of local names
     , _body :: PExp      -- ^ set to which local names refer to
     }
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 -- | quantifier
 data IQuant
@@ -317,7 +317,7 @@ data IQuant
   | IOne   -- ^ exactly one
   | ISome  -- ^ at least one (i.e., exists)
   | IAll   -- ^ for all
-  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
 
 type LineNo = Integer
 type ColNo  = Integer
@@ -459,4 +459,4 @@ data ObjectivesAndAttributes
   = ObjectivesAndAttributes
     { _qualities :: [String]
     , _attributes :: [String]
-    } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+    } deriving (Eq,Ord,Show,Data,Generic,ToJSON)

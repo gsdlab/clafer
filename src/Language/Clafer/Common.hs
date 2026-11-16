@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -58,9 +58,7 @@ getSuper claf = case getSuperId <$> _super claf of
 
 -- | Returns a list of any length
 getReference :: IClafer -> [String]
-getReference c = case _ref <$> _reference c of
-    Nothing   -> []
-    Just ref' -> getRefIds ref'
+getReference c = maybe [] (getRefIds . _ref) (_reference c)
 
 -- | Returns a list of any length
 getSuperAndReference :: IClafer -> [String]
@@ -330,7 +328,7 @@ matchNestedInheritance    uidIClaferMap        headClafer                 = do
       Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
       Nothing    -> []
     targetsSuperClafer :: [IClafer]
-    targetsSuperClafer = mapMaybe (findIClafer uidIClaferMap) $ map getSuperId $ catMaybes $ map _super targetClafer
+    targetsSuperClafer = mapMaybe (findIClafer uidIClaferMap . getSuperId) $ mapMaybe _super targetClafer
     superClafersTarget :: [IClafer]
     superClafersTarget = case _ref <$> _reference superClafer of
       Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
@@ -625,7 +623,7 @@ iIfThenElse :: String
 iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: Span -> String -> [IExp] -> IExp
-mkIFunExp _ _ (x:[]) = x
+mkIFunExp _ _ [x] = x
 mkIFunExp pos' op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" pos') [x,y]) xs
 
 toLowerS :: String -> String

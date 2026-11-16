@@ -188,8 +188,7 @@ expNav' pos' context x@(IClaferId modName' id' isTop' bind' ) = do
       let (impls', context') = maybe (impls, "")
            (\y -> ([[head y]], head y)) $
            find (\z -> context == (head.tail) z) impls
-      return (mkIFunExp pos' iUnion $ map (\u -> IClaferId modName' u isTop' bind') $
-              map head impls', context')
+      return (mkIFunExp pos' iUnion $ map ((\u -> IClaferId modName' u isTop' bind') . head) impls', context')
     else do
       return (x, id')
 expNav' pos' _ _ = error $ "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp, " ++ show pos'
@@ -200,7 +199,7 @@ split'(IFunExp _ (p:pexp:_)) f =
       [p {_exp = s}, pexp])
 split' (IClaferId modName' id' isTop' bind') f = do
     st <- gets stable
-    mapM f $ map (\y -> IClaferId modName' y isTop' bind') $ maybe [id'] (map head) $ Map.lookup id' st
+    mapM (f . (\y -> IClaferId modName' y isTop' bind')) $ maybe [id'] (map head) $ Map.lookup id' st
 split' _ _ = error "Function split' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
 -- -----------------------------------------------------------------------------
@@ -221,7 +220,7 @@ nonUidNames iModule = filter (\c -> '\'' `elem` _ident c || Map.findWithDefault 
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
-  IEClafer claf -> and $ map (checkConstraintElement idents) $ _elements claf
+  IEClafer claf -> all (checkConstraintElement idents) $ _elements claf
   IEConstraint _ pexp -> checkConstraintPExp idents pexp
   IEGoal _ _ ->  True
   IEInitializer _ _ pexp -> checkConstraintPExp idents pexp
@@ -233,8 +232,9 @@ checkConstraintIExp :: [String] -> IExp -> Bool
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls' pexp ->
      checkConstraintPExp ((oDecls' >>= (checkConstraintIDecl idents)) ++ idents) pexp
-   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ (rootIdent : idents)) then True
-                          else error $ "optimizer: " ++ ident' ++ " not found"
+   IClaferId _ ident' _ _
+     | ident' `elem` (specialNames ++ (rootIdent : idents)) -> True
+     | otherwise -> error $ "optimizer: " ++ ident' ++ " not found"
    _ -> True
 
 checkConstraintIDecl :: [String] -> IDecl -> [String]

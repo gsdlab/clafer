@@ -58,6 +58,7 @@ import qualified Data.ByteString.Char8 as BC
 import Data.IORef
 import Data.Char (isSpace, toLower)
 import Data.List (dropWhileEnd, find, intercalate, isPrefixOf, isSuffixOf, nub)
+import Data.Maybe (catMaybes)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Text.Encoding.Error (lenientDecode)
@@ -364,8 +365,8 @@ combineOptions imported (root, rootOptions) = do
   where
   files = [ (path, options) | (ModelFile path _, options) <- imported ]
   all' = rootOptions : map snd files
-  maximumOf xs = case [ x | Just x <- xs ] of { [] -> Nothing; ys -> Just (maximum ys) }
-  minimumOf xs = case [ x | Just x <- xs ] of { [] -> Nothing; ys -> Just (minimum ys) }
+  maximumOf xs = case catMaybes xs of { [] -> Nothing; ys -> Just (maximum ys) }
+  minimumOf xs = case catMaybes xs of { [] -> Nothing; ys -> Just (minimum ys) }
   -- the options of the compilation, which differ from the defaults
   runOptions =
     [ ("-o", changed console_output), ("-s", changed no_stats)

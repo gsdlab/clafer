@@ -200,9 +200,9 @@ addNewLines layoutCol ts@(t:_) = addNewLines' layoutCol (if isBracketOpen t then
 
 addNewLines' :: (Monad m) => (Token -> Int) -> Int -> [Token] -> ClaferT m [ExToken]
 addNewLines' _ _ []                     = return []
-addNewLines' _ 0 (t:[])                 = return [ExToken t]
-addNewLines' _ 1 (t:[])                 = return [ExToken t]
-addNewLines' _ _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
+addNewLines' _ 0 [t]                    = return [ExToken t]
+addNewLines' _ 1 [t]                    = return [ExToken t]
+addNewLines' _ _ [PT (Pn z x y) t]      = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
   where
     fPos = (Pos (fromIntegral x) (fromIntegral y))
 addNewLines' layoutCol n (t0:t1:ts)
@@ -221,7 +221,7 @@ addNewLines' _ _ tokens' = throwErr (ClaferErr ("[bug] LayoutResolver.addNewLine
 
 adjust :: (Monad m) => [Token] -> ClaferT m [Token]
 adjust [] = return []
-adjust (t:[]) = return [t]
+adjust [t] = return [t]
 adjust (t:ts) = ((updToken (t:ts)) >>= adjust) >>= (return . (t:))
 
 updToken :: (Monad m) => [Token] -> ClaferT m [Token]
@@ -249,14 +249,11 @@ addToken :: (Monad m) => Position -- ^ Position of the new token.
          -> [Token]  -- ^ The rest of the tokens. These will have their
                      --   positions updated to make room for the new token.
          -> ClaferT m [Token]
-addToken p@(Pn z x y) s ts = do
-  when (not $ validToken t) $ throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
-  (>>= (return . (PT p (TS s (fromJust t)):))) $ mapM (incrGlobal p (length s)) ts
+addToken p@(Pn z x y) s ts = case tokenLookup s of
+  Nothing -> throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
+  Just t -> (>>= (return . (PT p (TS s t):))) $ mapM (incrGlobal p (length s)) ts
   where
     fPos = Pos (fromIntegral x) (fromIntegral y)
-    validToken Nothing = False
-    validToken (Just _) = True
-    t = tokenLookup s
 
 resLayout :: String -> String
 resLayout input' =
@@ -268,7 +265,7 @@ resLayout input' =
 resolveLayout' :: StateT LayEnv Identity ()
 resolveLayout' = do
   stop <- isEof
-  when (not stop) $ do
+  unless stop $ do
     c  <- getc
     c' <- handleIndent c
     emit c'

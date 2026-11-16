@@ -142,7 +142,7 @@ exExp (CFun f args')
 exExp (CFun f args') = case (f, args') of
     ("not", [a])       -> "!" ++ exOperand a
     -- -1 is a constant, so the negation of a number is -(1)
-    ("minus", [a])     -> "-" ++ (if isConstant a then "(" ++ exExp a ++ ")" else exOperand a)
+    ("minus", [a])     -> "-" ++ (if isConstantExp a then "(" ++ exExp a ++ ")" else exOperand a)
     ("card", [a])      -> "#" ++ exOperand a
     ("sum", [a])       -> "sum " ++ exOperand a ++ ".dref"
     ("product", [a])   -> "product " ++ exOperand a ++ ".dref"
@@ -155,10 +155,10 @@ exExp (CFun f args') = case (f, args') of
     (_, [a, b]) | Just op' <- lookup f binaryOps -> exOperand a ++ " " ++ op' ++ " " ++ exOperand b
     _ -> error $ "Choco: no explicit form of " ++ f
   where
-    isConstant CInt{} = True
-    isConstant CDecimal{} = True
-    isConstant CEmpty{} = True
-    isConstant _ = False
+    isConstantExp CInt{} = True
+    isConstantExp CDecimal{} = True
+    isConstantExp CEmpty{} = True
+    isConstantExp _ = False
     binaryOps =
         [ ("add", "+"), ("sub", "-"), ("mul", "*"), ("div", "/"), ("mod", "%")
         , ("and", "&&"), ("or", "||"), ("implies", "=>"), ("ifOnlyIf", "<=>"), ("xor", "xor")

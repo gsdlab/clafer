@@ -74,7 +74,7 @@ transition p op' args = let (pre, stp) = transitionParts p op' args in mk p iImp
 -- | The precondition and the step of a transition, whose target is a sequence.
 transitionParts :: PExp -> String -> [PExp] -> (PExp, PExp)
 transitionParts p op' args = case (op', map lowerPExp args, args) of
-    (_, [a, b], [_, b0])       | op' == iTrans            -> (a, next b0)
+    (_, [a, _], [_, b0])       | op' == iTrans            -> (a, next b0)
     (_, [a, g, _], [_, _, b0]) | op' == iTransGuarded     -> (mk p iAnd [a, g], next b0)
     (_, [a, _], [_, b0])       | op' == iTransSync        -> (a, mk p iU [a, sequence' b0])
     (_, [a, _, t], [_, b0, _]) | op' == iTransSync        -> (a, mk p iU [mk p iAnd [t, a], sequence' b0])

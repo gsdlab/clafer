@@ -74,7 +74,8 @@ astrIExp :: MonadState (Map.Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op' exps' -> IFunExp op' `liftM` mapM astrPExp exps'
   IStr str -> do
-    modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
+    -- a string keeps the index it got first
+    modify (\e -> Map.insertWith (\_ old -> old) str (Map.size e) e)
     st <- get
     return (IInt $ toInteger $ (Map.!) st str)
   _ -> return x

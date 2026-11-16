@@ -78,16 +78,17 @@ defSEnv genv' declarations = env {aClafers = rCl aClafers',
   (aClafers', cClafers') = partition _isAbstract $ clafers env
 
 checkDuplicateSiblings :: IModule -> Resolve [IElement]
-checkDuplicateSiblings tree = let duplicate = checkDuplicateSiblings' $ _mDecls tree
-                              in if (isJust duplicate) then let Just(name,pos') = duplicate in throwError $ SemanticErr pos' $ ("Duplicate name: " ++ name) --error
-                                 else return $ _mDecls tree
+checkDuplicateSiblings tree = case checkDuplicateSiblings' $ _mDecls tree of
+  Just (name, pos') -> throwError $ SemanticErr pos' $ "Duplicate name: " ++ name
+  Nothing -> return $ _mDecls tree
 
 checkDuplicateSiblings' :: [IElement] -> Maybe (String,Span)
 checkDuplicateSiblings' tree =if (isJust check) then check
                               else checkForJust $ map checkDuplicateSiblings' elementsList
   where
-    check = checkListDuplicates $ map (\c -> (_ident c, _cinPos c)) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
-    elementsList = map (\c -> _elements c) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
+    clafers' = [ c | IEClafer c <- tree ]
+    check = checkListDuplicates $ map (\c -> (_ident c, _cinPos c)) clafers'
+    elementsList = map _elements clafers'
 
 
 checkForJust :: [Maybe (String,Span)] -> Maybe (String,Span)
@@ -102,7 +103,7 @@ checkListDuplicates list = checkListDuplicates' $ sortBy (compare `on` fst) list
 
 checkListDuplicates' :: [(String,Span)] -> Maybe (String,Span)
 checkListDuplicates' [] = Nothing
-checkListDuplicates' (_:[]) = Nothing
+checkListDuplicates' [_] = Nothing
 checkListDuplicates' ((a,b):(c,d):rest) = if a == c then
                                     Just (a,b)
                                   else
@@ -304,7 +305,7 @@ toTuple c = (_uid c, Just c)
 
 toNav' :: Span -> [(String, Maybe IClafer)] -> IExp
 toNav'    pos'    tuplePath                  =
-  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (createBind cbind)) tuplePath) :: IExp
+  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (maybe False isTopLevel cbind) (createBind cbind)) tuplePath) :: IExp
 
 createBind :: Maybe IClafer -> ClaferBinding
 createBind (Just c) = GlobalBind $ _uid c

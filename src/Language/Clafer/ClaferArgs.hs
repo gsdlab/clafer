@@ -36,13 +36,13 @@ import Data.Version (showVersion)
 
 -- | Type of output to be generated at the end of compilation
 data ClaferMode = AlloyLtl | Alloy | JSON | Clafer | Html | Graph | CVLGraph | Choco
-  deriving (Eq, Show, Ord, Data, Typeable)
+  deriving (Eq, Show, Ord, Data)
 instance Default ClaferMode where
   def = Alloy
 
 -- | Scope inference strategy
 data ScopeStrategy = None | Simple
-  deriving (Eq, Show, Data, Typeable)
+  deriving (Eq, Show, Data)
 instance Default ScopeStrategy where
   def = Simple
 
@@ -79,7 +79,7 @@ data ClaferArgs = ClaferArgs {
       public_imports :: Bool,
       import_base :: String,
       file :: FilePath
-    } deriving (Eq, Show, Data, Typeable)
+    } deriving (Eq, Show, Data)
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {

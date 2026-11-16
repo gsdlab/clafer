@@ -323,23 +323,23 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     | isRoot c  = x
     | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
   -- the relation does not change while this instance exists
-  stable x
+  unchanged x
     | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
     | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
   -- final and finalref fix the target of each instance, finaltarget only the set of targets
   fixesEach s r = _isFinal s || any (`elem` [FinalRefTarget, FinalRef]) (_refModifiers r)
   finalConsts =
     -- the instances of a final child do not change while this instance exists
-    [ stable $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
-    [ stable $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
+    [ unchanged $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
+    [ unchanged $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
     -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
     -- from engine, unless engine's modifier fixes it already (#109)
-    [ stable $ "this.@" ++ genRefName (_uid sup)
+    [ unchanged $ "this.@" ++ genRefName (_uid sup)
     | Nothing <- [_reference c], _isFinal c || FinalRef `elem` _finalReferences (_modifiers c)
     , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
     -- a finaltarget child points to the same set of targets while this instance exists; its
     -- instances may change and swap their targets
-    [ stable $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
+    [ unchanged $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
   finalTargetRef c' = case _reference c' of
     Just r | FinalTarget `elem` _refModifiers r, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
     Just _ -> Nothing
@@ -415,16 +415,16 @@ bindSelf = bindTo selfIdent
 
 -- | The constraint with this replaced by the given name.
 bindTo :: String -> Concat -> Concat
-bindTo ident (CString str) = CString $ bind Nothing str
+bindTo name' (CString str) = CString $ bind Nothing str
   where
   bind prev ('t':'h':'i':'s':rest)
-    | maybe True (not . identChar) prev && not (startsIdent rest) = ident ++ bind (Just '_') rest
+    | maybe True (not . identChar) prev && not (startsIdent rest) = name' ++ bind (Just '_') rest
   bind _ (x:xs) = x : bind (Just x) xs
   bind _ [] = []
   startsIdent (x:_) = identChar x
   startsIdent [] = False
   identChar x = isAlphaNum x || x == '_' || x == '\''
-bindTo ident (Concat trace xs) = Concat trace $ map (bindTo ident) xs
+bindTo name' (Concat trace xs) = Concat trace $ map (bindTo name') xs
 
 getAssertions :: IClafer -> [PExp]
 getAssertions c = [ pexp | IEConstraint False pexp <- _elements c ]
@@ -537,10 +537,10 @@ pushNegations pos' x@(PExp t pid' sp e)
       | op' == iIfThenElse, t == Just TBoolean, not (hasTemporal c) -> mk op' [c, push a, push b]
       | op' == iIfThenElse, t == Just TBoolean ->
           pushNegations pos' $ bool iAnd [bool iImpl [c, a], bool iImpl [bool iNot [c], b]]
-    IDeclPExp q ds@(_:_) body
-      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body
-      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body
-      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body
+    IDeclPExp q ds@(_:_) body'
+      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body'
+      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body'
+      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body'
     _ -> if pos' then x else neg x
   where
   push = pushNegations pos'
@@ -552,7 +552,7 @@ pushNegations pos' x@(PExp t pid' sp e)
 hasTemporal :: PExp -> Bool
 hasTemporal (PExp _ _ _ e) = case e of
   IFunExp op' es -> op' `elem` (iFinally : ltlOps) || any hasTemporal es
-  IDeclPExp _ _ body -> hasTemporal body
+  IDeclPExp _ _ body' -> hasTemporal body'
   _ -> False
 
 genPExp' :: GenEnv -> [String] -> PExp                      -> Concat

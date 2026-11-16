@@ -248,7 +248,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         _ -> Nothing
       where
         claferOfType (TClafer (u : _)) | u `notElem` [noClaferIdent, rootIdent, baseClafer] = Just u
-        claferOfType (TMap so _) = claferOfType so
+        claferOfType (TMap s' _) = claferOfType s'
         claferOfType (TUnion (t' : _)) = claferOfType t'
         claferOfType _ = Nothing
 
@@ -315,9 +315,10 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
     rewrite p1@PExp{_iType = Just _, _exp = IFunExp "." [p2, p3@PExp{_exp = IFunExp "." _}]} =
-        p1{_exp = IFunExp "." [p3{_iType = _iType p4, _exp = IFunExp "." [p2, p4]}, p5]}
-        where
-            PExp{_exp = IFunExp "." [p4, p5]} = rewrite p3
+        -- the rewritten join p3 is a join again
+        case rewrite p3 of
+            PExp{_exp = IFunExp "." [p4, p5]} -> p1{_exp = IFunExp "." [p3{_iType = _iType p4, _exp = IFunExp "." [p2, p4]}, p5]}
+            _ -> p1
     rewrite p1@PExp{_exp = IFunExp{_op = "-", _exps = [PExp{_exp = IInt i}]}} =
         -- This is so that the output looks cleaner, no other purpose since the Choco optimizer
         -- in the backend will treat the pre-rewritten expression the same.

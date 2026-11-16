@@ -47,8 +47,7 @@ import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
-import Control.Applicative
-import Data.List (find, intersperse, genericSplitAt, nub)
+import Data.List (find, intercalate, genericSplitAt, nub)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Char (isSpace)
@@ -62,11 +61,11 @@ printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c'@((Span (Pos row' col') _), comment):cs'), comments)
             | row > row' = case take 3 comment of
-                ['/', '/', '#'] -> findAll row (cs', concat [comments, printHtmlComment (trim (drop 2 comment)) ++ "\n"])
+                ['/', '/', '#'] -> findAll row (cs', comments ++ printHtmlComment (trim (drop 2 comment)) ++ "\n")
                 ['/', '/', _]   -> if col' == 1
-                                   then findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
-                                   else findAll row (cs', concat [comments, printInlineComment comment ++ "\n"])
-                ['/', '*', _]   -> findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
+                                   then findAll row (cs', comments ++ printStandaloneComment comment ++ "\n")
+                                   else findAll row (cs', comments ++ printInlineComment comment ++ "\n")
+                ['/', '*', _]   -> findAll row (cs', comments ++ printStandaloneComment comment ++ "\n")
                 _      -> (cs', "")
             | otherwise  = (c':cs', comments)
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
@@ -139,7 +138,7 @@ printDeclaration (EnumDecl s posIdent enumIds)  indent irMap html comments =
     " " ++
     printPosIdent posIdent mUid' html ++
     " = " ++
-    concat (intersperse " | " (map (\x -> printEnumId x indent irMap html comments) enumIds)) ++
+    intercalate " | " (map (\x -> printEnumId x indent irMap html comments) enumIds) ++
     comment ++
     printIndentEnd html
   where
@@ -358,7 +357,7 @@ printAssertion' exp' indent' irMap html comments =
 
 printDecl :: Decl-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDecl (Decl _ locids setExp) indent irMap html comments =
-  concat (intersperse "; " $ map printLocId locids) ++
+  intercalate "; " (map printLocId locids) ++
   while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printOperand 21 setExp indent irMap html comments
   where
     printLocId :: LocId -> String
@@ -595,16 +594,14 @@ getUid posIdent@(PosIdent (_, id')) irMap =
     findUid name xs     = find ((== name) . nameIn irMap) xs
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
-getDivId s irMap = if isNothing $ Map.lookup s irMap
-                      then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        _uid iClaf
+getDivId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> _uid iClaf
+                      _ -> "Uid not Found"
 
 getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
-getUseId s irMap = if isNothing $ Map.lookup s irMap
-                      then ("Uid not Found", "Uid not Found")
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        (_uid iClaf, fromMaybe "" $ _sident . _exp <$> _super iClaf)
+getUseId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> (_uid iClaf, maybe "" (_sident . _exp) (_super iClaf))
+                      _ -> ("Uid not Found", "Uid not Found")
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

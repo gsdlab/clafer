@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak <http://gsd.uwaterloo.ca>
 

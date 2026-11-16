@@ -69,7 +69,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
         targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
             then case getReference clafer of
-                [ref'] -> Map.findWithDefault 1 (fromMaybe "unknown" $ _uid <$> findIClafer uidClaferMap' ref' ) analysis'
+                [ref'] -> Map.findWithDefault 1 (maybe "unknown" _uid (findIClafer uidClaferMap' ref')) analysis'
                 _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis

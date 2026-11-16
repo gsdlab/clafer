@@ -100,8 +100,8 @@ resolveNClafer allClafers ancestors' abstractClafers parent clafer =
       { _super = super'
       , _parentUID = parentUID'
       , _modifiers = (_modifiers clafer)
-          { _initial = _isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer')  -- the clafer is declared as initial or inherits it
-          , _final = _isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer')        -- the clafer is declared as final or inherits it
+          { _initial = _isInitial clafer || maybe False _isInitial superIClafer'  -- the clafer is declared as initial or inherits it
+          , _final = _isFinal clafer || maybe False _isFinal superIClafer'        -- the clafer is declared as final or inherits it
           }
       , _elements = elements'
       }
@@ -115,9 +115,9 @@ resolveNSuper _ ancestors' abstractClafers parent _ (Just (PExp _ pid' pos' (ICl
         r <- case inheritedSuper of
           Just c  -> return $ Just (_uid c, [c])
           Nothing -> resolveN pos' ancestors' abstractClafers id'
-        ~(id'', [superClafer']) <- case r of
-          Nothing -> throwError $ SemanticErr pos' ("No superclafer found: " ++ id')
-          Just m  -> return m
+        (id'', superClafer') <- case r of
+          Just (u, c : _) -> return (u, c)
+          _ -> throwError $ SemanticErr pos' ("No superclafer found: " ++ id')
         return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
                  , Just superClafer')
   where

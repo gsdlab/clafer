@@ -224,12 +224,12 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
 desugarInit :: Maybe Interval -> PosIdent -> Init -> [IElement]
 desugarInit _ _ (InitEmpty _) = []
 desugarInit crd id' (InitSome s inithow exp') =
-    [ IEInitializer (isConstant' inithow) isSet $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
+    [ IEInitializer (isConstant' inithow) setInit $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
   where
     isConstant' (InitConstant _) = True
     isConstant' (InitDefault _) = False
     -- more than one instance of x under a parent instance
-    isSet = case crd of
+    setInit = case crd of
       Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
       Nothing -> False
     cId :: PExp
@@ -327,14 +327,14 @@ mkMinimizeMaximizePExp    isMaximize' s       exp' =
   IEGoal isMaximize' $ desugarPath $ PExp Nothing "" s $ IFunExp (if isMaximize' then iMaximize else iMinimize) [desugarExp exp']
 
 sugarConstraint :: PExp -> Constraint
-sugarConstraint pexp = Constraint (_inPos pexp)  $ map sugarExp [pexp]
+sugarConstraint pexp = Constraint (_inPos pexp)  [sugarExp pexp]
 
 sugarAssertion :: PExp -> Assertion
-sugarAssertion pexp = Assertion (_inPos pexp) $ map sugarExp [pexp]
+sugarAssertion pexp = Assertion (_inPos pexp) [sugarExp pexp]
 
 sugarGoal :: PExp -> Bool -> Goal
-sugarGoal PExp{_exp=IFunExp _ [pexp]} True  = GoalMaximize (_inPos pexp) $ map sugarExp [pexp]
-sugarGoal PExp{_exp=IFunExp _ [pexp]} False = GoalMinimize (_inPos pexp) $ map sugarExp [pexp]
+sugarGoal PExp{_exp=IFunExp _ [pexp]} True  = GoalMaximize (_inPos pexp) [sugarExp pexp]
+sugarGoal PExp{_exp=IFunExp _ [pexp]} False = GoalMinimize (_inPos pexp) [sugarExp pexp]
 sugarGoal goal                        _     = error $ "Desugarer.sugarGoal: malformed objective:\n" ++ show goal
 
 desugarAbstract :: Abstract -> Bool
@@ -580,13 +580,13 @@ sugarExp x = sugarExp' $ _exp x
 sugarExp' :: IExp -> Exp
 sugarExp' x = case x of
   IDeclPExp quant' [] pexp -> EQuantExp noSpan (sugarQuant quant') (sugarExp pexp)
-  IDeclPExp IAll (decl@(IDecl True _ _):[]) pexp ->
+  IDeclPExp IAll [decl@(IDecl True _ _)] pexp ->
     EDeclAllDisj noSpan (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp IAll  (decl@(IDecl False _ _):[]) pexp ->
+  IDeclPExp IAll  [decl@(IDecl False _ _)] pexp ->
     EDeclAll noSpan (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp quant' (decl@(IDecl True _ _):[]) pexp ->
+  IDeclPExp quant' [decl@(IDecl True _ _)] pexp ->
     EDeclQuantDisj noSpan (sugarQuant quant') (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp quant' (decl@(IDecl False _ _):[]) pexp ->
+  IDeclPExp quant' [decl@(IDecl False _ _)] pexp ->
     EDeclQuant noSpan (sugarQuant quant') (sugarDecl decl) (sugarExp pexp)
   IClaferId "" id' _ _ -> ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
   IClaferId modName' id' _ _ -> ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
