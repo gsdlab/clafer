@@ -1,5 +1,6 @@
 ##### Clafer Version 0.5.9, unreleased
 
+* Builds with GHC 9.12.4 (Stackage nightly-2026-11-15) and still with GHC 9.6.7.
 * Two explicit models, both fixpoints (`doc/rich-and-core-explicit.md`, [#128](https://github.com/gsdlab/clafer/pull/128)). The rich explicit model, `clafer -m clafer`, keeps the enumerations, the initializers (`=` and `:=`), the behavioral patterns and the transitions as written, with everything else written out. The explicit core model, `clafer -m clafer --core`, is what every backend gets (static Alloy, temporal Alloy, Choco): the rich constructs lowered once, in `Language.Clafer.Intermediate.Core`. The core contains only the constructs that cannot be lowered into more primitive forms of Clafer.
   * The initializers are lowered to constraints, as 0.5.8 compiled them, except a per-instance `:=` whose value has temporal operators: its lowering needs a past-time operator ([#127](https://github.com/gsdlab/clafer/issues/127)), so it stays `:=` in the core, and the temporal Alloy output interprets it as in 0.5.8 (test case `CoreInitializers`).
   * The core of 212 of the 213 test models is the 0.5.8 explicit model; the Alloy and Choco outputs are the same, except for an equivalent expression in the Alloy output of `tmp_initialValue07`.
