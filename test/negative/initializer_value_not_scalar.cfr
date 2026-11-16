@@ -1,0 +1,5 @@
+// A per-instance initializer := of an abstract clafer needs a value with at most one element
+// (#126, kbak/clafer-semantics#170): every Val starts with the value {1, 2}, which a single
+// reference cannot have. For an initializer of all the instances together, write Val *.
+abstract Val -> integer := 1, 2
+v : Val

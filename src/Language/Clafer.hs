@@ -136,6 +136,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Core (Semantics (..), lowerToCore)
+import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
@@ -458,6 +459,10 @@ compile desugaredMod = do
     env <- getEnv
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) clafersWithKeyWords :: CErr Span)
+    -- the multiplicities of the abstract clafers with :=, which have no meaning (#126)
+    ast' <- getAst
+    let unsupportedBounds = unsupportedInitializerBounds ast'
+    unless (null unsupportedBounds) $ throwErrs unsupportedBounds
     ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
 
@@ -626,6 +631,7 @@ generate =
               ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
               ++ (if skip_resolver cargs then "" else showDoubleUnderscoreNames (inputFiles env) iModule)
               ++ showFixedInitialValues (inputFiles env) (fixedInitialValues ast' iModule)
+              ++ showSeveralValues (inputFiles env) (severalValues iModule)
 
     return $ Map.fromList (
         -- result for Alloy
@@ -810,6 +816,10 @@ analyze args' iModule = do
     _ -> return ()
   (rTree, genv) <- liftError $ resolveModule args' iModule
   let tTree = transModule rTree
+  -- the per-instance := of the abstract clafers, before the optimizer removes the ones that
+  -- nothing extends (#126)
+  let unsupportedValues = unsupportedInitialValues tTree
+  unless (null unsupportedValues) $ throwErrs unsupportedValues
   return (optimizeModule args' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
@@ -922,6 +932,21 @@ showFixedInitialValues files = unlines . map showFixedInitialValue
       ++ " does not redefine the initializer '=' of " ++ _ident super' ++ ", which " ++ _ident claf
       ++ " inherits: both hold. Since '=' fixes the value in every state, the ':=' repeats an equal value,"
       ++ " and a different value leaves no instance of " ++ _ident claf ++ "."
+
+-- | Warnings about the single references with an initializer of several values, at their
+--   positions in the files
+showSeveralValues :: [ModelFile] -> [(IClafer, PExp, Bool)] -> String
+showSeveralValues files = unlines . map showSeveralValue
+  where
+  showSeveralValue (claf, PExp{_inPos = Span (Pos l c) _}, constant) =
+    let
+      (path, l') = modelPosition files l
+      kind = if constant then "'='" else "':='"
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": " ++ _ident claf
+      ++ " is a single reference, which cannot equal the several values of its initializer " ++ kind
+      ++ ", so no instance of " ++ _ident claf ++ " can satisfy it. For several values, give "
+      ++ _ident claf ++ " the multiplicity *."
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

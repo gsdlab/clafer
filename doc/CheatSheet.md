@@ -163,6 +163,13 @@ An inherited initializer keeps its clock, which the abstract clafer's own multip
 * Without a multiplicity, `abstract Val -> integer := 1` initializes each instance when it is born, also one born later.
 * With `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
 
+Two forms have no meaning, so the compiler rejects them ([#126](https://github.com/gsdlab/clafer/issues/126)), in every mode, also `-m clafer`:
+
+* A per-instance `:=` of an abstract clafer needs a value with at most one element, which the compiler establishes from the declarations, without the constraints: `abstract Val -> integer := 1, 2` and `:= pool.dref` with `pool -> integer *` are errors, while `:= 1`, `:= seed.dref` with `seed -> integer ?`, `:= #pool` and `:= pool.dref ** 1` are not. To initialize all the instances together, write `*`.
+* On a top-level abstract clafer with `:=`, only `*` (or `0..*`) has a meaning: `abstract Val -> integer ? := 1` is an error. A number of instances is a constraint, e.g., `[ G (#Val = 2) ]`.
+
+A single reference with several values, e.g., `x -> integer ? := 1, 2` or `= 1, 2`, has no instance: the compiler warns.
+
 To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
 
 ```

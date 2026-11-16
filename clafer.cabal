@@ -107,6 +107,7 @@ library
                       , Language.Clafer.Intermediate.Desugarer
                       , Language.Clafer.Intermediate.Core
                       , Language.Clafer.Intermediate.Initializers
+                      , Language.Clafer.Intermediate.InitializerChecks
                       , Language.Clafer.Intermediate.Intclafer
                       , Language.Clafer.Intermediate.Resolver
                       , Language.Clafer.Intermediate.ResolverInheritance

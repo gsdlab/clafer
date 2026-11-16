@@ -821,6 +821,73 @@ case_CoreInitializers = do
     hasNot True "x -> int 0..1 := 1"
     hasNot True "= 2 {}"
 
+-- The support limits of the initializers (#126, kbak/clafer-semantics#170): a per-instance :=
+-- of an abstract clafer needs a value with at most one element, and on an abstract clafer
+-- with :=, a multiplicity other than * has no meaning. Every mode rejects them, also the rich
+-- explicit model, which would otherwise print them as supported forms, in static and temporal
+-- models, also for an abstract clafer that nothing extends. A single reference with several
+-- values is a warning.
+case_InitializerDiagnostics :: Assertion
+case_InitializerDiagnostics = do
+    let
+        temporal = "[ G some v ]\n"
+        compileIn modes' core' = compileOneFragment defaultClaferArgs{mode = modes', core = core'}
+        allModes = [ ([Clafer], False), ([Clafer], True), ([JSON], False), ([JSON], True), ([Alloy], False) ]
+        rejected expected model' = forM_ [ "", temporal ] $ \t -> forM_ allModes $ \(modes', core') ->
+          case compileIn modes' core' (model' ++ t) of
+            Left errs' -> (expected `isInfixOf` show errs') @? "Unexpected errors for\n" ++ model' ++ t ++ show errs'
+            Right _ -> assertFailure $ "Compiled in " ++ show (modes', core') ++ ":\n" ++ model' ++ t
+        -- the rich and the core explicit model compile to themselves
+        admitted model' = forM_ [ "", temporal ] $ \t -> forM_ [False, True] $ \core' -> do
+          let explicit m = case compileIn [Clafer] core' m of
+                Right r -> Right $ outputCode $ fromJust $ Map.lookup Clafer r
+                Left errs' -> Left errs'
+          case explicit (model' ++ t) of
+            Right x -> either (const Nothing) Just (explicit x) == Just x @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ either show id (explicit x)
+            Left errs' -> assertFailure $ "Rejected:\n" ++ model' ++ t ++ show errs'
+        warnings model' = case compileIn [Clafer] False model' of
+          Right r -> statistics $ fromJust $ Map.lookup Clafer r
+          Left errs' -> show errs'
+        scalar = "its initial value, which must have at most one element"
+        scalarValue = "could not be established for"
+        bound = "with an initializer ':=' is not supported"
+        several = "is a single reference, which cannot equal the several values"
+    -- scalar admission
+    rejected scalar "abstract Val -> integer := 1, 2\nv : Val\n"
+    rejected scalar "abstract Val -> integer := 1, 2\nv ?\n"
+    rejected (scalarValue ++ " 'pool.dref'") "pool ->> integer *\n[ #pool <= 1 ]\nabstract Val -> integer := pool.dref\nv : Val\n"
+    rejected scalar "P *\n  q -> integer\nabstract Val -> integer := P.q.dref\nv : Val\n"
+    mapM_ (admitted . (++ "\nv : Val\n"))
+      [ "abstract Val -> integer := 1"
+      , "abstract Val -> integer := 1, 1"
+      , "seed -> integer ?\nabstract Val -> integer := seed.dref"
+      , "pool ->> integer *\nabstract Val -> integer := pool.dref ** 1"
+      , "abstract Val -> integer := 1 / 0"
+      , "P\n  q -> integer\nabstract Val -> integer := P.q.dref + 1"
+      , "seed ?\nabstract Val -> integer := if some seed then 1 else 2"
+      , "pool -> integer *\nabstract Val -> integer := #pool"
+      -- a collection initializer, which initializes all the instances together
+      , "abstract Val -> integer * := 1, 2"
+      , "abstract Val -> integer 0..* := 1, 2"
+      -- = is not an initial value, and its multiplicity is the one of the instances
+      , "abstract Val -> integer = 1, 2"
+      ]
+    -- the multiplicity of an abstract clafer with :=, as written
+    forM_ ["?", "1", "2", "1..*", "+", "0..3"] $ \m ->
+      rejected ("The multiplicity " ++ m ++ " of the abstract clafer Val " ++ bound) ("abstract Val -> integer " ++ m ++ " := 1\nv : Val\n")
+    -- the multiplicity of a nested abstract clafer is not limited (only * is a clock there,
+    -- #129); its per-instance := has the same scalar admission, in the parent's context
+    let nested m = "abstract Base\n  q -> integer\n  " ++ m ++ "\nv : Base\n  x : Base.Val\n"
+    admitted $ nested "abstract Val -> integer ? := 1"
+    admitted $ nested "abstract Val -> integer := this.q.dref"
+    rejected scalar $ nested "abstract Val -> integer := 1, 2"
+    -- a single reference with several values
+    (several `isInfixOf` warnings "P\n  x -> integer ? := 1, 2\n") @? "No warning for := 1, 2"
+    ("initializer '='" `isInfixOf` warnings "P\n  x -> integer ? = 1, 2\n") @? "No warning for = 1, 2"
+    mapM_ (\m -> not (several `isInfixOf` warnings m) @? "Warning for\n" ++ m)
+      [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
+      , "abstract Val -> integer = 1, 2\nv : Val\n" ]
+
 -- The value of an initializer with temporal operators is evaluated in the context of the parent
 -- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
 -- guard, and it navigates from the parent, also after the parent disappeared.

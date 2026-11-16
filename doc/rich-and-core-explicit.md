@@ -167,8 +167,10 @@ The patterns and transitions in the rich and the core explicit model of a constr
 2. **The clock of `:=` has no syntax of its own.** Under kbak/clafer-semantics#170, a written
    `*` or `0..*` on an abstract clafer makes `:=` a set initializer. The rich explicit model
    leaves the multiplicity of an abstract clafer with a per-instance `:=` out, so that it
-   means the same when compiled again; the meaning then depends on a missing token. A keyword
-   or annotation would be clearer.
+   means the same when compiled again; the meaning then depends on a missing token. Since
+   0.5.9 the token is unambiguous: on a top-level abstract clafer with `:=`, a multiplicity
+   other than `*` is an error (gsdlab/clafer#126), so the rich explicit model cannot print a
+   rejected form as a supported one. A keyword or annotation would still be clearer.
 3. **Consumers of the IR and of the explicit model:** the JSON output of the rich IR has the
    operators of the rich constructs, the initializers and the `_enum` modifier, and a consumer
    that does not read them can use `-m json --core`; chocosolver's explicit parser does not read `:=`,

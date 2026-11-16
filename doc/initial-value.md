@@ -214,6 +214,39 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
 - Negative: `:=` on a clafer that is not a reference, which `=` rejects with a type error
   (`x = 10`: "Function '=' cannot be performed on TClafer … = TInteger").
 
+## Support limits (0.5.9)
+
+kbak/clafer-semantics#170 has two support limits, which 0.5.9 checks (#126) right after name
+resolution, before the optimizer removes the abstract clafers that nothing extends and before
+any output, so that every mode, also the rich explicit model, gets only supported forms
+(`Language.Clafer.Intermediate.InitializerChecks`):
+
+- **Scalar admission:** a per-instance `:=` of an abstract clafer needs a value with at most one
+  element. Otherwise, in a temporal model, no instance can be born with the value, while in a
+  static model, where `:=` is the aggregate `[ some Val => Val.dref = e ]`, several instances
+  can share the values, so the two would disagree. The bound comes from the declarations and
+  simple, sound rules (literals; clafers with at most one instance; navigations to them, to
+  `dref` and to `parent`; counts, sums, products, minima and maxima; arithmetic; an
+  intersection with, or a difference from, such a value; a union of the same value; and
+  `if then else`), not from the constraints: `pool.dref` with `pool ->> integer *` is not
+  admitted, also with `[ #pool <= 1 ]`. `1 / 0` is admitted: it has one element, and the
+  obligation simply cannot be met.
+- **The multiplicity of a top-level abstract clafer with `:=`:** `*` (or `0..*`) makes `:=` a set
+  initializer at time zero, and the absence of a multiplicity a per-instance one; any other,
+  e.g., `?`, `1` or `1..*`, has no meaning as a clock and is an error. In 0.5.8, it gave the
+  per-instance clock, and it bounded the number of instances in static Alloy only, while the
+  other backends and the explicit models ignored it (#129, which proposes one meaning for the
+  multiplicity of an abstract clafer). The contract classifies only the top-level abstract
+  clafers: on a nested one, `*` makes `:=` a set initializer under the parent, as for a
+  concrete clafer, and another multiplicity keeps the per-instance clock.
+
+A single reference whose initializer, `:=` or `=`, is a union of different literals of one kind,
+e.g., `x -> integer ? := 1, 2`, is well-formed but has no instance, so the compiler warns.
+
+Tests: `case_InitializerDiagnostics` in the test suite (every mode, static and temporal models,
+the rich and core explicit models of the admitted forms compile to themselves), and the negative
+models `initializer_value_not_scalar*.cfr` and `initializer_bound_of_abstract.cfr`.
+
 ## What 0.5.8 does
 
 - **Temporality:** the desugarer already desugars a model twice when it is dynamic (for the final
