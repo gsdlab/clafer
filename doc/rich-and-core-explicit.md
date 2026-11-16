@@ -18,14 +18,14 @@ and the model was hard to read and to map back to what was written: for example,
 
 ## The principle of the core
 
-**The explicit core model contains only the constructs that cannot be expanded into more
+**The explicit core model contains only the constructs that cannot be lowered into more
 primitive forms of the Clafer language.** A construct that Clafer can write with other
-constructs is not in the core: its expansion is. A construct stays in the core only when the
-operators that its expansion needs are not in the language.
+constructs is not in the core: its lowering is. A construct stays in the core only when the
+operators that its lowering needs are not in the language.
 
 So the core is the smallest language in which every Clafer model can be written, and it is
 what the semantics (kbak/clafer-semantics) has to define: every other construct is defined by
-its expansion. The principle decides each construct:
+its lowering. The principle decides each construct:
 
 | Construct | In the core | Why |
 |---|---|---|
@@ -34,14 +34,14 @@ its expansion. The principle decides each construct:
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
 | `x -> T = e` | no: `[ some x => x.dref = e ]` in the parent | it is written with a constraint |
 | `x -> T := e`, in a static model, per instance with a value without temporal operators, of a collection, or at time zero | no: a constraint, with `initially` in a temporal model | as `=` |
-| `x -> T := e`, per instance, with a value with temporal operators | **yes** | its expansion needs a past-time operator, which Clafer does not have |
+| `x -> T := e`, per instance, with a value with temporal operators | **yes** | its lowering needs a past-time operator, which Clafer does not have |
 
 The last row is the one exception today. The value of such an initializer is evaluated in the
 parent's context, when the instance appears (gsdlab/clafer#123). The core can write
 `initially` only in the context of `x`, where the temporal operators of the value would mean
 something else, and in the context of the parent, "the instance appears now" needs a
 past-time operator: `not previous (c in this.x)`. Clafer has no past-time operators, so this
-`:=` cannot be expanded and stays in the core, which marks it. When Clafer has them
+`:=` cannot be lowered and stays in the core, which marks it. When Clafer has them
 (gsdlab/clafer#127), the principle moves it out of the core: it becomes
 `[ G (all c : this.x | (not previous (c in this.x)) => (c.dref = e)) ]` in the parent
 (gsdlab/clafer#126).
@@ -69,16 +69,16 @@ model.cfr ── parse, desugar the defaults, resolve ──▶ IR (rich) ──
 ```
 
 Every backend gets the core, so the explicit core model is exactly what they solve, and the
-meaning of each rich construct has a single definition: its expansion, in
+meaning of each rich construct has a single definition: its lowering, in
 `Language.Clafer.Intermediate.Core` (and `Initializers` for the initializers). The backends
 interpret the constructs that remain in the core: the temporal Alloy generator interprets the
 per-instance `:=` with a temporal value, and the static backends never get it, since in a
 static model `:=` is `=`. A backend that can use the intent, such as an SMV backend for the
 patterns or a state machine view for the transitions, may read the rich IR instead; it must
-then agree with the expansion, which can be checked by comparing the instances, traces and
+then agree with the lowering, which can be checked by comparing the instances, traces and
 counterexamples of the two levels.
 
-## The rich constructs and their expansion
+## The rich constructs and their lowering
 
 ### Enumerations
 
@@ -113,7 +113,7 @@ them after the multiplicity, e.g., `0..* x -> int 0..1 := this.A__y.dref + 1 {`.
   first state of each of its lifetimes, the value evaluated in the parent's context.
 
 So the rich explicit model keeps every `=` and `:=` as written, and the core keeps only the
-`:=` that cannot be expanded (test case `CoreInitializers`). See
+`:=` that cannot be lowered (test case `CoreInitializers`). See
 [initial-value.md](initial-value.md) for the meaning.
 
 ### Behavioral patterns
@@ -158,7 +158,7 @@ The patterns and transitions in the rich and the core explicit model of a constr
 ## Open points
 
 1. **The modifiers `final`, `finalref` and `finaltarget` are in the core**, and the principle
-   asks whether they can be expanded. `finalref` seems to be: the reference of an instance
+   asks whether they can be lowered. `finalref` seems to be: the reference of an instance
    keeps its value while the instance exists, e.g., for a reference to integers,
    `[ G (all v : integer | (this.dref = v) => X (some this => this.dref = v)) ]` in `x`.
    `final` and `finaltarget` also forbid new instances or targets, which needs either a
@@ -173,5 +173,5 @@ The patterns and transitions in the rich and the core explicit model of a constr
    rich constructs and the `_enum` modifier; chocosolver's explicit parser does not read `:=`,
    `=`, patterns or transitions on a declaration, so it reads the core.
 4. **The semantics** (kbak/clafer-semantics) defines the core; the rich constructs are
-   defined by their expansion, which the semantics may state, e.g., as theorems that each
+   defined by their lowering, which the semantics may state, e.g., as theorems that each
    pattern's formula meets its definition.
