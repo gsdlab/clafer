@@ -81,7 +81,14 @@ them after the multiplicity, e.g., `0..* x -> int 0..1 := this.A__y.dref + 1 {`.
 - `:=` of each instance, in a temporal model: `[ initially (this.dref = e') ]` in `x`, where
   `e'` is `e` with `this.parent` for `this`.
 - `:=` of a set of instances (`xs -> T * := e`, kbak/clafer-semantics#170):
-  `[ initially (some xs => xs.dref = e) ]` in the parent.
+  `[ initially (some xs => xs.dref = e) ]` in the parent, also when `e` has temporal
+  operators, since the parent is the context of `e`; for a top-level abstract clafer with `*`,
+  `[ initially (some X => X.dref = e) ]` at the top level (time zero).
+- `:=` of each instance, in a temporal model, when `e` has temporal operators: stays `:=` in
+  the core, which marks the initializers that need past-time operators (open point 2).
+
+So the rich explicit model keeps every `=` and `:=` as written, and the core keeps only those
+`:=` (test case `CoreInitializers`).
 
 See [initial-value.md](initial-value.md) for the meaning.
 
@@ -126,6 +133,9 @@ The patterns and transitions in the rich and the core explicit model of a constr
 2. **A `:=` whose value has temporal operators stays in the core.** The value is evaluated in
    the context of the parent (gsdlab/clafer#123), which the core language cannot write in the
    context of `x` without past-time operators; the temporal Alloy generator interprets it.
+   With the past-time operators of gsdlab/clafer#127, it would be
+   `[ G (all c : this.x | (not previous (c in this.x)) => (c.dref = e)) ]` in the parent, and
+   `:=` would leave the core (gsdlab/clafer#126).
 3. **Consumers of the IR and of the explicit model need updating:** the JSON output has new
    operators and the `_enum` modifier; chocosolver's explicit parser does not read `:=`,
    `=`, patterns or transitions on a declaration, so it needs the core.

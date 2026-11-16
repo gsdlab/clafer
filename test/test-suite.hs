@@ -731,9 +731,6 @@ case_AbsentReference = do
     -- an inherited reference: the instances of the abstract clafer are those of its subclafers
     hasAlloy [ "abstract Ref -> integer", "r : Ref ?", "[ G some r ]" ] "always (this not in alive_Ref implies no this.@Ref_ref)"
 
--- The value of an initializer with temporal operators is evaluated in the context of the parent
--- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
--- guard, and it navigates from the parent, also after the parent disappeared.
 -- | The explicit model keeps the enumerations, initializers, behavioral patterns and
 --   transitions; its core (--core) has them lowered, as the backends get them
 --   (doc/rich-and-core-explicit.md).
@@ -757,6 +754,50 @@ case_RichAndCoreExplicit = do
     has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
     has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
 
+-- | The initializers stay as written in the rich explicit model and are lowered to LTL in the
+--   core, except a per-instance := whose value has temporal operators: it is evaluated in the
+--   parent's context when the instance appears, which the core cannot say without past-time
+--   operators (gsdlab/clafer#127), so it stays := in the core (doc/rich-and-core-explicit.md).
+case_CoreInitializers :: Assertion
+case_CoreInitializers = do
+    let model = [ "P ?", "    b ?", "    x -> integer ? := 1", "    y -> integer = 2"
+                , "    xs -> integer * := 1, 2", "    t -> integer * := if (X some b) then 1 else 2"
+                , "    z -> integer := if (X some b) then 1 else 2"
+                , "abstract Val -> integer := 1", "v : Val"
+                , "abstract Vs -> integer * := 3", "vs : Vs"
+                , "[ G some P ]" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- explicit core'
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        hasNot core' unexpected = do
+            x <- explicit core'
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+    -- rich: as written
+    has False "0..* x -> int 0..1 := 1 {}"
+    has False "0..* y -> int 1..1 = 2 {}"
+    has False "0..* xs -> int 0..* := 1 ++ 2 {}"
+    has False "abstract 0..* Val -> int := 1 {}"
+    -- core: per instance, a fixed value, parent birth, time zero
+    has True "0..* x -> int 0..1 {\n    [initially (this.dref = 1)]"
+    has True "[((#this.y) >= 1) => (this.y.dref = 2)]"
+    has True "[initially (((#this.xs) >= 1) => (this.xs.dref = (1 ++ 2)))]"
+    has True "abstract 0..* Val -> int 0..* {\n  [initially (this.dref = 1)]"
+    has True "[initially (((#Vs) >= 1) => (Vs.dref = 3))]"
+    -- a collection is initialized at the parent's birth, in the parent's context, so its
+    -- temporal value needs no past-time operator
+    has True "[initially (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
+    -- per instance with a temporal value: := in both
+    has False "0..* z -> int 1..1 := if (X ((#this.b) >= 1)) then 1 else 2 {}"
+    has True "0..* z -> int 1..1 := if (X ((#this.b) >= 1)) then 1 else 2 {}"
+    hasNot True "x -> int 0..1 := 1"
+    hasNot True "= 2 {}"
+
+-- The value of an initializer with temporal operators is evaluated in the context of the parent
+-- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
+-- guard, and it navigates from the parent, also after the parent disappeared.
 case_InitialValueTemporalContext :: Assertion
 case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
