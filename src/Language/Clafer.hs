@@ -611,7 +611,8 @@ generate =
       -- the core of the model, which the backends get; Choco solves static models only, where := is =
       coreModule = lowerToCore (if staticClaferSubset then Static else Temporal) iModule
       chocoModule = lowerToCore Static iModule
-      -- the explicit model keeps the modeling intent; its core (--core) is what the backends get
+      -- the explicit model and the JSON IR keep the modeling intent; their core (--core) is
+      -- what the backends get
       explicitModule = if core cargs then coreModule else iModule
       cargs = args env
       otherTokens' = otherTokens env
@@ -673,11 +674,11 @@ generate =
                    extension = "json",
                    outputCode = concat
                      [ "{"
-                     , case gatherObjectivesAndAttributes iModule $ astModuleTrace env of
+                     , case gatherObjectivesAndAttributes explicitModule $ astModuleTrace env of
                           Nothing         -> ""
                           Just objectives -> "\"objectives\":" ++ convertString (encode $ spansInFiles (inputFiles env) $ toJSON objectives) ++ ","
                      , "\"iModule\":"
-                     , convertString $ encode $ spansInFiles (inputFiles env) $ toJSON iModule
+                     , convertString $ encode $ spansInFiles (inputFiles env) $ toJSON explicitModule
                      , "}"
                      ],
                    statistics = stats,

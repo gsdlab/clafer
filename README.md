@@ -193,21 +193,22 @@ Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 6); 'json' (intermediate
-                                          representation of Clafer model);
-                                          'clafer' (the explicit model, with
-                                          everything written out, as Choco
-                                          solves it; a temporal model with its
-                                          temporal modifiers and operators,
-                                          which only Alloy solves);
-                                          'html' (original model in HTML);
-                                          'graph' (graphical representation
-                                          written in DOT language); 'cvlgraph'
-                                          (cvl notation representation written
-                                          in DOT language); 'choco' (Choco
-                                          constraint programming solver).
-                                          Multiple modes can be specified at
-                                          the same time, e.g., '-m alloy -m
-                                          html'.
+                                          representation of Clafer model, rich
+                                          or, with --core, core); 'clafer' (the
+                                          rich explicit model, with everything
+                                          written out except the enumerations,
+                                          initializers, behavioral patterns and
+                                          transitions; with --core, the
+                                          explicit core model, which the
+                                          backends solve); 'html' (original
+                                          model in HTML); 'graph' (graphical
+                                          representation written in DOT
+                                          language); 'cvlgraph' (cvl notation
+                                          representation written in DOT
+                                          language); 'choco' (Choco constraint
+                                          programming solver). Multiple modes
+                                          can be specified at the same time,
+                                          e.g., '-m alloy -m html'.
   -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' mode
                                           only).
@@ -227,6 +228,14 @@ Common flags:
                                           written out, and its scopes in its
                                           scope file. Shorthand for -f -k -l
                                           --ss=none.
+     --core                               In 'clafer' and 'json' modes, print
+                                          the explicit core model and its IR,
+                                          which the backends solve: the
+                                          enumerations, initializers,
+                                          behavioral patterns and transitions,
+                                          which the explicit model keeps,
+                                          lowered to clafers, constraints and
+                                          LTL operators.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.

@@ -754,6 +754,32 @@ case_RichAndCoreExplicit = do
     has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
     has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
 
+-- | The JSON IR is the rich IR, or with --core the core IR that the backends get.
+case_JsonRichAndCore :: Assertion
+case_JsonRichAndCore = do
+    let model = [ "enum Color = red | green", "light -> Color", "p ?", "q ?", "r ?"
+                , "Box ?", "    on ?", "    off ?", "    x -> integer := 3", "    [ on --> off ]"
+                , "[ never p between q and r ]" ]
+        json core' = case compileOneFragment defaultClaferArgs{mode = [JSON], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup JSON r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- json core'
+            (expected `isInfixOf` x) @? (expected ++ " not in the JSON IR (core: " ++ show core' ++ ")")
+        hasNot core' unexpected = do
+            x <- json core'
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in the JSON IR (core: " ++ show core' ++ ")")
+    has False "\"_op\":\"never between\""
+    has False "\"_op\":\"-->\""
+    has False "\"_enum\":true"
+    has False "IEInitializer"
+    hasNot True "\"_op\":\"never between\""
+    hasNot True "\"_op\":\"-->\""
+    hasNot True "\"_enum\":true"
+    hasNot True "IEInitializer"
+    has True "\"_op\":\"U\""
+    has True "\"_op\":\"initially\""
+
 -- | The initializers stay as written in the rich explicit model and are lowered to LTL in the
 --   core, except a per-instance := whose value has temporal operators: it is evaluated in the
 --   parent's context when the instance appears, which the core cannot say without past-time

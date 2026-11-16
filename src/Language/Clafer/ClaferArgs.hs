@@ -83,7 +83,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (the explicit model, with everything written out, as Choco solves it; a temporal model with its temporal modifiers and operators, which only Alloy solves); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model, rich or, with --core, core); 'clafer' (the rich explicit model, with everything written out except the enumerations, initializers, behavioral patterns and transitions; with --core, the explicit core model, which the backends solve); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' mode only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
@@ -92,7 +92,7 @@ clafer = ClaferArgs {
   check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
   skip_resolver       = def &= help "The names of the clafers are their UIDs, as in an explicit model: skip renaming them. Names must be unique; they are still resolved and checked." &= name "f",
   explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -k -l --ss=none." &= explicit &= name "explicit",
-  core                = def &= help "In 'clafer' mode, print the explicit core model, which the backends solve: the enumerations, initializers, behavioral patterns and transitions, which the explicit model keeps, lowered to clafers, constraints and LTL operators." &= explicit &= name "core",
+  core                = def &= help "In 'clafer' and 'json' modes, print the explicit core model and its IR, which the backends solve: the enumerations, initializers, behavioral patterns and transitions, which the explicit model keeps, lowered to clafers, constraints and LTL operators." &= explicit &= name "core",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
   validate            = def &= help "Validate outputs of all modes, and exit with 1 if a tool rejects one. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, dot for graphs, and clafer itself for explicit models, which must compile to themselves. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",

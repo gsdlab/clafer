@@ -8,7 +8,7 @@ compiled again, it prints itself. Clafer has two explicit models, both fixpoints
 | name | rich explicit model | explicit core model |
 | keeps | the modeling intent: enumerations, initializers, behavioral patterns, transitions | the core language only |
 | for | reading, editing, storing, diffing; backends that use the intent | the meaning; what the backends solve |
-| IR | the IR as resolved, also the JSON output (`-m json`) | the IR after `lowerToCore` |
+| IR | the IR as resolved; `-m json` prints it | the IR after `lowerToCore`; `-m json --core` prints it |
 
 Up to Clafer 0.5.8 there was one explicit model, in which everything that is not a default was
 desugared: enumerations became clafers, initializers constraints, and behavioral patterns and
@@ -61,7 +61,7 @@ model.cfr ── parse, desugar the defaults, resolve ──▶ IR (rich) ──
                                                lowerToCore (Core.hs)
                                                        │
                                                        ▼
-                                                   IR (core) ──▶ -m clafer --core
+                                                   IR (core) ──▶ -m clafer --core, -m json --core
                                                        │
                                      ┌─────────────────┼─────────────────┐
                                      ▼                 ▼                 ▼
@@ -169,8 +169,9 @@ The patterns and transitions in the rich and the core explicit model of a constr
    leaves the multiplicity of an abstract clafer with a per-instance `:=` out, so that it
    means the same when compiled again; the meaning then depends on a missing token. A keyword
    or annotation would be clearer.
-3. **Consumers of the IR and of the explicit model:** the JSON output has the operators of the
-   rich constructs and the `_enum` modifier; chocosolver's explicit parser does not read `:=`,
+3. **Consumers of the IR and of the explicit model:** the JSON output of the rich IR has the
+   operators of the rich constructs, the initializers and the `_enum` modifier, and a consumer
+   that does not read them can use `-m json --core`; chocosolver's explicit parser does not read `:=`,
    `=`, patterns or transitions on a declaration, so it reads the core.
 4. **The semantics** (kbak/clafer-semantics) defines the core; the rich constructs are
    defined by their lowering, which the semantics may state, e.g., as theorems that each
