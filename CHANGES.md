@@ -1,3 +1,11 @@
+##### Clafer Version 0.5.9, unreleased
+
+* Two explicit models, both fixpoints (`doc/rich-and-core-explicit.md`, [#128](https://github.com/gsdlab/clafer/pull/128)). The rich explicit model, `clafer -m clafer`, keeps the enumerations, the initializers (`=` and `:=`), the behavioral patterns and the transitions as written, with everything else written out. The explicit core model, `clafer -m clafer --core`, is what every backend gets (static Alloy, temporal Alloy, Choco): the rich constructs lowered once, in `Language.Clafer.Intermediate.Core`. The core contains only the constructs that cannot be lowered into more primitive forms of Clafer.
+  * The initializers are lowered to constraints, as 0.5.8 compiled them, except a per-instance `:=` whose value has temporal operators: its lowering needs a past-time operator ([#127](https://github.com/gsdlab/clafer/issues/127)), so it stays `:=` in the core, and the temporal Alloy output interprets it as in 0.5.8 (test case `CoreInitializers`).
+  * The core of 212 of the 213 test models is the 0.5.8 explicit model; the Alloy and Choco outputs are the same, except for an equivalent expression in the Alloy output of `tmp_initialValue07`.
+  * `-m json` prints the rich IR, with the operators of the patterns and transitions, the initializers and the `_enum` modifier; `-m json --core` prints the core IR (test case `JsonRichAndCore`).
+* The pattern lowerings are checked with nuXmv: `test/patterns/check-patterns.py` proves, for the 30 pairs of pattern and scope, that the core formula is equivalent on all traces to a reference written from the definitions of Dwyer et al. with past-time operators. It is not part of `make test`.
+
 ##### Clafer Version 0.5.8, Nov 15, 2026
 
 * Builds with GHC 9.12.4 (Stackage nightly-2026-11-11) and still with GHC 9.6.7. The lexer is generated with alex 3.5: the lexer generated in 2018 did not compile with GHC 9.12 (`Int#` instead of `Int16#`).
