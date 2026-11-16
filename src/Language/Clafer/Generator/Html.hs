@@ -416,6 +416,8 @@ printExp (EOr _ exp1 exp2)        indent irMap html comments = printOperand 5 ex
 printExp (EXor _ exp1 exp2)       indent irMap html comments = printOperand 6 exp1 indent irMap html comments ++ " xor " ++ printOperand 7 exp2 indent irMap html comments
 printExp (LtlU _ exp1 exp2)       indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ " U " ++ printOperand 9 exp2 indent irMap html comments
 printExp (TmpUntil _ exp1 exp2)   indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
+printExp (TmpSince _ exp1 exp2) indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " since " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
+printExp (TmpTriggered _ exp1 exp2) indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " triggered " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
 printExp (LtlW _ exp1 exp2)       indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ " W " ++ printOperand 10 exp2 indent irMap html comments
 printExp (TmpWUntil _ exp1 exp2)  indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " weakuntil " ++ while html "</span>" ++ printOperand 10 exp2 indent irMap html comments
 printExp (LtlF _ exp')            indent irMap html comments = "F " ++ printOperand 10 exp' indent irMap html comments
@@ -423,6 +425,9 @@ printExp (TmpEventually _ exp')   indent irMap html comments = while html "<span
 printExp (LtlG _ exp')            indent irMap html comments = "G " ++ printOperand 10 exp' indent irMap html comments
 printExp (TmpGlobally _ exp')     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "globally " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (LtlX _ exp')            indent irMap html comments = "X " ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpPrevious _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "previous " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpOnce _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "once " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpHistorically _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "historically " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (TmpNext _ exp')         indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "next " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (ENeg _ exp')            indent irMap html comments = " ! " ++ printOperand 11 exp' indent irMap html comments
 printExp (ELt _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &lt; " else " < ") ++ printOperand 16 exp2 indent irMap html comments
@@ -494,6 +499,8 @@ expPrec exp' = case exp' of
   EAnd{}                    -> 7
   LtlU{}                    -> 8
   TmpUntil{}                -> 8
+  TmpSince{}                -> 8
+  TmpTriggered{}            -> 8
   LtlW{}                    -> 9
   TmpWUntil{}               -> 9
   LtlF{}                    -> 10
@@ -502,6 +509,9 @@ expPrec exp' = case exp' of
   TmpGlobally{}             -> 10
   LtlX{}                    -> 10
   TmpNext{}                 -> 10
+  TmpPrevious{}             -> 10
+  TmpOnce{}                 -> 10
+  TmpHistorically{}         -> 10
   ENeg{}                    -> 11
   ELt{}                     -> 15
   EGt{}                     -> 15

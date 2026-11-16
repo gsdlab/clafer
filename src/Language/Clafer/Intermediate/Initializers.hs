@@ -30,8 +30,9 @@
        every lifetime of @x@ starts with the value: @[ initially (this.dref = e') ]@ in the
        context of @x@, where @e'@ is @e@ with @this.parent@ for @this@, the parent instance.
        A value with temporal operators keeps its meaning only in the context of the parent
-       (gsdlab/clafer#123), which the core cannot write: that initializer stays, and the
-       temporal generator interprets it (see "Language.Clafer.Generator.AlloyLtl").
+       (gsdlab/clafer#123), where an instance appears when it was not there in the previous
+       state (gsdlab/clafer#127): @[ all c : this.x | (not previous (c in this.x)) => (c.dref = e) ]@
+       in the context of the parent, which holds in every state of the parent.
      * A set initializer, @xs -> T * := e@, constrains the instances under the parent when the
        parent is born: @[ initially (some xs => xs.dref = e) ]@ in the context of the parent.
 -}
@@ -44,6 +45,8 @@ module Language.Clafer.Intermediate.Initializers
 
 import Control.Lens.Plated (transformOn, universeOn)
 import Data.Data.Lens (biplate)
+import Data.List (find)
+import Data.Maybe (fromMaybe)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 
@@ -56,29 +59,59 @@ data Semantics
 -- | The module with the initializers that the backend does not interpret replaced by
 --   constraints of the parents, right after their clafers.
 lowerInitializers :: Semantics -> IModule -> IModule
-lowerInitializers sem imodule = imodule{_mDecls = lowerElements sem $ _mDecls imodule}
+lowerInitializers sem imodule = imodule{_mDecls = lowerElements sem taken $ _mDecls imodule}
+  where
+  -- the names that a local variable must not shadow
+  taken = concat [ [_uid c, _ident c] | c <- universeOn biplate imodule :: [IClafer] ]
+       ++ concat [ concatMap _decls ds | PExp{_exp = IDeclPExp _ ds _} <- universeOn biplate imodule :: [PExp] ]
 
-lowerElements :: Semantics -> [IElement] -> [IElement]
-lowerElements sem = concatMap lowerElement
+lowerElements :: Semantics -> [String] -> [IElement] -> [IElement]
+lowerElements sem taken = concatMap lowerElement
   where
   lowerElement (IEClafer c) = IEClafer c{_elements = kept} : parentConstraints
     where
-    elements' = lowerElements sem $ _elements c
+    elements' = lowerElements sem taken $ _elements c
     kept = [ own e | e <- elements', not (lowered e) ]
-    parentConstraints = [ IEConstraint True $ asConstraint e | e <- elements', lowered e ]
+    -- the initializers of c, lowered to constraints of its parent, next to c
+    parentConstraints = [ IEConstraint True $ asConstraint c e | e <- elements', lowered e ]
     -- the per-instance := of a temporal model, in the context of the clafer
     own (IEInitializer False False eq) | not (hasTemporal $ initializerValue eq) = IEConstraint True $ initialValue c eq
     own e = e
   lowerElement e = [e]
-  lowered (IEInitializer k s _) = sem == Static || k || s
+  -- lowered to a constraint of the parent: all but the per-instance := of a temporal model
+  -- whose value has no temporal operators, which becomes a constraint of the clafer
+  lowered (IEInitializer k s eq) = sem == Static || k || s || hasTemporal (initializerValue eq)
   lowered _ = False
-  asConstraint (IEInitializer k s eq)
+  asConstraint x (IEInitializer k s eq)
     | sem == Temporal && not k && s = bool iInitially [ implied ]
+    | sem == Temporal && not k = appearing taken x eq
     | otherwise = implied
     where
     implied = bool iImpl [ PExp (Just TBoolean) (_pid eq) (_inPos eq) $ IDeclPExp ISome [] $ initializedClafer eq, eq ]
     bool op' = PExp (Just TBoolean) (_pid eq) (_inPos eq) . IFunExp op'
-  asConstraint e = error $ "[bug] Initializers.asConstraint: not an initializer: " ++ show e
+  asConstraint _ e = error $ "[bug] Initializers.asConstraint: not an initializer: " ++ show e
+
+-- | The per-instance initial value of the clafer @x@ whose value has temporal operators, in the
+--   context of the parent, where the value is written (gsdlab/clafer#123): each instance of @x@
+--   that appears, i.e., that was not an instance of @x@ under this parent in the previous state
+--   of its lifetime, has the value, @[ all c : this.x | (not previous (c in this.x)) => (c.dref = e) ]@
+--   (gsdlab/clafer#127). The constraint holds in every state of the parent. The local variable has
+--   a name that no clafer and no other local variable has, e.g., @x_1@.
+appearing :: [String] -> IClafer -> PExp -> PExp
+appearing taken x eq@PExp{_exp = IFunExp op' [lhs, value]} =
+    bool $ IDeclPExp IAll [IDecl False [v] xs] $ bool $ IFunExp iImpl
+      [ bool $ IFunExp iNot [bool $ IFunExp iPrevious [bool $ IFunExp iIn [c, xs]]]
+      , eq{_exp = IFunExp op' [ownRef lhs, value]} ]
+  where
+  pos' = _inPos eq
+  bool = PExp (Just TBoolean) (_pid eq) pos'
+  xs = initializedClafer eq
+  v = fromMaybe (_ident x) $ find (`notElem` taken) [ _ident x ++ "_" ++ show k | k <- [1 :: Int ..] ]
+  c = PExp (_iType xs) "" pos' $ IClaferId "" v False (LocalBind v)
+  -- c.dref for this.x.dref (x.dref at the top level)
+  ownRef p@PExp{_exp = IFunExp j [_, dref]} | j == iJoin = p{_exp = IFunExp j [c, dref]}
+  ownRef p = p
+appearing _ _ eq = error $ "[bug] Initializers.appearing: not an equation: " ++ show eq
 
 -- | The per-instance initial value of the clafer @c@, @initially (this.dref = e')@ in its context,
 --   from the equation @x.dref = e@ in the context of the parent.

@@ -281,6 +281,8 @@ data Exp
     | EAnd Span Exp Exp
     | LtlU Span Exp Exp
     | TmpUntil Span Exp Exp
+    | TmpSince Span Exp Exp
+    | TmpTriggered Span Exp Exp
     | LtlW Span Exp Exp
     | TmpWUntil Span Exp Exp
     | LtlF Span Exp
@@ -289,6 +291,9 @@ data Exp
     | TmpGlobally Span Exp
     | LtlX Span Exp
     | TmpNext Span Exp
+    | TmpPrevious Span Exp
+    | TmpOnce Span Exp
+    | TmpHistorically Span Exp
     | ENeg Span Exp
     | ELt Span Exp Exp
     | EGt Span Exp Exp
@@ -348,6 +353,8 @@ instance Spannable Exp where
     getSpan (EAnd s _ _ ) = s
     getSpan (LtlU s _ _ ) = s
     getSpan (TmpUntil s _ _ ) = s
+    getSpan (TmpSince s _ _ ) = s
+    getSpan (TmpTriggered s _ _ ) = s
     getSpan (LtlW s _ _ ) = s
     getSpan (TmpWUntil s _ _ ) = s
     getSpan (LtlF s _ ) = s
@@ -356,6 +363,9 @@ instance Spannable Exp where
     getSpan (TmpGlobally s _ ) = s
     getSpan (LtlX s _ ) = s
     getSpan (TmpNext s _ ) = s
+    getSpan (TmpPrevious s _ ) = s
+    getSpan (TmpOnce s _ ) = s
+    getSpan (TmpHistorically s _ ) = s
     getSpan (ENeg s _ ) = s
     getSpan (ELt s _ _ ) = s
     getSpan (EGt s _ _ ) = s

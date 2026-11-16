@@ -164,7 +164,7 @@ exExp (CFun f args') = case (f, args') of
         , ("and", "&&"), ("or", "||"), ("implies", "=>"), ("ifOnlyIf", "<=>"), ("xor", "xor")
         , ("lessThan", "<"), ("lessThanEqual", "<="), ("greaterThan", ">"), ("greaterThanEqual", ">=")
         , ("equal", "="), ("notEqual", "!="), ("$in", "in"), ("notIn", "not in")
-        , ("union", "++"), ("diff", "--"), ("inter", "**"), ("U", "U"), ("W", "W") ]
+        , ("union", "++"), ("diff", "--"), ("inter", "**"), ("U", "U"), ("W", "W"), ("since", "since"), ("triggered", "triggered") ]
 
 -- | A behavioral pattern, e.g., @s must precede p after q until r@.
 exPattern :: String -> String -> [CExp] -> String

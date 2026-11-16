@@ -65,7 +65,6 @@ import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer hiding (FinalRef, FinalTarget)
 import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
-import Language.Clafer.Intermediate.Initializers (initializerValue)
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
 data GenEnv = GenEnv
@@ -184,14 +183,6 @@ parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
   Nothing -> error $ "AlloyLtl.parentRel: clafer not found: " ++ uid'
   where
   rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
-
--- | The relation from the instances of the clafer to their parents, also those that do not exist:
---   the parent of an instance does not change.
-fixedParentRel :: GenEnv -> IClafer -> String
-fixedParentRel genEnv c = case map (("@" ++) . genParentName . _uid) $ concreteSubs genEnv c of
-  []    -> "(none->none)"
-  [r]   -> "(" ++ r ++ ")"
-  rels' -> "(" ++ intercalate " + " rels' ++ ")"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -353,32 +344,11 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
 --   for the whole fact, so they are not in the signature fact. The bounds of an interval are two
 --   facts, which are removed one by one.
 genFacts :: GenEnv -> IClafer -> [Concat]
-genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts ++ initialValues
+genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts
   where
   uid' = _uid c
+  -- the initializers are constraints in the core ("Language.Clafer.Intermediate.Initializers")
   userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint True pexp <- _elements c ]
-  -- the initial value of each instance (:=, kbak/clafer-semantics#164): its first state has the
-  -- value, which is written in the context of the parent and keeps its meaning there, with its
-  -- temporal operators (gsdlab/clafer#123): it is generated in the context of the parent, with
-  -- the parent of the instance, also after it disappeared, as the context instance. The other
-  -- initializers are constraints of the parent ("Language.Clafer.Intermediate.Initializers").
-  initialValues = [ (IrPExp $ _pid eq, initialValue eq) | IEInitializer False False eq <- _elements c ]
-  initialValue eq = cconcat
-    [ CString $ "(" ++ appearsNow genEnv [uid'] ++ ") implies ((this."
-    , genPExp' genEnv [uid'] $ drefOf $ _exps $ _exp eq
-    , CString ") = "
-    , bindTo parentInstance $ bracketed (genPExp genEnv parentPath) $ initializerValue eq
-    , CString ")" ]
-  -- a constant or a name as it is, as the generator writes a constraint
-  bracketed f v = case _exp v of
-    IInt _ -> f v
-    IClaferId{} -> f v
-    _ -> brArg f v
-  drefOf (PExp{_exp = IFunExp _ [_, dref]} : _) = dref
-  drefOf es =error $ "[bug] AlloyLtl.genFacts: an initializer whose equation is not on dref: " ++ show es
-  (parentPath, parentInstance) = case parentOf genEnv c of
-    Just p | not (isRoot p) -> ([_uid p], "(this." ++ fixedParentRel genEnv c ++ ")")
-    _ -> ([rootIdent], rootIdent)
   childCards c' = case fromJust $ _card c' of
     (1, 1)  -> [(ExactCard child False, CString $ "one " ++ rel)]
     (0, 1)  -> [(ExactCard child False, CString $ "lone " ++ rel)]
@@ -524,6 +494,12 @@ pushNegations pos' x@(PExp t pid' sp e)
       | op' == iF   -> mk (if pos' then iF else iG) [push a]
       | op' == iG   -> mk (if pos' then iG else iF) [push a]
       | op' `elem` [iX, iInitially, iFinally] -> mk op' [push a]
+      -- the past: not previous a is the weak previous of not a, not once a is
+      -- historically not a (#127)
+      | op' == iPrevious     -> mk (if pos' then iPrevious else iWeakPrevious) [push a]
+      | op' == iWeakPrevious -> mk (if pos' then iWeakPrevious else iPrevious) [push a]
+      | op' == iOnce         -> mk (if pos' then iOnce else iHistorically) [push a]
+      | op' == iHistorically -> mk (if pos' then iHistorically else iOnce) [push a]
     IFunExp op' [a, b]
       | op' == iAnd  -> mk (if pos' then iAnd else iOr) [push a, push b]
       | op' == iOr   -> mk (if pos' then iOr else iAnd) [push a, push b]
@@ -533,6 +509,9 @@ pushNegations pos' x@(PExp t pid' sp e)
       | op' == iXor  -> pushNegations pos' $ bool iOr [bool iAnd [a, bool iNot [b]], bool iAnd [bool iNot [a], b]]
       | op' `elem` [iU, iW], pos' -> mk op' [push a, push b]
       | op' `elem` [iU, iW] -> mk (if op' == iU then iW else iU) [push b, mk iAnd [push a, push b]]
+      -- not (a since b) is (not a) triggered (not b), and the converse
+      | op' == iSince     -> mk (if pos' then iSince else iTriggered) [push a, push b]
+      | op' == iTriggered -> mk (if pos' then iTriggered else iSince) [push a, push b]
     IFunExp op' [c, a, b]
       | op' == iIfThenElse, t == Just TBoolean, not (hasTemporal c) -> mk op' [c, push a, push b]
       | op' == iIfThenElse, t == Just TBoolean ->
@@ -551,7 +530,7 @@ pushNegations pos' x@(PExp t pid' sp e)
 -- | Whether the formula has temporal operators.
 hasTemporal :: PExp -> Bool
 hasTemporal (PExp _ _ _ e) = case e of
-  IFunExp op' es -> op' `elem` (iFinally : ltlOps) || any hasTemporal es
+  IFunExp op' es -> op' `elem` (iFinally : iWeakPrevious : ltlOps) || any hasTemporal es
   IDeclPExp _ _ body' -> hasTemporal body'
   _ -> False
 
@@ -655,12 +634,31 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
       Concat (IrPExp pid') [CString $ "eventually (not " ++ p ++ " or ", e, CString ")"]
   | Just p <- parentExists genEnv resPath, op' == iG =
       Concat (IrPExp pid') [CString $ "(not " ++ p ++ ") releases (not " ++ p ++ " or ", e, CString ")"]
+  -- the past is looked at while the parent exists, in its current lifetime (#127): a previous
+  -- lifetime of the parent is not visible, as the obligations of the future operators lapse
+  -- with the parent; at the top level, they are Alloy's operators
+  | Just p <- parentExists genEnv resPath, op' == iPrevious =
+      Concat (IrPExp pid') [CString $ "before (" ++ p ++ " and ", e, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iWeakPrevious =
+      Concat (IrPExp pid') [CString $ "not before (" ++ p ++ " and not ", e, CString ")"]
+  | Nothing <- parentExists genEnv resPath, op' == iWeakPrevious =
+      Concat (IrPExp pid') [CString "not before not ", e]
+  | Just p <- parentExists genEnv resPath, op' == iOnce =
+      Concat (IrPExp pid') [CString $ p ++ " since (" ++ p ++ " and ", e, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iHistorically =
+      Concat (IrPExp pid') [CString $ "not (" ++ p ++ " since (" ++ p ++ " and not ", e, CString "))"]
   where
   e = brArg (genPExp' genEnv resPath) exp'
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp1, exp2])
   | Just p <- parentExists genEnv resPath, op' == iU =
       Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
                              CString $ ") until (not " ++ p ++ " or ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iSince =
+      Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
+                             CString $ ") since (" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iTriggered =
+      Concat (IrPExp pid') [CString $ "not ((" ++ p ++ " and not ", brArg (genPExp' genEnv resPath) exp1,
+                             CString $ ") since (" ++ p ++ " and not ", brArg (genPExp' genEnv resPath) exp2, CString "))"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')
   | op' == iSumSet = genIFunExp pid' genEnv resPath (IFunExp iSumSet' [removeright (head exps'), getRight $ head exps'])
   | op' == iSumSet' = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
@@ -697,6 +695,11 @@ genOp    op'
   | op' == iF = ["eventually "]
   | op' == iG = ["always "]
   | op' == iU = [" until "]
+  | op' == iPrevious = ["before "]
+  | op' == iOnce = ["once "]
+  | op' == iHistorically = ["historically "]
+  | op' == iSince = [" since "]
+  | op' == iTriggered = [" triggered "]
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
   | op' == iSumSet = ["sum temp : "," | temp."]

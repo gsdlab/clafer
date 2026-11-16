@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/tmp_past01.cfr</div>
+
+<div>
+<span class="claferDecl" id="go">go</span> ?</div>
+
+
+<div>
+<span class="claferDecl" id="ready">ready</span> ?</div>
+
+
+<div>
+<span class="claferDecl" id="done">done</span> ?</div>
+
+
+<div>
+<span class="keyword">[</span> G (<a href="#done"><span class="reference">done</span></a> =&gt; <span class="tKeyword">once </span><a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> G (<a href="#done"><span class="reference">done</span></a> =&gt; <a href="#ready"><span class="reference">ready</span></a><span class="tKeyword"> since </span><a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> G (<a href="#go"><span class="reference">go</span></a> =&gt;  ! (<span class="tKeyword">previous </span><a href="#go"><span class="reference">go</span></a>)) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span><span class="keyword">some</span> <a href="#go"><span class="reference">go</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#ready"><span class="reference">ready</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#done"><span class="reference">done</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>X (<span class="keyword">some</span> <a href="#ready"><span class="reference">ready</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>X X (<span class="keyword">some</span> <a href="#ready"><span class="reference">ready</span></a> &amp;&amp; <span class="keyword">some</span> <a href="#done"><span class="reference">done</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">initially </span> ! (<span class="tKeyword">previous </span><a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">initially </span>X X <span class="tKeyword">once </span><a href="#go"><span class="reference">go</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">initially </span>X X (<a href="#ready"><span class="reference">ready</span></a><span class="tKeyword"> since </span><a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">initially </span>X X  ! (<span class="tKeyword">historically </span><a href="#ready"><span class="reference">ready</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> G ( ! (<span class="tKeyword">once </span><a href="#go"><span class="reference">go</span></a>) =&gt; <span class="keyword">no</span> <a href="#done"><span class="reference">done</span></a><span class="tKeyword"> triggered </span><span class="keyword">no</span> <a href="#go"><span class="reference">go</span></a>) <span class="keyword">]</span></div>
+
+</body>
+</html>

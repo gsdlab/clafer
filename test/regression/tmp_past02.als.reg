@@ -1,0 +1,52 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_Shift : set Shift }
+fact { always (lone root.@r_Shift) }
+fact { always ((not before some root) implies (some (alive_Shift.@r_Worker).@r_alarm)) }
+fact { always ((not before some root) implies (after (no alive_Shift))) }
+fact { always ((not before some root) implies (after (after ((some alive_Shift.@r_Worker) && (no (alive_Shift.@r_Worker).@r_alarm))))) }
+
+assert assertAt_18_10 { always ((not before some root) implies (after (after (no (alive_Shift.@r_Worker).@r_warned)))) }
+check assertAt_18_10 for 1 but 10 steps
+
+
+
+sig Shift
+{ p_Shift : lone root
+, var r_Worker : set Worker }
+fun alive_Shift : set Shift { root.@r_Shift }
+fact { always ~@r_Shift in @p_Shift }
+
+fact { all self_ : Shift | always (self_ in alive_Shift implies (lone self_.@r_Worker)) }
+
+
+sig Worker
+{ p_Worker : lone Shift
+, var r_alarm : set alarm
+, var r_warned : set warned }
+fun alive_Worker : set Worker { Shift.@r_Worker }
+fact { always ~@r_Worker in @p_Worker
+  always @r_Worker.univ in alive_Shift }
+
+fact { all self_ : Worker | always (self_ in alive_Worker implies (lone self_.@r_alarm)) }
+fact { all self_ : Worker | always (self_ in alive_Worker implies (lone self_.@r_warned)) }
+fact { all self_ : Worker | always (self_ in alive_Worker implies (((some self_.@r_warned) => (before (some self_.(@p_Worker :> alive_Shift) and (some self_.(@p_Worker :> alive_Shift) since (some self_.(@p_Worker :> alive_Shift) and (some self_.@r_alarm)))))) && ((not before (some self_.(@p_Worker :> alive_Shift) and not (not (some self_.(@p_Worker :> alive_Shift) since (some self_.(@p_Worker :> alive_Shift) and not (!(some self_.@r_alarm))))))) || (some self_.@r_warned)))) }
+
+
+sig alarm
+{ p_alarm : lone Worker }
+fun alive_alarm : set alarm { Worker.@r_alarm }
+fact { always ~@r_alarm in @p_alarm
+  always @r_alarm.univ in alive_Worker }
+
+
+sig warned
+{ p_warned : lone Worker }
+fun alive_warned : set warned { Worker.@r_warned }
+fact { always ~@r_warned in @p_warned
+  always @r_warned.univ in alive_Worker }
+
+

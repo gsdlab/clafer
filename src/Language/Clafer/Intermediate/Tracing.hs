@@ -201,6 +201,8 @@ traverseExp x =
     EAnd _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     LtlU _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     TmpUntil _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    TmpSince _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    TmpTriggered _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     LtlW _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     TmpWUntil _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     LtlF _ e -> traverseExp e
@@ -209,6 +211,9 @@ traverseExp x =
     TmpGlobally _ e -> traverseExp e
     LtlX _ e -> traverseExp e
     TmpNext _ e -> traverseExp e
+    TmpPrevious _ e -> traverseExp e
+    TmpOnce _ e -> traverseExp e
+    TmpHistorically _ e -> traverseExp e
     ENeg _ e -> traverseExp e
     ELt _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EGt _ e1 e2 -> traverseExp e1 ++ traverseExp e2

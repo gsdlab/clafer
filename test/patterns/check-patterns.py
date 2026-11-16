@@ -9,6 +9,14 @@ to a reference written here from the definitions of the patterns in words, with 
 operators instead of the nested untils of the expansions. nuXmv proves the equivalence
 (LTL model checking is complete), or prints a trace on which the two differ.
 
+Since Clafer has the past-time operators (gsdlab/clafer#127), each reference is also written
+as a Clafer constraint (`previous`, `once`, `historically`, `since`, `triggered`), compiled
+the same way, and checked to be equivalent to the reference: clafer reads, keeps and prints
+the past-time operators as NuSMV defines them. Finally, the script proves the encoding of
+the past-time operators in the temporal Alloy output, which looks back only in the current
+lifetime of the parent of the context instance, against a definition of each operator by
+recursion on the states (see also past-encoding.als, the same check in Alloy, bounded).
+
 Needs a clafer with --core and nuXmv (https://nuxmv.fbk.eu). It is not part of `make test`;
 run it after changing the expansions of the patterns, e.g., from the root of the repository:
 
@@ -92,7 +100,12 @@ def clafer_pattern(kind, scope):
 
 # --- the explicit core expressions, which clafer writes with every operand in parentheses
 
-TOKEN = re.compile(r"\s*(\(#[a-z]\) >= 1|\(#[a-z]\) = 0|<=>|=>|&&|\|\||!|\(|\)|[UWFGX]\b)")
+TOKEN = re.compile(r"\s*(\(#[a-z]\) >= 1|\(#[a-z]\) = 0|<=>|=>|&&|\|\||!|\(|\)|[UWFGX]\b"
+                   r"|previous\b|once\b|historically\b|since\b|triggered\b)")
+
+# the past-time operators of Clafer, and NuSMV's
+PAST_UNARY = {"previous": "Y", "once": "O", "historically": "H"}
+PAST_BINARY = {"since": "S", "triggered": "T"}
 
 
 def tokens(text):
@@ -125,18 +138,20 @@ def to_smv(text):
             return f"({e})"
         if t in ("!", "F", "G", "X"):
             return f"{t} {operand()}"
+        if t in PAST_UNARY:
+            return f"{PAST_UNARY[t]} {operand()}"
         raise ValueError(f"unexpected {t!r} in {text!r}")
 
     def expression():
         nonlocal pos
         left = operand()
-        if pos < len(toks) and toks[pos] in ("<=>", "=>", "&&", "||", "U", "W"):
+        if pos < len(toks) and toks[pos] in ("<=>", "=>", "&&", "||", "U", "W", "since", "triggered"):
             op = toks[pos]
             pos += 1
             right = operand()
             if op == "W":  # nuXmv has no weak until: a W b is b V (a | b)
                 return f"({right} V ({left} | {right}))"
-            return f"{left} {dict({'<=>': '<->', '=>': '->', '&&': '&', '||': '|'}).get(op, op)} {right}"
+            return f"{left} {dict({'<=>': '<->', '=>': '->', '&&': '&', '||': '|', **PAST_BINARY}).get(op, op)} {right}"
         return left
 
     e = expression()
@@ -144,12 +159,70 @@ def to_smv(text):
     return e
 
 
-def expansion(clafer, workdir, kind, scope):
+# --- the references as Clafer constraints
+
+SMV_TOKEN = re.compile(r"\s*(<->|->|[!&|()]|[pqrs]\b|[XFGYOHUST]\b)")
+SMV_TO_CLAFER = {"&": "&&", "|": "||", "->": "=>", "<->": "<=>",
+                 "Y": "previous", "O": "once", "H": "historically", "S": "since", "T": "triggered"}
+
+
+def to_clafer(reference):
+    """The Clafer constraint of a reference, with every operand in parentheses. NuSMV's
+    precedences, from the loosest: <->, ->, |, &, the binary temporal operators, the unary ones."""
+    toks, pos = [], 0
+    while pos < len(reference.strip()):
+        m = SMV_TOKEN.match(reference, pos)
+        if not m:
+            raise ValueError(f"cannot read {reference[pos:]!r}")
+        toks.append(m.group(1))
+        pos = m.end()
+        while pos < len(reference) and reference[pos].isspace():
+            pos += 1
+    pos = 0
+
+    def unary():
+        nonlocal pos
+        t = toks[pos]
+        pos += 1
+        if t in "pqrs":
+            return f"(some {t})"
+        if t == "(":
+            e = level(0)
+            assert toks[pos] == ")", toks[pos:]
+            pos += 1
+            return e
+        if t in ("!", "X", "F", "G", "Y", "O", "H"):
+            return f"({SMV_TO_CLAFER.get(t, t)} {unary()})"
+        raise ValueError(f"unexpected {t!r} in {reference!r}")
+
+    levels = [("<->",), ("->",), ("|",), ("&",), ("U", "S", "T")]
+
+    def level(i):
+        nonlocal pos
+        if i == len(levels):
+            return unary()
+        left = level(i + 1)
+        while pos < len(toks) and toks[pos] in levels[i]:
+            op = toks[pos]
+            pos += 1
+            right = level(i + 1) if op != "->" else level(i)  # -> is right-associative
+            left = f"({left} {SMV_TO_CLAFER.get(op, op)} {right})"
+        return left
+
+    e = level(0)
+    assert pos == len(toks), toks[pos:]
+    return e
+
+
+def expansion(clafer, workdir, kind, scope, constraint=None):
+    """The explicit core of the pattern, or of the given constraint, in an assertion."""
     name = re.sub(r"\W", "_", f"{kind}_{scope}") or kind
+    if constraint:
+        name += "_reference"
     model = os.path.join(workdir, f"{name}.cfr")
     with open(model, "w") as f:
         f.write("p ?\nq ?\nr ?\ns ?\n\n")
-        f.write(f"assert [ {clafer_pattern(kind, scope)} ]\n")
+        f.write(f"assert [ {constraint or clafer_pattern(kind, scope)} ]\n")
     out = subprocess.run([clafer, "-m", "clafer", "--core", "-o", "-s", model],
                          capture_output=True, text=True)
     if out.returncode != 0:
@@ -174,6 +247,70 @@ def check(nuxmv, workdir, name, formula, reference):
     raise RuntimeError(f"nuXmv failed on {smv}:\n{out.stdout}{out.stderr}")
 
 
+# --- the encoding of the past-time operators in the temporal Alloy output
+
+# In the context of a clafer with a parent, P is "the parent of the context instance exists"; the
+# encodings with Alloy's operators (before, since) written with NuSMV's (Y, S), and the monitors
+# that define the operators on the current lifetime of the parent, by recursion on the states
+PAST_ENCODING = """MODULE main
+VAR
+  p : boolean; a : boolean; b : boolean;
+  mPrevious : boolean; mWeakPrevious : boolean; mOnce : boolean;
+  mHistorically : boolean; mSince : boolean; mTriggered : boolean;
+ASSIGN
+  init(mPrevious) := FALSE;
+  init(mWeakPrevious) := TRUE;
+  init(mOnce) := p & a;
+  init(mHistorically) := p & a;
+  init(mSince) := p & b;
+  init(mTriggered) := b;
+  next(mPrevious) := p & a;
+  next(mWeakPrevious) := !p | a;
+  next(mOnce) := next(p) & (next(a) | (p & mOnce));
+  next(mHistorically) := next(p) & next(a) & (!p | mHistorically);
+  next(mSince) := next(p) & (next(b) | (next(a) & p & mSince));
+  next(mTriggered) := next(b) & (next(a) | !p | mTriggered);
+"""
+
+PAST_SPECS = [
+    ("previous a", "before (p and a)", "Y (p & a)", "mPrevious"),
+    ("not previous not a", "not before (p and not a)", "!(Y (p & !a))", "mWeakPrevious"),
+    ("once a", "p since (p and a)", "p S (p & a)", "mOnce"),
+    ("historically a", "not (p since (p and not a))", "!(p S (p & !a))", "mHistorically"),
+    ("a since b", "(p and a) since (p and b)", "(p & a) S (p & b)", "mSince"),
+    ("a triggered b", "not ((p and not a) since (p and not b))", "!((p & !a) S (p & !b))", "mTriggered"),
+]
+
+
+def check_past_encoding(nuxmv, workdir):
+    """Proves each encoding equal to its monitor in every state where the parent exists, and
+    that Alloy's own once, without the bound, is not: it sees a previous lifetime. One file per
+    specification, since nuXmv does not print the results in the order of the specifications."""
+    def holds(name, spec):
+        smv = os.path.join(workdir, f"past_{name}.smv")
+        with open(smv, "w") as f:
+            f.write(PAST_ENCODING)
+            f.write(f"LTLSPEC {spec}\n")
+        out = subprocess.run([nuxmv, smv], capture_output=True, text=True)
+        if "is true" in out.stdout:
+            return True
+        if "is false" in out.stdout:
+            return False
+        raise RuntimeError(f"nuXmv failed on {smv}:\n{out.stdout}{out.stderr}")
+
+    failures = 0
+    for i, (clafer_op, alloy, enc, monitor) in enumerate(PAST_SPECS):
+        ok = holds(f"e{i}", f"G (p -> (({enc}) <-> {monitor}))")
+        failures += not ok
+        print(f"{'OK  ' if ok else 'DIFF'} {clafer_op}: {alloy}")
+    if holds("unbounded", "G (p -> ((O a) <-> mOnce))"):
+        failures += 1
+        print("DIFF once a without the bound of the lifetime has no counterexample")
+    else:
+        print("OK   once a without the bound sees a previous lifetime of the parent")
+    return failures
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--clafer", default="clafer")
@@ -193,7 +330,24 @@ def main():
             print(f"     clafer:    {core}\n     smv:       {formula}\n     reference: {reference}")
             print("     " + "\n     ".join(trace.splitlines()[:60]))
     print(f"{len(REFERENCES) - failures} of {len(REFERENCES)} expansions are equivalent to the references")
-    sys.exit(1 if failures else 0)
+
+    # the references, as Clafer constraints with the past-time operators
+    reference_failures = 0
+    for (kind, scope), reference in REFERENCES.items():
+        constraint = to_clafer(reference)
+        name, core = expansion(args.clafer, workdir, kind, scope, constraint)
+        formula = to_smv(core)
+        ok, trace = check(args.nuxmv, workdir, name, formula, reference)
+        if not ok:
+            reference_failures += 1
+            print(f"DIFF the reference of {clafer_pattern(kind, scope)} in Clafer")
+            print(f"     clafer:    {constraint}\n     core:      {core}\n     smv:       {formula}\n     reference: {reference}")
+            print("     " + "\n     ".join(trace.splitlines()[:60]))
+    print(f"{len(REFERENCES) - reference_failures} of {len(REFERENCES)} references compile from Clafer to themselves")
+
+    encoding_failures = check_past_encoding(args.nuxmv, workdir)
+    print(f"{len(PAST_SPECS) + 1 - encoding_failures} of {len(PAST_SPECS) + 1} checks of the encoding of the past-time operators hold")
+    sys.exit(1 if failures or reference_failures or encoding_failures else 0)
 
 
 if __name__ == "__main__":

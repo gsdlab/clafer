@@ -815,10 +815,12 @@ case_CoreInitializers = do
     -- a collection is initialized at the parent's birth, in the parent's context, so its
     -- temporal value needs no past-time operator
     has True "[initially (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
-    -- per instance with a temporal value: := in both
+    -- per instance with a temporal value: in the context of the parent, each instance that
+    -- appears, i.e., was not there in the previous state, has the value (#127)
     has False "0..* z -> int 1..1 := if (X ((#this.b) >= 1)) then 1 else 2 {}"
-    has True "0..* z -> int 1..1 := if (X ((#this.b) >= 1)) then 1 else 2 {}"
-    hasNot True "x -> int 0..1 := 1"
+    has True "[all z_1 : this.z | (!(previous (z_1 in this.z))) => (z_1.dref = (if (X ((#this.b) >= 1)) then 1 else 2))]"
+    has True "0..* z -> int 1..1 {}"
+    hasNot True ":="
     hasNot True "= 2 {}"
 
 -- The support limits of the initializers (#126, kbak/clafer-semantics#170): a per-instance :=
@@ -888,13 +890,61 @@ case_InitializerDiagnostics = do
       [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
       , "abstract Val -> integer = 1, 2\nv : Val\n" ]
 
+-- The past-time operators (#127): previous, once, historically, since and triggered are core
+-- operators, which both explicit models print as written; their keywords are reserved; a model
+-- with them is temporal; in the temporal Alloy output, they are Alloy's operators at the top
+-- level and in the context of a top-level clafer, and look back only in the current lifetime of
+-- the parent otherwise; their negations are their duals.
+case_PastOperators :: Assertion
+case_PastOperators = do
+    let
+        pastModel = [ "a ?", "b ?", "Q *", "    P ?", "        c ?", "        d ?"
+                , "        [ G (c => previous d) ]", "        [ G !(once c) ]", "        [ G (c since d) ]"
+                , "[ G (a => previous b) ]", "[ G (historically a || a since b) ]", "[ G (a triggered b) ]"
+                , "[ G !(previous a) ]", "[ G !(a since b) ]", "[ G some Q ]" ]
+        compileIn modes' core' m = compileOneFragment defaultClaferArgs{mode = modes', core = core'} $ unlines m
+        output modes' core' m = case compileIn modes' core' m of
+            Right r -> return $ fromJust $ Map.lookup (fromJust $ listToMaybe modes') r
+            Left errs' -> assertFailure (show errs') >> return NoCompilerResult{reason = ""}
+        hasIn modes' core' expected = do
+            x <- outputCode <$> output modes' core' pastModel
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    -- the explicit models, as written, and fixpoints
+    forM_ [False, True] $ \core' -> do
+        hasIn [Clafer] core' "[G (((#a) >= 1) => (previous ((#b) >= 1)))]"
+        hasIn [Clafer] core' "[G ((historically ((#a) >= 1)) || (((#a) >= 1) since ((#b) >= 1)))]"
+        hasIn [Clafer] core' "[G (((#a) >= 1) triggered ((#b) >= 1))]"
+        hasIn [Clafer] core' "[G (!(once ((#this.c) >= 1)))]"
+        x <- outputCode <$> output [Clafer] core' pastModel
+        y <- outputCode <$> output [Clafer] core' (lines x)
+        x == y @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y
+    hasIn [JSON] True "\"_op\":\"previous\""
+    -- the top level, and a clafer whose parent is not the root, with the negations as duals
+    hasIn [Alloy] False "fact { always (always ((some alive_a) => (before (some alive_b)))) }"
+    hasIn [Alloy] False "fact { always (always (not before not (!(some alive_a)))) }"
+    hasIn [Alloy] False "fact { always (always ((!(some alive_a)) triggered (!(some alive_b)))) }"
+    hasIn [Alloy] False "before (some self_.(@p_P :> alive_Q) and (some self_.@r_d))"
+    hasIn [Alloy] False "not (some self_.(@p_P :> alive_Q) since (some self_.(@p_P :> alive_Q) and not (!(some self_.@r_c))))"
+    hasIn [Alloy] False "((some self_.(@p_P :> alive_Q) and (some self_.@r_c)) since (some self_.(@p_P :> alive_Q) and (some self_.@r_d)))"
+    -- a temporal pastModel: no Choco output
+    choco <- output [Choco] False pastModel
+    case choco of
+      NoCompilerResult{} -> return ()
+      _ -> assertFailure "Choco output of a pastModel with past-time operators"
+    -- the keywords are reserved
+    forM_ ["previous", "once", "historically", "since", "triggered"] $ \k ->
+      case compileIn [Clafer] False [k ++ " ?"] of
+        Left _ -> return ()
+        Right _ -> assertFailure $ "A clafer named " ++ k ++ " compiled"
+
 -- The value of an initializer with temporal operators is evaluated in the context of the parent
--- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
--- guard, and it navigates from the parent, also after the parent disappeared.
+-- (#123), where the initializer is a constraint (#127): its obligations are bounded by the parent
+-- of the parent, P, and an instance of x appears when it was not there in the previous state of
+-- that lifetime. Without temporal operators, the value is the initial value in the context of x.
 case_InitialValueTemporalContext :: Assertion
 case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
-    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x)).@r_flag))"
-    hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
+    hasAlloy (model "X (some flag)") "fact { all self_ : Box | always (self_ in alive_Box implies (all  x_1 : self_.@r_x | (before (some self_.(@p_Box :> alive_P) and (x_1 in (self_.@r_x)))) || ((x_1.@x_ref) = ((after (not some self_.(@p_Box :> alive_P) or (some self_.@r_flag))) => 1 else 2)))) }"
+    hasAlloy (model "initially (some flag)") "(((not before self_ in alive_Box) implies (some self_.@r_flag)) => 1 else 2)"
     hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

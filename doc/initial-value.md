@@ -214,6 +214,15 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
 - Negative: `:=` on a clafer that is not a reference, which `=` rejects with a type error
   (`x = 10`: "Function '=' cannot be performed on TClafer … = TInteger").
 
+## The lowering of a value with temporal operators (0.5.9)
+
+A per-instance `:=` whose value has temporal operators is evaluated in the context of the
+parent (gsdlab/clafer#123). Since the past-time operators (gsdlab/clafer#127), it is a
+constraint of the parent in the core, `[ all c : this.x | (not previous (c in this.x)) =>
+(c.dref = e) ]`: an instance of `x` appears when it was not there in the previous state of the
+parent's lifetime. The temporal Alloy generator has no interpretation of its own for it any
+more; its output for `tmp_initialValue07` is equivalent to the one of 0.5.8.
+
 ## Support limits (0.5.9)
 
 kbak/clafer-semantics#170 has two support limits, which 0.5.9 checks (#126) right after name

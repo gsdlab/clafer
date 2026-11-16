@@ -458,6 +458,11 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   LtlG  _ exp'  -> dop iG  [exp']
   LtlX  _ exp'  -> dop iX  [exp']
   TmpInitially _ exp' -> dop iInitially [exp']
+  TmpPrevious _ exp' -> dop iPrevious [exp']
+  TmpOnce _ exp' -> dop iOnce [exp']
+  TmpHistorically _ exp' -> dop iHistorically [exp']
+  TmpSince _ exp0 exp' -> dop iSince [exp0, exp']
+  TmpTriggered _ exp0 exp' -> dop iTriggered [exp0, exp']
   TmpFinally _ exp' -> dop iFinally [exp']
   EQuantExp _ quant' exp' ->
       IDeclPExp (desugarQuant quant') [] (desugarExp exp')
@@ -617,6 +622,9 @@ sugarExp' x = case x of
     | op'' == iX             = LtlX noSpan
     | op'' == iInitially     = TmpInitially noSpan
     | op'' == iFinally       = TmpFinally noSpan
+    | op'' == iPrevious      = TmpPrevious noSpan
+    | op'' == iOnce          = TmpOnce noSpan
+    | op'' == iHistorically  = TmpHistorically noSpan
     | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan
@@ -639,6 +647,8 @@ sugarExp' x = case x of
     | op'' == iRem           = ERem noSpan
     | op'' == iU             = LtlU noSpan
     | op'' == iW             = LtlW noSpan
+    | op'' == iSince         = TmpSince noSpan
+    | op'' == iTriggered     = TmpTriggered noSpan
     | op'' == iUnion         = EUnion noSpan
     | op'' == iDifference    = EDifference noSpan
     | op'' == iIntersection  = EIntersection noSpan

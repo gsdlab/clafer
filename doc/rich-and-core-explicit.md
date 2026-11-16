@@ -34,17 +34,17 @@ its lowering. The principle decides each construct:
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
 | `x -> T = e` | no: `[ some x => x.dref = e ]` in the parent | it is written with a constraint |
 | `x -> T := e`, in a static model, per instance with a value without temporal operators, of a collection, or at time zero | no: a constraint, with `initially` in a temporal model | as `=` |
-| `x -> T := e`, per instance, with a value with temporal operators | **yes** | its lowering needs a past-time operator, which Clafer does not have |
+| `x -> T := e`, per instance, with a value with temporal operators | no: `[ all c : this.x \| (not previous (c in this.x)) => (c.dref = e) ]` in the parent | it is written with the past-time operator `previous` |
 
-The last row is the one exception today. The value of such an initializer is evaluated in the
-parent's context, when the instance appears (gsdlab/clafer#123). The core can write
+The last row was the one exception until 0.5.9. The value of such an initializer is evaluated
+in the parent's context, when the instance appears (gsdlab/clafer#123). The core can write
 `initially` only in the context of `x`, where the temporal operators of the value would mean
 something else, and in the context of the parent, "the instance appears now" needs a
-past-time operator: `not previous (c in this.x)`. Clafer has no past-time operators, so this
-`:=` cannot be lowered and stays in the core, which marks it. When Clafer has them
-(gsdlab/clafer#127), the principle moves it out of the core: it becomes
-`[ G (all c : this.x | (not previous (c in this.x)) => (c.dref = e)) ]` in the parent
-(gsdlab/clafer#126).
+past-time operator: `not previous (c in this.x)`. Since Clafer has the past-time operators
+(gsdlab/clafer#127), the `:=` is lowered to that constraint in the parent, which holds in every
+state of the parent, so the core has no rich construct left (gsdlab/clafer#126). The past-time
+operators themselves are core operators: `previous`, `once`, `historically`, `since` and
+`triggered` (see the cheat sheet).
 
 The defaults have a single obvious expansion, and both explicit models write them out, so the
 rich explicit model loses no intent by them: the keyword multiplicities (`?`, `*`, `+`) and
@@ -108,12 +108,15 @@ them after the multiplicity, e.g., `0..* x -> int 0..1 := this.A__y.dref + 1 {`.
   `[ initially (some xs => xs.dref = e) ]` in the parent, also when `e` has temporal
   operators, since the parent is the context of `e`; for a top-level abstract clafer with `*`,
   `[ initially (some X => X.dref = e) ]` at the top level (time zero).
-- `:=` of each instance, in a temporal model, when `e` has temporal operators: `:=` itself,
-  the exception of the principle. The temporal Alloy generator gives each instance, in the
-  first state of each of its lifetimes, the value evaluated in the parent's context.
+- `:=` of each instance, in a temporal model, when `e` has temporal operators:
+  `[ all c : this.x | (not previous (c in this.x)) => (c.dref = e) ]` in the parent, with a
+  name for `c` that no clafer has (`x_1`): each instance that appears, i.e., that was not an
+  instance of `x` under the parent in the previous state, has the value of `e` in the
+  parent's context then. The temporal Alloy output of `tmp_initialValue07` is equivalent to the
+  interpretation of `:=` by the temporal Alloy generator of 0.5.8, which Alloy checks.
 
-So the rich explicit model keeps every `=` and `:=` as written, and the core keeps only the
-`:=` that cannot be lowered (test case `CoreInitializers`). See
+So the rich explicit model keeps every `=` and `:=` as written, and the core has none (test
+case `CoreInitializers`). See
 [initial-value.md](initial-value.md) for the meaning.
 
 ### Behavioral patterns
@@ -145,13 +148,18 @@ The patterns and transitions in the rich and the core explicit model of a constr
 
 - Each rich and each core explicit model of the test models compiles to itself, and the core
   of each test model is the explicit model that Clafer 0.5.8, which desugared everything,
-  printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`).
+  printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),
+  which 0.5.8 kept and 0.5.9 lowers with `previous`.
 - The pattern expansions are verified: for every pattern and scope, nuXmv checks that the
   formula of the core is equivalent, on all traces, to a reference written from the
   definition of the pattern with past-time operators. All 30 pairs of pattern and scope are
   equivalent ([`test/patterns/check-patterns.py`](../test/patterns/check-patterns.py)); for
   example, `never p before r` is `F r => (no p U r)` in the core, and its reference is
-  `F r -> G (!(O r) -> !p)`: if r occurs, no p before its first occurrence.
+  `F r -> G (!(O r) -> !p)`: if r occurs, no p before its first occurrence. Each reference is
+  also written as a Clafer constraint with the past-time operators, compiled, and checked
+  equivalent to itself, and the encoding of the past-time operators in the temporal Alloy
+  output is proved against a definition of each operator by recursion on the states (also in
+  Alloy, bounded: [`test/patterns/past-encoding.als`](../test/patterns/past-encoding.als)).
 - `RichAndCoreExplicit` and `CoreInitializers` (test-suite) check the rich constructs in both
   models.
 
@@ -162,8 +170,10 @@ The patterns and transitions in the rich and the core explicit model of a constr
    keeps its value while the instance exists, e.g., for a reference to integers,
    `[ G (all v : integer | (this.dref = v) => X (some this => this.dref = v)) ]` in `x`.
    `final` and `finaltarget` also forbid new instances or targets, which needs either a
-   past-time operator or a quantifier over instances that do not exist yet, so they stay in
-   the core until gsdlab/clafer#127, like the `:=` above. To be decided with the semantics.
+   past-time operator or a quantifier over instances that do not exist yet. Since 0.5.9 the
+   past-time operators exist (gsdlab/clafer#127), so they could be lowered, e.g., `final`
+   as "no instance appears after the first state of the parent". To be decided with the
+   semantics.
 2. **The clock of `:=` has no syntax of its own.** Under kbak/clafer-semantics#170, a written
    `*` or `0..*` on an abstract clafer makes `:=` a set initializer. The rich explicit model
    leaves the multiplicity of an abstract clafer with a per-instance `:=` out, so that it

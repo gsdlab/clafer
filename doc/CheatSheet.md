@@ -539,6 +539,21 @@ initially <boolean expression>
 finally <boolean expression>
 ```
 
+The past-time operators of LTL with past ([#127](https://github.com/gsdlab/clafer/issues/127)), with the names of NuSMV's glosses, have keywords only:
+
+```
+previous <boolean expression>                          // NuSMV's Y, Alloy's before
+once <boolean expression>                              // O
+historically <boolean expression>                      // H
+<boolean expression> since <boolean expression>        // S
+<boolean expression> triggered <boolean expression>    // T, not ((not a) since (not b))
+```
+
+`previous a` holds when there is a previous state and `a` held in it, `once a` when `a` held now or earlier, `historically a` when `a` held now and in every earlier state, and `a since b` when `b` held now or earlier and `a` in every state after it up to now.
+They look back while the parent of the context exists, in its current lifetime, as the future operators require while the parent exists: a previous lifetime of the parent is not visible, and in the first state of the parent's lifetime, `previous a` is false and `!(previous !a)` is true, as in the first state of the trace.
+At the top level and in a top-level clafer, they look back to the start of the trace.
+`previous`, `once`, `historically`, `since` and `triggered` are reserved words.
+
 ### Dwyer's patterns
 
 Specification patterns say what must hold in a part of the trace, without temporal operators: they read as requirements.

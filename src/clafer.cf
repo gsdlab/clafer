@@ -98,6 +98,10 @@ EXor.           Exp6  ::= Exp6 "xor" Exp7 ;
 EAnd.           Exp7  ::= Exp7 "&&"  Exp8 ;
 LtlU.           Exp8  ::= Exp8 "U"  Exp9 ;
 TmpUntil.       Exp8  ::= Exp8 "until"  Exp9 ;
+-- past-time operators (#127): since and triggered with the precedence of until, previous, once
+-- and historically with the one of next
+TmpSince.       Exp8  ::= Exp8 "since"  Exp9 ;
+TmpTriggered.   Exp8  ::= Exp8 "triggered"  Exp9 ;
 LtlW.           Exp9  ::= Exp9 "W"  Exp10 ;
 TmpWUntil.      Exp9  ::= Exp9 "weakuntil"  Exp10 ;
 LtlF.           Exp10  ::= "F"  Exp10 ;
@@ -106,6 +110,9 @@ LtlG.           Exp10  ::= "G"  Exp10 ;
 TmpGlobally.    Exp10  ::= "globally"  Exp10 ;
 LtlX.           Exp10  ::= "X"  Exp10 ;
 TmpNext.        Exp10  ::= "next"  Exp10 ;
+TmpPrevious.    Exp10  ::= "previous"  Exp10 ;
+TmpOnce.        Exp10  ::= "once"  Exp10 ;
+TmpHistorically. Exp10  ::= "historically"  Exp10 ;
 ENeg.           Exp11  ::= "!" Exp11 ;
 ELt.            Exp15  ::= Exp15 "<"  Exp16 ;
 EGt.            Exp15  ::= Exp15 ">"  Exp16 ;

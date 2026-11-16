@@ -114,6 +114,11 @@ import Language.Clafer.Front.ErrM
   'until' { PT _ (TS _ 94) }
   'weakuntil' { PT _ (TS _ 95) }
   'xor' { PT _ (TS _ 96) }
+  'historically' { PT _ (TS _ 102) }
+  'once' { PT _ (TS _ 103) }
+  'previous' { PT _ (TS _ 104) }
+  'since' { PT _ (TS _ 105) }
+  'triggered' { PT _ (TS _ 106) }
   '{' { PT _ (TS _ 97) }
   '|' { PT _ (TS _ 98) }
   '||' { PT _ (TS _ 99) }
@@ -251,6 +256,8 @@ Exp7 : Exp7 '&&' Exp8 { Language.Clafer.Front.AbsClafer.EAnd ((mkCatSpan $1) >- 
 Exp8 :: { Exp }
 Exp8 : Exp8 'U' Exp9 { Language.Clafer.Front.AbsClafer.LtlU ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp8 'until' Exp9 { Language.Clafer.Front.AbsClafer.TmpUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp8 'since' Exp9 { Language.Clafer.Front.AbsClafer.TmpSince ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp8 'triggered' Exp9 { Language.Clafer.Front.AbsClafer.TmpTriggered ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp9 {  $1 }
 Exp9 :: { Exp }
 Exp9 : Exp9 'W' Exp10 { Language.Clafer.Front.AbsClafer.LtlW ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -263,6 +270,9 @@ Exp10 : 'F' Exp10 { Language.Clafer.Front.AbsClafer.LtlF ((mkTokenSpan $1) >- (m
       | 'globally' Exp10 { Language.Clafer.Front.AbsClafer.TmpGlobally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'X' Exp10 { Language.Clafer.Front.AbsClafer.LtlX ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'next' Exp10 { Language.Clafer.Front.AbsClafer.TmpNext ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'previous' Exp10 { Language.Clafer.Front.AbsClafer.TmpPrevious ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'once' Exp10 { Language.Clafer.Front.AbsClafer.TmpOnce ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'historically' Exp10 { Language.Clafer.Front.AbsClafer.TmpHistorically ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp11 {  $1 }
 Exp11 :: { Exp }
 Exp11 : '!' Exp11 { Language.Clafer.Front.AbsClafer.ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }

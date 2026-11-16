@@ -1,0 +1,18 @@
+// The past-time operators look back while the parent of the context instance exists, in its
+// current lifetime (gsdlab/clafer#127), as the obligations of the future operators last while
+// the parent exists. Shift disappears in the second state and comes back in the third: the
+// Worker of the new Shift does not see the alarm of the previous one.
+
+Shift ?
+    Worker ?
+        alarm ?
+        warned ?
+        // warned in the states after an alarm, in the lifetime of the Shift
+        [ warned <=> previous (once alarm) ]
+
+[ initially (some Shift.Worker.alarm) ]
+[ initially X no Shift ]
+[ initially X X (some Shift.Worker && no Shift.Worker.alarm) ]
+
+// the new Shift has seen no alarm
+assert [ initially X X no Shift.Worker.warned ]

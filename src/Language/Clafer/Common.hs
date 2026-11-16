@@ -402,6 +402,33 @@ iF          = "F"
 iX :: String
 iX          = "X"
 
+-- | The past-time operators of LTL with past (#127): @previous a@ (NuSMV's @Y@, Alloy's
+--   @before@), @once a@, @historically a@, @a since b@ and @a triggered b@, which look back
+--   while the parent of the context instance exists, in its current lifetime.
+iPrevious :: String
+iPrevious     = "previous"
+
+iOnce :: String
+iOnce         = "once"
+
+iHistorically :: String
+iHistorically = "historically"
+
+iSince :: String
+iSince        = "since"
+
+iTriggered :: String
+iTriggered    = "triggered"
+
+-- | The weak previous, @not previous not a@ (NuSMV's @Z@), which only the negation pushing of
+--   the temporal Alloy output writes; it has no keyword.
+iWeakPrevious :: String
+iWeakPrevious = "weakprevious"
+
+-- | The past-time operators that a model can write.
+pastOps :: [String]
+pastOps = [iPrevious, iOnce, iHistorically, iSince, iTriggered]
+
 iInitially :: String
 iInitially    = "initially"
 
@@ -433,7 +460,7 @@ iProdSet :: String
 iProdSet  = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally, iPrevious, iOnce, iHistorically, iWeakPrevious]
 
 -- binary operators
 iIff :: String
@@ -458,7 +485,7 @@ iW :: String
 iW          = "W"
 
 logBinOps :: [String]
-logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW]
+logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW, iSince, iTriggered]
 
 iLt :: String
 iLt           = "<"
@@ -485,13 +512,13 @@ iNin :: String
 iNin          = "not in"
 
 ltlOps :: [String]
-ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]
+ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally] ++ pastOps
 
 ltlBinOps :: [String]
-ltlBinOps = [iW, iU]
+ltlBinOps = [iW, iU, iSince, iTriggered]
 
 ltlUnOps :: [String]
-ltlUnOps = [iX, iG, iF, iInitially, iFinally]
+ltlUnOps = [iX, iG, iF, iInitially, iFinally, iPrevious, iOnce, iHistorically]
 
 -- | The behavioral patterns of Dwyer et al.'s catalogue: @never@, @sometime@, @lonce@ (at most
 --   once), @always@, @s must precede p@ and @s must follow p@.
