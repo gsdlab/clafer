@@ -1061,8 +1061,52 @@ case_AbstractMultiplicity = do
     lacksOut [Clafer] True [ "abstract Tools", "b ?" ] "#Tools"
     -- an unused abstract clafer with a lower bound is kept, and the bound leaves no instance
     hasOut [Clafer] True [ "abstract Tools 2", "b ?" ] "[(#Tools) = 2]"
-    -- the scope leaves room for the lower bound
-    hasOut [Alloy] False [ "abstract Tools 3..6", "hammer : Tools *" ] "3 hammer"
+    -- the scope leaves room for the upper bound, which a subclafer may reach alone
+    hasOut [Alloy] False [ "abstract Tools 3..6", "hammer : Tools *" ] "6 hammer"
+
+-- The simple scope analysis reads the rich IR: the upper bounds of the abstract clafers, which
+-- bound their subclafers, globally or per parent instance; the counting constraints; the set
+-- references to a target that the multiplicities bound. The temporal Alloy output encodes the
+-- literals of an enumeration as constants.
+case_RichScopes :: Assertion
+case_RichScopes = do
+    let
+        outputOf m = case compileOneFragment defaultClaferArgs{mode = [Alloy]} $ unlines m of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Alloy r
+            Left errs' -> assertFailure (show errs') >> return ""
+        runLine m = do
+            x <- outputOf m
+            return $ fromMaybe "" $ find ("run show" `isPrefixOf`) $ lines x
+        scopes m expected = do
+            l <- runLine m
+            forM_ expected $ \e -> (e `isInfixOf` l) @? (e ++ " not in: " ++ l)
+        has m expected = do
+            x <- outputOf m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        lacks m unexpected = do
+            x <- outputOf m
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+    -- the upper bound of a top-level abstract clafer, also for the abstract clafer itself
+    scopes [ "abstract Tools 3..6", "hammer : Tools *", "saw : Tools *" ] [ "6 Tools", "6 hammer", "6 saw" ]
+    scopes [ "abstract Tools 3..6", "hammer : Tools 0..2", "saw : Tools 1..5" ] [ "6 Tools", "2 hammer", "5 saw" ]
+    -- per parent instance for a nested abstract clafer
+    scopes [ "abstract Shop", "    abstract Tools 2..4", "    hammer : Tools *", "s1 : Shop", "s2 : Shop" ] [ "8 Tools", "8 hammer" ]
+    -- counting constraints, also with the number first and in a conjunction
+    scopes [ "A *", "[ #A > 4 ]", "B *", "    c ?", "[ 3 <= #B.c && #B >= 2 ]" ] [ "5 A", "3 B", "3 c" ]
+    -- a set reference to a bounded target, not a bag, nor a reference to an unbounded target
+    scopes [ "enum Color = red | green | blue", "Car 2", "    paint -> Color 0..10", "    tint ->> Color 0..10" ]
+           [ "6 paint", "20 tint" ]
+    scopes [ "Gs *", "Car 2", "    paint -> Gs 0..10" ] [ "20 paint" ]
+    -- the subclafers of an abstract clafer may share targets (#125); a count through a reference
+    -- counts targets
+    scopes [ "Target 2", "abstract Ref -> Target", "r : Ref 2", "a : Ref", "c : Ref", "[ #r.dref = 2 ]" ] [ "4 Ref" ]
+    -- the literals of an enumeration are constants in the temporal Alloy output
+    let enum = [ "enum Color = red | green", "Car", "    color -> Color", "    [ color = red => X color = green ]" ]
+    has enum "one sig red extends Color"
+    has enum "fun alive_red : set red { red }"
+    has enum "r_red : set red"
+    lacks enum "p_red"
+    lacks enum "red_1"
 
 -- The past-time operators (#127): previous, once, historically, since and triggered are core
 -- operators, which both explicit models print as written; their keywords are reserved; a model

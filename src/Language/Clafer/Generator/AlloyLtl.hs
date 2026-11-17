@@ -74,13 +74,14 @@ data GenEnv = GenEnv
   , forScopes :: String
   , statics :: ([UID], [UID])  -- ^ the clafers that are final with all their ancestors in the rich
                                --   IR, and those of them whose own references are final
+  , enumLiterals :: [UID]      -- ^ the literals of the enumerations of the rich IR
   }
 
 -- | Alloy 6 code generation
 -- | The finality modifiers are constraints of the core ("Language.Clafer.Intermediate.Finality");
 --   the relations of the static clafers of the rich IR do not change, and are not @var@.
-genAlloyLtlModule :: ([UID], [UID]) -> ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    statics'          claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ([UID], [UID]) -> [UID] -> ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    statics'          literals' claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   uidIClaferMap' = uidClaferMap genv
   -- the clafers of the module, as the optimizer left them: the map of the environment still has
@@ -89,7 +90,7 @@ genAlloyLtlModule    statics'          claferargs'   (imodule, genv)    scopes  
            { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
-  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' statics'
+  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' statics' literals'
 
   -- a scope bounds the instance identities across the trace, which may be reused when an
   -- instance reappears; the multiplicities bound the existing instances in each snapshot
@@ -145,6 +146,13 @@ isStatic genEnv c
   | isRoot c  = True
   | otherwise = _uid c `elem` fst (statics genEnv)
 
+-- | Whether the clafer is a literal of an enumeration in the rich IR: a top-level clafer with
+--   exactly one instance, which is final, so it exists in every state. Its signature is a @one sig@
+--   without a parent relation, and it has no facts of its finality, which hold trivially; its
+--   static containment relation in the root stays, so that an instance shows it.
+isEnumLiteral :: GenEnv -> IClafer -> Bool
+isEnumLiteral genEnv c = _uid c `elem` enumLiterals genEnv
+
 -- | The nearest super clafer that declares a reference, and the reference.
 inheritedReference :: GenEnv -> IClafer -> Maybe (IClafer, IReference)
 inheritedReference genEnv c = listToMaybe
@@ -186,7 +194,9 @@ parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
     rels' -> "(" ++ intercalate " + " rels' ++ ")"
   Nothing -> error $ "AlloyLtl.parentRel: clafer not found: " ++ uid'
   where
-  rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
+  rel c
+    | isEnumLiteral genEnv c = "(" ++ _uid c ++ "->" ++ rootIdent ++ ")"
+    | otherwise = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -207,7 +217,7 @@ optShowSet xs = CString "\n" +++ showSet (CString "\n  ") xs
 
 genClafer :: GenEnv -> IClafer -> Concat
 genClafer genEnv c = cunlines (filterNull
-  [ claferDecl c (showSet (CString "\n, ") (genRelations genEnv c) +++ optShowSet (filterNull $ genConstraints genEnv c))
+  [ claferDecl (isEnumLiteral genEnv c) c (showSet (CString "\n, ") (genRelations genEnv c) +++ optShowSet (filterNull $ genConstraints genEnv c))
   , if isRoot c then CString "" else aliveFun
   , mkFact $ cintercalate (CString "\n  ") $ filterNull $ genStructure genEnv c
   , cunlines $ genFacts genEnv c
@@ -216,15 +226,16 @@ genClafer genEnv c = cunlines (filterNull
   where
   aliveFun = CString $ "fun " ++ aliveName (_uid c) ++ " : set " ++ _uid c ++ " { " ++ aliveBody ++ " }"
   aliveBody
+    | isEnumLiteral genEnv c = _uid c
     | hasContainment c = sigOf (fromJust $ parentOf genEnv c) ++ ".@" ++ genRelName (_uid c)
     | otherwise        = case map (aliveName . _uid) $ subsOf genEnv c of
         []    -> "none"
         alive -> intercalate " + " alive
   sigOf p = if isRoot p then rootIdent else _uid p
 
-claferDecl :: IClafer -> Concat -> Concat
-claferDecl    c     rest    = cconcat
-  [ CString $ if isRoot c then "one " else ""
+claferDecl :: Bool -> IClafer -> Concat -> Concat
+claferDecl    one' c     rest    = cconcat
+  [ CString $ if isRoot c || one' then "one " else ""
   , CString $ if _isAbstract c then "abstract " else ""
   , CString "sig "
   , Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]
@@ -238,7 +249,7 @@ genRelations :: GenEnv -> IClafer -> [Concat]
 genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
   where
   parent'
-    | hasContainment c && not (_isAbstract c) =
+    | hasContainment c && not (_isAbstract c) && not (isEnumLiteral genEnv c) =
         [CString $ genParentName (_uid c) ++ " : lone " ++ maybe rootIdent sigName (parentOf genEnv c)]
     | otherwise = []
   sigName p = if isRoot p then rootIdent else _uid p
@@ -268,7 +279,7 @@ getTarget    x     = case x of
 --   abstract clafer, its instances are those of its subclafers.
 genStructure :: GenEnv -> IClafer -> [Concat]
 genStructure genEnv c
-  | not (hasContainment c) = []
+  | not (hasContainment c) || isEnumLiteral genEnv c = []
   | _isAbstract c =
       [ CString $ "always @" ++ rel ++ " = " ++ case map (('@' :) . genRelName . _uid) $ subsOf genEnv c of
           []   -> "none->none"
@@ -322,7 +333,9 @@ genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ user
   where
   uid' = _uid c
   -- the initializers are constraints in the core ("Language.Clafer.Intermediate.Initializers")
-  userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint True pexp <- _elements c ]
+  userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint' True pexp o <- _elements c, not (finalityOfLiteral o) ]
+  -- the finality of a literal of an enumeration holds trivially in its encoding ('isEnumLiteral')
+  finalityOfLiteral o = isEnumLiteral genEnv c && maybe False ((`elem` ["final", "finalref", "finaltarget"]) . _construct) o
   childCards c' = case fromJust $ _card c' of
     (1, 1)  -> [(ExactCard child False, CString $ "one " ++ rel)]
     (0, 1)  -> [(ExactCard child False, CString $ "lone " ++ rel)]

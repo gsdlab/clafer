@@ -108,11 +108,14 @@ counterexamples of the two levels. The core IR keeps the trace back to the rich 
 every clafer and constraint that a lowering made has its `origin` (`_cOrigin`, `_eOrigin`: the
 construct and its position), also without `--record-provenance`, which only prints it. The
 origin names the construct, not its arguments, so a backend that needs those reads the rich IR,
-which `generate` has next to the core. One backend does this so far: the temporal Alloy
-generator declares the relations of the clafers that are final with all their ancestors in the
-rich IR without `var` (`staticClafers` in `Finality`), which the core constraints of the
-finality modifiers allow. Static Alloy and Choco use
-the core alone (the scopes of all backends are computed from the rich IR). Other backends could
+which `generate` has next to the core. The temporal Alloy generator does this twice: it declares
+the relations of the clafers that are final with all their ancestors in the rich IR without
+`var` (`staticClafers` in `Finality`), which the core constraints of the finality modifiers
+allow, and it encodes the literals of an enumeration as constants (`enumLiterals` in `Core`):
+a `one sig` without a parent relation, whose finality constraints, which hold trivially, it
+leaves out by their origin. Static Alloy and Choco use the core alone. The scopes of all the
+backends are computed from the rich IR: the multiplicities of the abstract clafers, the set
+references and the counting constraints as written. Other backends could
 do the same, e.g., an SMV backend for the patterns or a state machine view for the transitions.
 
 ## The rich constructs and their lowering

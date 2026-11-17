@@ -136,7 +136,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.AbstractMultiplicity (authoredBounds, lowerAbstractBounds, withAuthoredBounds)
-import           Language.Clafer.Intermediate.Core (Semantics (..), forgetOrigins, lowerToCore)
+import           Language.Clafer.Intermediate.Core (Semantics (..), enumLiterals, forgetOrigins, lowerToCore)
 import           Language.Clafer.Intermediate.Finality (staticClafers)
 import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
@@ -654,7 +654,7 @@ generate =
                  let
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
                     (imod,strMap) = astrModule coreModule
-                    (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule staticsA, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
+                    (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule staticsA literalsA, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
                     -- the clafers whose UIDs cannot be Alloy names get names of their own
                     names = alloyNames imod
                     imodA = toAlloyNames names imod
@@ -662,6 +662,8 @@ generate =
                     scopesA = [ (Map.findWithDefault u u names, s) | (u, s) <- scopes ]
                     -- the static clafers come from the rich IR, whose finality modifiers the core
                     -- has as constraints
+                    -- the literals of the enumerations, which the core has as clafers
+                    literalsA = map (\u -> Map.findWithDefault u u names) $ enumLiterals iModule
                     staticsA = let (cs, rs) = staticClafers iModule; rename u = Map.findWithDefault u u names in (map rename cs, map rename rs)
                     alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats

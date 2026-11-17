@@ -113,81 +113,41 @@ abstract sig ProtocolVersion
 {}
 fun alive_ProtocolVersion : set ProtocolVersion { alive_SSL2_0 + alive_SSL3_0 + alive_TLS1_0 + alive_TLS1_1 + alive_TLS1_2 }
 
-sig SSL2_0 extends ProtocolVersion
-{ p_SSL2_0 : lone root }
-fun alive_SSL2_0 : set SSL2_0 { root.@r_SSL2_0 }
-fact { always ~@r_SSL2_0 in @p_SSL2_0 }
+one sig SSL2_0 extends ProtocolVersion
+{}
+fun alive_SSL2_0 : set SSL2_0 { SSL2_0 }
 
-fact { all self_ : SSL2_0 | always (self_ in alive_SSL2_0 implies (all  SSL2_0_1 : (self_ & alive_SSL2_0) | after (SSL2_0_1 in (alive_SSL2_0)))) }
-fact { all self_ : SSL2_0 | always (self_ in alive_SSL2_0 implies (all  SSL2_0_1 : (self_ & alive_SSL2_0) | (not before not (!(some root))) || (before (SSL2_0_1 in (alive_SSL2_0))))) }
+one sig SSL3_0 extends ProtocolVersion
+{}
+fun alive_SSL3_0 : set SSL3_0 { SSL3_0 }
 
+one sig TLS1_0 extends ProtocolVersion
+{}
+fun alive_TLS1_0 : set TLS1_0 { TLS1_0 }
 
-sig SSL3_0 extends ProtocolVersion
-{ p_SSL3_0 : lone root }
-fun alive_SSL3_0 : set SSL3_0 { root.@r_SSL3_0 }
-fact { always ~@r_SSL3_0 in @p_SSL3_0 }
+one sig TLS1_1 extends ProtocolVersion
+{}
+fun alive_TLS1_1 : set TLS1_1 { TLS1_1 }
 
-fact { all self_ : SSL3_0 | always (self_ in alive_SSL3_0 implies (all  SSL3_0_1 : (self_ & alive_SSL3_0) | after (SSL3_0_1 in (alive_SSL3_0)))) }
-fact { all self_ : SSL3_0 | always (self_ in alive_SSL3_0 implies (all  SSL3_0_1 : (self_ & alive_SSL3_0) | (not before not (!(some root))) || (before (SSL3_0_1 in (alive_SSL3_0))))) }
-
-
-sig TLS1_0 extends ProtocolVersion
-{ p_TLS1_0 : lone root }
-fun alive_TLS1_0 : set TLS1_0 { root.@r_TLS1_0 }
-fact { always ~@r_TLS1_0 in @p_TLS1_0 }
-
-fact { all self_ : TLS1_0 | always (self_ in alive_TLS1_0 implies (all  TLS1_0_1 : (self_ & alive_TLS1_0) | after (TLS1_0_1 in (alive_TLS1_0)))) }
-fact { all self_ : TLS1_0 | always (self_ in alive_TLS1_0 implies (all  TLS1_0_1 : (self_ & alive_TLS1_0) | (not before not (!(some root))) || (before (TLS1_0_1 in (alive_TLS1_0))))) }
-
-
-sig TLS1_1 extends ProtocolVersion
-{ p_TLS1_1 : lone root }
-fun alive_TLS1_1 : set TLS1_1 { root.@r_TLS1_1 }
-fact { always ~@r_TLS1_1 in @p_TLS1_1 }
-
-fact { all self_ : TLS1_1 | always (self_ in alive_TLS1_1 implies (all  TLS1_1_1 : (self_ & alive_TLS1_1) | after (TLS1_1_1 in (alive_TLS1_1)))) }
-fact { all self_ : TLS1_1 | always (self_ in alive_TLS1_1 implies (all  TLS1_1_1 : (self_ & alive_TLS1_1) | (not before not (!(some root))) || (before (TLS1_1_1 in (alive_TLS1_1))))) }
-
-
-sig TLS1_2 extends ProtocolVersion
-{ p_TLS1_2 : lone root }
-fun alive_TLS1_2 : set TLS1_2 { root.@r_TLS1_2 }
-fact { always ~@r_TLS1_2 in @p_TLS1_2 }
-
-fact { all self_ : TLS1_2 | always (self_ in alive_TLS1_2 implies (all  TLS1_2_1 : (self_ & alive_TLS1_2) | after (TLS1_2_1 in (alive_TLS1_2)))) }
-fact { all self_ : TLS1_2 | always (self_ in alive_TLS1_2 implies (all  TLS1_2_1 : (self_ & alive_TLS1_2) | (not before not (!(some root))) || (before (TLS1_2_1 in (alive_TLS1_2))))) }
-
+one sig TLS1_2 extends ProtocolVersion
+{}
+fun alive_TLS1_2 : set TLS1_2 { TLS1_2 }
 
 abstract sig HandshakeStatus
 {}
 fun alive_HandshakeStatus : set HandshakeStatus { alive_initiated + alive_completed + alive_failed }
 
-sig initiated extends HandshakeStatus
-{ p_initiated : lone root }
-fun alive_initiated : set initiated { root.@r_initiated }
-fact { always ~@r_initiated in @p_initiated }
+one sig initiated extends HandshakeStatus
+{}
+fun alive_initiated : set initiated { initiated }
 
-fact { all self_ : initiated | always (self_ in alive_initiated implies (all  initiated_1 : (self_ & alive_initiated) | after (initiated_1 in (alive_initiated)))) }
-fact { all self_ : initiated | always (self_ in alive_initiated implies (all  initiated_1 : (self_ & alive_initiated) | (not before not (!(some root))) || (before (initiated_1 in (alive_initiated))))) }
+one sig completed extends HandshakeStatus
+{}
+fun alive_completed : set completed { completed }
 
-
-sig completed extends HandshakeStatus
-{ p_completed : lone root }
-fun alive_completed : set completed { root.@r_completed }
-fact { always ~@r_completed in @p_completed }
-
-fact { all self_ : completed | always (self_ in alive_completed implies (all  completed_1 : (self_ & alive_completed) | after (completed_1 in (alive_completed)))) }
-fact { all self_ : completed | always (self_ in alive_completed implies (all  completed_1 : (self_ & alive_completed) | (not before not (!(some root))) || (before (completed_1 in (alive_completed))))) }
-
-
-sig failed extends HandshakeStatus
-{ p_failed : lone root }
-fun alive_failed : set failed { root.@r_failed }
-fact { always ~@r_failed in @p_failed }
-
-fact { all self_ : failed | always (self_ in alive_failed implies (all  failed_1 : (self_ & alive_failed) | after (failed_1 in (alive_failed)))) }
-fact { all self_ : failed | always (self_ in alive_failed implies (all  failed_1 : (self_ & alive_failed) | (not before not (!(some root))) || (before (failed_1 in (alive_failed))))) }
-
+one sig failed extends HandshakeStatus
+{}
+fun alive_failed : set failed { failed }
 
 abstract sig Port
 {}

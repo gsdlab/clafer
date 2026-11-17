@@ -1,4 +1,4 @@
-scope({$Animal:2, $leg:2});
+scope({$Animal:2, $leg:16});
 defaultScope(1);
 stringLength(16);
 

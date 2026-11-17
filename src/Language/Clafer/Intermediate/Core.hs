@@ -42,11 +42,12 @@ module Language.Clafer.Intermediate.Core
   ( Semantics (..)
   , lowerToCore
   , forgetOrigins
+  , enumLiterals
   , lowerPExp
   ) where
 
 import Control.Lens (over)
-import Control.Lens.Plated (plate, transformOn, transformOnOf, universe)
+import Control.Lens.Plated (plate, transformOn, transformOnOf, universe, universeOn)
 import Data.Data.Lens (biplate, uniplate)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Finality (lowerFinality, lowerInitial)
@@ -76,6 +77,14 @@ markRich = transformOnOf biplate uniplate mark
   mark e = e
 
 -- | The clafers of the enumerations are ordinary clafers.
+-- | The literals of the enumerations of the rich IR: the clafers whose super clafer is an
+--   enumeration. A backend may encode them as constants ("Language.Clafer.Generator.AlloyLtl").
+enumLiterals :: IModule -> [UID]
+enumLiterals imodule = [ _uid c | c <- clafers, not (_isAbstract c), [s] <- [getSuper c], s `elem` enums ]
+  where
+  clafers = universeOn biplate imodule :: [IClafer]
+  enums = [ _uid c | c <- clafers, _enum (_modifiers c) ]
+
 lowerEnums :: IModule -> IModule
 lowerEnums = transformOn biplate unmark
   where

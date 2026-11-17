@@ -1,4 +1,4 @@
-scope({$Bench:2, $Rack:4, $Tools:7, $Workbench:2, $big:2, $hammer:2, $saw:5, $small:2});
+scope({$Bench:2, $Rack:2, $Tools:6, $Workbench:2, $big:2, $hammer:2, $saw:5, $small:2});
 defaultScope(1);
 stringLength(16);
 

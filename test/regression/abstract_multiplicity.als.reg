@@ -38,11 +38,11 @@ sig small extends Rack
 { one @r_small.this }
 
 assert assertAt_17_10 { ((#Tools) >= 3) && ((#Tools) <= 6) }
-check assertAt_17_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+check assertAt_17_10 for 1 but 2 Bench, 2 Rack, 6 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
 
 assert assertAt_18_10 { (#saw) <= 5 }
-check assertAt_18_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+check assertAt_18_10 for 1 but 2 Bench, 2 Rack, 6 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
 
 assert assertAt_19_10 { all  w : Workbench | ((#(w.@r_big)).plus[(#(w.@r_small))]) <= 1 }
-check assertAt_19_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+check assertAt_19_10 for 1 but 2 Bench, 2 Rack, 6 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
 
