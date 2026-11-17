@@ -15,13 +15,13 @@ sig s
 { p_s : lone root
 , var r_a : set a
 , var r_b : set b }
-{ always (this in alive_s implies (let children = (this.@r_a + this.@r_b) | one children))
-  always (this in alive_s and not before this in alive_s implies (some this.@r_a)) }
+{ always (this in alive_s implies (let children = (this.@r_a + this.@r_b) | one children)) }
 fun alive_s : set s { root.@r_s }
 fact { always ~@r_s in @p_s }
 
 fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_a)) }
 fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_b)) }
+fact { all self_ : s | always (self_ in alive_s implies ((not before self_ in alive_s) implies (some self_.@r_a))) }
 
 assert assertAt_6_14 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_a) => (after (some self_.@r_b)))) }
 check assertAt_6_14 for 1 but 10 steps

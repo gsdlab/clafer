@@ -915,6 +915,26 @@ case_FinalityLowered = do
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
+-- The modifier initial is a constraint of the parent in the core (kbak/clafer-semantics#195):
+-- the parent has an instance in its first state, the model at the start of the trace at the top
+-- level; a subclafer of a top-level abstract clafer inherits it. The rich model keeps it.
+case_InitialLowered :: Assertion
+case_InitialLowered = do
+    let model = [ "initial top ?", "A ?", "    initial b ?", "abstract S", "    initial c ?", "T : S ?"
+                , "abstract initial Ub", "V : Ub ?", "[ G some A ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    rich <- explicit False model
+    all (`isInfixOf` rich) ["initial 0..* top", "initial 0..* b", "abstract initial 0..* Ub"] @? ("modifiers not kept:\n" ++ rich)
+    x <- explicit True model
+    not ("initial " `isInfixOf` x) @? ("a modifier in the core:\n" ++ x)
+    all (`isInfixOf` x)
+      [ "[initially ((#top) >= 1)]", "[initially ((#V) >= 1)]"
+      , "[initially ((#this.b) >= 1)]", "[initially ((#this.c) >= 1)]" ] @? ("constraints missing:\n" ++ x)
+    y <- explicit True (lines x)
+    x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
+
 -- The multiplicity of an abstract clafer bounds the number of all its instances (#129,
 -- kbak/clafer-semantics#193): globally at the top level, per parent instance when nested, in
 -- every state. The rich model keeps it as written, the core has it as a constraint, which

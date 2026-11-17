@@ -499,8 +499,7 @@ sig channel
 , var r_serverFinish : set serverFinish
 , var r_dataTransfer : set dataTransfer
 , var r_fatalError : set fatalError }
-{ always (this in alive_channel implies (let children = (this.@r_clientHello + this.@r_serverResponse + this.@r_clientResponse + this.@r_serverFinish + this.@r_dataTransfer + this.@r_fatalError) | one children))
-  always (this in alive_channel and not before this in alive_channel implies (some this.@r_clientHello)) }
+{ always (this in alive_channel implies (let children = (this.@r_clientHello + this.@r_serverResponse + this.@r_clientResponse + this.@r_serverFinish + this.@r_dataTransfer + this.@r_fatalError) | one children)) }
 fun alive_channel : set channel { Protocol.@r_channel }
 fact { always ~@r_channel in @p_channel
   always @r_channel.univ in alive_Protocol }
@@ -518,6 +517,7 @@ fact { all self_ : channel | always (self_ in alive_channel implies (((some self
 fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_clientResponse).@r_clientFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
 fact { all self_ : channel | always (self_ in alive_channel implies (((some self_.@r_serverFinish) && (no (self_.@r_serverFinish).@r_serverFinished)) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
 fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_serverFinish).@r_serverFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_dataTransfer))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies ((not before self_ in alive_channel) implies (some self_.@r_clientHello))) }
 
 
 sig clientHello
@@ -697,14 +697,14 @@ sig serverFinish
 { p_serverFinish : lone channel
 , var r_serverChangeCipherSpec : set serverChangeCipherSpec
 , var r_serverFinished : set serverFinished }
-{ always (this in alive_serverFinish implies (let children = (this.@r_serverChangeCipherSpec + this.@r_serverFinished) | one children))
-  always (this in alive_serverFinish and not before this in alive_serverFinish implies (some this.@r_serverChangeCipherSpec)) }
+{ always (this in alive_serverFinish implies (let children = (this.@r_serverChangeCipherSpec + this.@r_serverFinished) | one children)) }
 fun alive_serverFinish : set serverFinish { channel.@r_serverFinish }
 fact { always ~@r_serverFinish in @p_serverFinish
   always @r_serverFinish.univ in alive_channel }
 
 fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverChangeCipherSpec)) }
 fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverFinished)) }
+fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies ((not before self_ in alive_serverFinish) implies (some self_.@r_serverChangeCipherSpec))) }
 
 
 sig serverChangeCipherSpec

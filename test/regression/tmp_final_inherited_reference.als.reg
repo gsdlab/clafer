@@ -81,14 +81,14 @@ sig gear
 { p_gear : lone Car
 , var r_park : set park
 , var r_drive : set drive }
-{ always (this in alive_gear implies (let children = (this.@r_park + this.@r_drive) | one children))
-  always (this in alive_gear and not before this in alive_gear implies (some this.@r_park)) }
+{ always (this in alive_gear implies (let children = (this.@r_park + this.@r_drive) | one children)) }
 fun alive_gear : set gear { Car.@r_gear }
 fact { always ~@r_gear in @p_gear
   always @r_gear.univ in alive_Car }
 
 fact { all self_ : gear | always (self_ in alive_gear implies (lone self_.@r_park)) }
 fact { all self_ : gear | always (self_ in alive_gear implies (lone self_.@r_drive)) }
+fact { all self_ : gear | always (self_ in alive_gear implies ((not before self_ in alive_gear) implies (some self_.@r_park))) }
 
 
 sig park

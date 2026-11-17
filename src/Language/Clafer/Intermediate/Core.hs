@@ -48,13 +48,13 @@ import Control.Lens (over)
 import Control.Lens.Plated (plate, transformOn)
 import Data.Data.Lens (biplate)
 import Language.Clafer.Common
-import Language.Clafer.Intermediate.Finality (lowerFinality)
+import Language.Clafer.Intermediate.Finality (lowerFinality, lowerInitial)
 import Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
 import Language.Clafer.Intermediate.Intclafer
 
 -- | The core of the module, for a backend that reads it with the given semantics.
 lowerToCore :: Semantics -> IModule -> IModule
-lowerToCore sem = lowerFinality . lowerEnums . over biplate lowerPExp . lowerInitializers sem
+lowerToCore sem = lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . lowerInitializers sem
 
 -- | The clafers of the enumerations are ordinary clafers.
 lowerEnums :: IModule -> IModule

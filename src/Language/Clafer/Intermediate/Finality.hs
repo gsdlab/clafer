@@ -19,8 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{- | The finality modifiers, lowered to constraints of the core (gsdlab/clafer#127,
-     kbak/clafer-semantics#192). Each modifier keeps a set from one state to the next while the
+{- | The temporal modifiers, lowered to constraints of the core: @initial@ ('lowerInitial'), and
+     the finality modifiers (gsdlab/clafer#127, kbak/clafer-semantics#192). Each modifier keeps a set from one state to the next while the
      parent of the clafer exists, without additions and without losses. The constraints are in the
      context of the clafer @x@, where the obligations of @X@ and @previous@ last while the parent
      exists, in its current lifetime, and a quantifier captures the instance, which @this@ is not
@@ -43,6 +43,7 @@
 -}
 module Language.Clafer.Intermediate.Finality
   ( lowerFinality
+  , lowerInitial
   , staticClafers
   ) where
 
@@ -134,6 +135,35 @@ finality uidIClaferMap' taken x =
   targets =
     [ forAll vt (dref thisX) $ fun iX [fun iIn [tv, dref siblings]]
     , forAll vt (dref thisX) $ since' (fun iIn [tv, dref siblings]) ]
+
+-- | The module with the modifier @initial@ as constraints of the parents (kbak/clafer-semantics#195):
+--   an instance of the parent has an instance of @initial x@ in its first state, in each of its
+--   lifetimes, @[ initially (some this.x) ]@, and the model has one in the first state of the
+--   trace at the top level, @[ initially (some x) ]@. A top-level abstract clafer has no instances
+--   of its own: its subclafers inherit the modifier.
+lowerInitial :: IModule -> IModule
+lowerInitial imodule = imodule{_mDecls = lowerElements Nothing $ _mDecls imodule}
+  where
+  lowerElements parent' es = map lowerElement es ++
+    [ IEConstraint True $ initially' parent' x | IEClafer x <- es, _isInitial x, not (_isAbstract x && isTopLevel x) ]
+  lowerElement (IEClafer c) = IEClafer c
+    { _elements = lowerElements (Just c) $ _elements c
+    , _modifiers = (_modifiers c){_initial = False} }
+  lowerElement e = e
+
+-- | The constraint that the parent, or the model at the top level, has an instance of x initially.
+initially' :: Maybe IClafer -> IClafer -> PExp
+initially' parent' x = bool $ IFunExp iInitially [bool $ IDeclPExp ISome [] instances]
+  where
+  pos' = _cinPos x
+  uid' = _uid x
+  typed t = PExp (Just t) "" pos'
+  bool = typed TBoolean
+  instances = case parent' of
+    Nothing -> typed (TClafer [uid']) $ IClaferId "" uid' True (GlobalBind uid')
+    Just p -> typed (TClafer [uid']) $ IFunExp iJoin
+      [ typed (TClafer [_uid p]) $ IClaferId "" thisIdent True (GlobalBind $ _uid p)
+      , typed (TClafer [uid']) $ IClaferId "" uid' False (GlobalBind uid') ]
 
 isRoot :: IClafer -> Bool
 isRoot c = _uid c == rootIdent

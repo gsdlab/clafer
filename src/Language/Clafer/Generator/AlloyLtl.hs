@@ -283,7 +283,7 @@ genStructure genEnv c
 
 -- | The constraints in the signature fact of the clafer, which hold for every existing instance.
 genConstraints :: GenEnv -> IClafer -> [Concat]
-genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts ++ initialConsts
+genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts
   where
   uid' = _uid c
   alive = aliveName uid'
@@ -311,12 +311,6 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
   groupConst = [ genGroupConst genEnv c ]
   childConsts = concatMap childConst $ containedClafers c
   childConst c' = genParentSubrelationConstraint (uidIClaferMap genEnv) c' : genSetUniquenessConstraint genEnv c'
-  -- whenever this instance appears
-  initialConsts =
-    [ appears $ CString $ "some this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isInitial c' ]
-  appears x
-    | isRoot c  = x
-    | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find
