@@ -1,8 +1,8 @@
 //# OPTIONS --explicit
 0..* A 2..2 {
-  0..* x -> int 1..1 := 10 {}
-  0..* y -> int 0..1 := this.x.dref + 1 {}
-  0..* zs -> int 0..2 := 1 ++ 2 {}
+  0..* x -> int 1..1 := each 10 {}
+  0..* y -> int 0..1 := each this.x.dref + 1 {}
+  0..* zs -> int 0..2 := together 1 ++ 2 {}
 }
-abstract 0..* Val -> int := 2 {}
+abstract 0..* Val -> int 0..* := each 2 {}
 0..* v1 : Val 1..1 {}

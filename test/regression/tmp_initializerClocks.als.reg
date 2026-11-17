@@ -1,0 +1,77 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_Vi : set Vi
+, var r_Wi : set Wi
+, var r_A : set A }
+fact { always (one root.@r_A) }
+fact { always ((#alive_Val) <= 3) }
+fact { always ((#alive_Wal) <= 3) }
+fact { always ((not before some root) implies ((some alive_Wal) => ((alive_Wal.@Wal_ref) = 1))) }
+fact { always ((not before some root) implies ((no alive_Vi) && (no alive_Wi))) }
+fact { always ((eventually (some alive_Vi)) && (eventually (some alive_Wi))) }
+
+
+abstract sig Val
+{ var Val_ref : set Int }
+{ always (this in alive_Val implies (one this.@Val_ref))
+  always (this not in alive_Val implies no this.@Val_ref) }
+fun alive_Val : set Val { alive_Vi }
+fact { all self_ : Val | always (self_ in alive_Val implies ((not before self_ in alive_Val) implies ((self_.@Val_ref) = 1))) }
+
+
+abstract sig Wal
+{ var Wal_ref : set Int }
+{ always (this in alive_Wal implies (one this.@Wal_ref))
+  always (this not in alive_Wal implies no this.@Wal_ref) }
+fun alive_Wal : set Wal { alive_Wi }
+
+sig Vi extends Val
+{ p_Vi : lone root }
+fun alive_Vi : set Vi { root.@r_Vi }
+fact { always ~@r_Vi in @p_Vi }
+
+
+sig Wi extends Wal
+{ p_Wi : lone root }
+fun alive_Wi : set Wi { root.@r_Wi }
+fact { always ~@r_Wi in @p_Wi }
+
+
+sig A
+{ p_A : lone root
+, var r_xs : set xs
+, var r_ys : set ys }
+fun alive_A : set A { root.@r_A }
+fact { always ~@r_A in @p_A }
+
+fact { all self_ : A | always (self_ in alive_A implies (#(self_.@r_xs) <= 2)) }
+fact { all self_ : A | always (self_ in alive_A implies (#(self_.@r_ys) <= 2)) }
+fact { all self_ : A | always (self_ in alive_A implies ((not before self_ in alive_A) implies ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = 3)))) }
+fact { all self_ : A | always (self_ in alive_A implies (eventually ((#(self_.@r_xs)) = 2))) }
+
+
+sig xs
+{ p_xs : lone A
+, var xs_ref : set Int }
+{ always (this in alive_xs implies (one this.@xs_ref))
+  always (this not in alive_xs implies no this.@xs_ref) }
+fun alive_xs : set xs { A.@r_xs }
+fact { always ~@r_xs in @p_xs
+  always @r_xs.univ in alive_A }
+
+fact { all self_ : xs | always (self_ in alive_xs implies ((not before self_ in alive_xs) implies ((self_.@xs_ref) = 2))) }
+
+
+sig ys
+{ p_ys : lone A
+, var ys_ref : set Int }
+{ always (this in alive_ys implies (one this.@ys_ref))
+  always (this not in alive_ys implies no this.@ys_ref) }
+fun alive_ys : set ys { A.@r_ys }
+fact { always ~@r_ys in @p_ys
+  always @r_ys.univ in alive_A }
+
+

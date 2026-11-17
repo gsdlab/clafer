@@ -1,0 +1,16 @@
+scope({$V:2, $Val:2, $xs:2, $ys:2});
+defaultScope(1);
+stringLength(16);
+
+$xs = Clafer("xs").withCard(2, 2);
+$ys = Clafer("ys").withCard(2, 2);
+$Val = Abstract("Val");
+$V = Clafer("V").withCard(2, 2);
+$V.extending($Val);
+$xs.refTo(Int);
+$ys.refTo(Int);
+$Val.refTo(Int);
+Constraint(all([decl([$_xs_1 = local("xs_1")], global($xs))], equal(joinRef($_xs_1), constant(1))));
+Constraint(implies(some(global($ys)), equal(joinRef(global($ys)), union(constant(1), constant(2)))));
+Constraint(lessThanEqual(card(global($Val)), constant(3)));
+Constraint(implies(some(global($Val)), equal(joinRef(global($Val)), constant(5))));

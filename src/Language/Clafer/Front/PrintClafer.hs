@@ -197,6 +197,8 @@ instance Print InitHow where
   prt i e = case e of
     InitConstant _ -> prPrec i 0 (concatD [doc (showString "=")])
     InitDefault _ -> prPrec i 0 (concatD [doc (showString ":=")])
+    InitEach _ -> prPrec i 0 (concatD [doc (showString ":="), doc (showString "each")])
+    InitTogether _ -> prPrec i 0 (concatD [doc (showString ":="), doc (showString "together")])
 
 instance Print GCard where
   prt i e = case e of

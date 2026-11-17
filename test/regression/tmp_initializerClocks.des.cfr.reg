@@ -1,0 +1,12 @@
+//# OPTIONS --explicit --tl=10
+[initially (((#Vi) = 0) && ((#Wi) = 0))]
+[(F ((#Vi) >= 1)) && (F ((#Wi) >= 1))]
+abstract 0..* Val ->> int 0..3 := each 1 {}
+abstract 0..* Wal ->> int 0..3 := together 1 {}
+0..* Vi : Val 0..* {}
+0..* Wi : Wal 0..* {}
+0..* A 1..1 {
+  [F ((#this.xs) = 2)]
+  0..* xs ->> int 0..2 := each 2 {}
+  0..* ys ->> int 0..2 := together 3 {}
+}

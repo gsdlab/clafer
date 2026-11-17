@@ -1,0 +1,23 @@
+open util/integer
+pred show {}
+
+
+fact { 2 <= #xs and #xs <= 2 }
+sig xs
+{ xs_ref : one Int }
+
+fact { all  xs_1 : xs | (xs_1.@xs_ref) = 1 }
+fact { 2 <= #ys and #ys <= 2 }
+sig ys
+{ ys_ref : one Int }
+
+fact { (some ys) => ((ys.@ys_ref) = (1 + 2)) }
+abstract sig Val
+{ Val_ref : one Int }
+
+fact { (#Val) <= 3 }
+fact { (some Val) => ((Val.@Val_ref) = 5) }
+fact { 2 <= #V and #V <= 2 }
+sig V extends Val
+{}
+

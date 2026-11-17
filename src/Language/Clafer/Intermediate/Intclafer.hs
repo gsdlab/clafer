@@ -179,9 +179,14 @@ data IElement
   --   at the top level), and @e@ has the meaning it has in the parent.
   | IEInitializer
     { _isConstant :: Bool   -- ^ @=@ (constant) or @:=@ (initial value)
-    , _isSetInit :: Bool    -- ^ a set initializer: the multiplicity written for the clafer allows
-                            --   more than one instance, so a @:=@ initializes the instances under
-                            --   a parent instance when that instance is born, not each instance
+    , _isSetInit :: Bool    -- ^ a set initializer, the clock of @:=@: the instances under a parent
+                            --   instance when that instance is born (or, for a top-level abstract
+                            --   clafer, all its instances at time zero), not each instance at its
+                            --   birth; @:= together@, or the multiplicity written for the clafer
+                            --   allows more than one instance (kbak/clafer-semantics#170)
+    , _isExplicitClock :: Bool -- ^ the clock of @:=@ is written: @:= each@ (not a set initializer)
+                            --   or @:= together@ (a set initializer), whatever the multiplicity
+                            --   (kbak/clafer-semantics#194)
     , _cpexp :: PExp        -- ^ the equation @x = e@, in the context of the parent
     }
   -- | Goal (optimization objective)
@@ -392,8 +397,8 @@ iMap f (IRIElement (IEConstraint' h pexp o)) =
   f $ IRIElement $ (\p' -> IEConstraint' h p' o) $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRIElement (IEInitializer k s pexp)) =
-  f $ IRIElement $ IEInitializer k s $ unWrapPExp $ iMap f $ IRPExp pexp
+iMap f (IRIElement (IEInitializer k s clk pexp)) =
+  f $ IRIElement $ IEInitializer k s clk $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc elems o)) =
   f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc (map (unWrapIElement . iMap f . IRIElement) elems) o
 iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc elems o)) =
@@ -418,7 +423,7 @@ iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRIElement (IEInitializer _ _ pexp)) =
+iFoldMap f i@(IRIElement (IEInitializer _ _ _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ elems _)) =
   f i `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems

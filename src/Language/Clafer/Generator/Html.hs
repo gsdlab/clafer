@@ -374,11 +374,13 @@ printVarBinding (VarBinding _ locid exp') indent irMap html comments =
 
 printInit :: Init -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printInit (InitEmpty _) _ _ _ _ = ""
-printInit (InitSome _ initHow exp') indent irMap html comments = printInitHow initHow  ++ printExp exp' indent irMap html comments
+printInit (InitSome _ initHow exp') indent irMap html comments = printInitHow initHow html ++ printExp exp' indent irMap html comments
 
-printInitHow :: InitHow -> String
-printInitHow (InitConstant _) = " = "
-printInitHow (InitDefault _) = " := "
+printInitHow :: InitHow -> Bool -> String
+printInitHow (InitConstant _) _ = " = "
+printInitHow (InitDefault _) _ = " := "
+printInitHow (InitEach _) html = " := " ++ while html "<span class=\"keyword\">" ++ "each" ++ while html "</span>" ++ " "
+printInitHow (InitTogether _) html = " := " ++ while html "<span class=\"keyword\">" ++ "together" ++ while html "</span>" ++ " "
 
 printTransition :: Transition -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printTransition (TransitionEmpty _) _ _ _ _ = ""

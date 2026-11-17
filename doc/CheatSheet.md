@@ -143,6 +143,8 @@ a constant using `=`, and an initial value using `:=`.
 ```
 = <set expression>
 := <set expression>
+:= each <set expression>
+:= together <set expression>
 ```
 
 `x -> integer ? = 10` is the constraint `[ some x => x.dref = 10 ]` in the parent's context: an optional `x` stays optional, and in a temporal model the value holds in every state.
@@ -162,17 +164,25 @@ As for the other redefinitions, the subclafer's own initializer is added to the 
 * `:= 2` under `= 2` repeats the value, which `=` fixes in every state, and `:= 3` under `= 2` has no instance. Both hold, and the compiler warns that a `:=` does not redefine an inherited `=`.
 * Another value, `:= 3` or `= 3` under `:= 2`, has no instance.
 
-An inherited initializer keeps its clock, which the abstract clafer's own multiplicity decides ([kbak/clafer-semantics#170](https://github.com/kbak/clafer-semantics/issues/170)):
+The clock of `:=` says when the value is checked ([kbak/clafer-semantics#194](https://github.com/kbak/clafer-semantics/issues/194)):
+
+* `:= each e`: each instance at its birth, also one born later or born again.
+* `:= together e`: all the instances under the parent at the parent's birth, and all the instances of a top-level abstract clafer at time zero. An instance born later under the same parent is not initialized.
+* `:= e`, without a clock: the multiplicity decides, as below, so `xs -> integer * := e` is `:= together e`, and `x -> integer ? := e` is `:= each e`.
+
+A written clock does not depend on the multiplicity: `xs -> integer * := each 1` initializes each instance of `xs`. In a static model, `:= each e` of a clafer with several instances is an equation for each instance, and `:= together e` one for all of them: `xs -> integer * := each 1, 2` has no instance (a single reference cannot equal two values; the compiler warns), while `:= together 1, 2` lets two instances have 1 and 2.
+
+An inherited initializer keeps its clock, which the abstract clafer's own clock or multiplicity decides ([kbak/clafer-semantics#170](https://github.com/kbak/clafer-semantics/issues/170)):
 
 * Without a multiplicity, `abstract Val -> integer := 1` initializes each instance when it is born, also one born later.
-* With `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
+* With `:= together`, or with `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
 
 Two forms have no meaning, so the compiler rejects them ([#126](https://github.com/gsdlab/clafer/issues/126)), in every mode, also `-m clafer`:
 
-* A per-instance `:=` of an abstract clafer needs a value with at most one element, which the compiler establishes from the declarations, without the constraints: `abstract Val -> integer := 1, 2` and `:= pool.dref` with `pool -> integer *` are errors, while `:= 1`, `:= seed.dref` with `seed -> integer ?`, `:= #pool` and `:= pool.dref ** 1` are not. To initialize all the instances together, write `*`.
-* On a top-level abstract clafer with `:=`, only `*` (or `0..*`) has a meaning: `abstract Val -> integer ? := 1` is an error. A number of instances is a constraint, e.g., `[ G (#Val = 2) ]`.
+* A per-instance `:=` of an abstract clafer needs a value with at most one element, which the compiler establishes from the declarations, without the constraints: `abstract Val -> integer := 1, 2` and `:= pool.dref` with `pool -> integer *` are errors, while `:= 1`, `:= seed.dref` with `seed -> integer ?`, `:= #pool` and `:= pool.dref ** 1` are not. To initialize all the instances together, write `:= together`.
+* On a top-level abstract clafer with `:=` without a clock, only `*` (or `0..*`) has a meaning: `abstract Val -> integer ? := 1` is an error, which asks for `:= each` or `:= together`. With a clock, every multiplicity is allowed, e.g., `abstract Val -> integer 0..3 := together 1`.
 
-A single reference with several values, e.g., `x -> integer ? := 1, 2` or `= 1, 2`, has no instance: the compiler warns.
+A single reference with several values, e.g., `x -> integer ? := 1, 2` or `= 1, 2`, has no instance, and nor does `xs -> integer * := each 1, 2`: the compiler warns.
 
 To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
 

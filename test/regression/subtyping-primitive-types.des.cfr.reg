@@ -6,7 +6,7 @@ abstract 0..* percent ->> int 0..* {
 0..* threePercent : percent 1..1 = twoPercent.dref + 1 {}
 abstract 0..* date ->> string 0..* {}
 0..* today : date 1..1 = "Mar 20, 2012" {}
-abstract 0..* time ->> int = time.minute.dref + time.hour.dref {
+abstract 0..* time ->> int 0..* = time.minute.dref + time.hour.dref {
   0..* minute -> int 1..1 {
     [(this.dref >= 0) && (this.dref <= 5)]
   }

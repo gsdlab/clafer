@@ -204,12 +204,15 @@ data Init = InitEmpty Span | InitSome Span InitHow Exp
 instance Spannable Init where
     getSpan (InitEmpty s ) = s
     getSpan (InitSome s _ _ ) = s
-data InitHow = InitConstant Span | InitDefault Span
+data InitHow
+    = InitConstant Span | InitDefault Span | InitEach Span | InitTogether Span
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable InitHow where
     getSpan (InitConstant s ) = s
     getSpan (InitDefault s ) = s
+    getSpan (InitEach s ) = s
+    getSpan (InitTogether s ) = s
 data GCard
     = GCardEmpty Span
     | GCardXor Span

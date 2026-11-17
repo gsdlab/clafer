@@ -119,6 +119,8 @@ import Language.Clafer.Front.ErrM
   'previous' { PT _ (TS _ 104) }
   'since' { PT _ (TS _ 105) }
   'triggered' { PT _ (TS _ 106) }
+  'each' { PT _ (TS _ 107) }
+  'together' { PT _ (TS _ 108) }
   '{' { PT _ (TS _ 97) }
   '|' { PT _ (TS _ 98) }
   '||' { PT _ (TS _ 99) }
@@ -196,6 +198,8 @@ Init : {- empty -} { Language.Clafer.Front.AbsClafer.InitEmpty noSpan }
 InitHow :: { InitHow }
 InitHow : '=' { Language.Clafer.Front.AbsClafer.InitConstant ((mkTokenSpan $1)) }
         | ':=' { Language.Clafer.Front.AbsClafer.InitDefault ((mkTokenSpan $1)) }
+        | ':=' 'each' { Language.Clafer.Front.AbsClafer.InitEach ((mkTokenSpan $1) >- (mkTokenSpan $2)) }
+        | ':=' 'together' { Language.Clafer.Front.AbsClafer.InitTogether ((mkTokenSpan $1) >- (mkTokenSpan $2)) }
 GCard :: { GCard }
 GCard : {- empty -} { Language.Clafer.Front.AbsClafer.GCardEmpty noSpan }
       | 'xor' { Language.Clafer.Front.AbsClafer.GCardXor ((mkTokenSpan $1)) }

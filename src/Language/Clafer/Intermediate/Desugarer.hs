@@ -96,7 +96,7 @@ sugarDeclaration (IEConstraint True constraint) =
 sugarDeclaration  (IEConstraint False assertion) =
       ElementDecl (_inPos assertion) $ SubAssertion (_inPos assertion) $ sugarAssertion assertion
 sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal isMaximize'
-sugarDeclaration  (IEInitializer _ _ pexp) = error $ "Desugarer.sugarDeclaration: an initializer outside a clafer at " ++ show (_inPos pexp)
+sugarDeclaration  (IEInitializer _ _ _ pexp) = error $ "Desugarer.sugarDeclaration: an initializer outside a clafer at " ++ show (_inPos pexp)
 
 
 desugarClafer :: Bool -> Clafer -> [IElement]
@@ -190,9 +190,13 @@ sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ eleme
       (sugarSuper super') (sugarReference reference') (sugarCard crd') init' (TransitionEmpty s) (sugarElements elements')
   where
     -- the initializer, with the value of its equation x = e
-    init' = case [ (k, e) | IEInitializer k _ PExp{_exp = IFunExp _ [_, e]} <- elements' ] of
-      (k, e) : _ -> InitSome s (if k then InitConstant s else InitDefault s) (sugarExp e)
+    init' = case [ (k, setInit, clk, e) | IEInitializer k setInit clk PExp{_exp = IFunExp _ [_, e]} <- elements' ] of
+      (k, setInit, clk, e) : _ -> InitSome s (initHow k setInit clk) (sugarExp e)
       [] -> InitEmpty s
+    initHow True _ _ = InitConstant s
+    initHow False _ False = InitDefault s
+    initHow False False True = InitEach s
+    initHow False True True = InitTogether s
 
 desugarSuper :: Super -> Maybe PExp
 desugarSuper (SuperEmpty _) = Nothing
@@ -217,21 +221,30 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
 
 -- | The initializer of the clafer @x@, kept as written (see 'IEInitializer'): @x -> T = e@ or
 --   @x -> T := e@ is the equation @x = e@, which the name resolver and the type checker treat as a
---   constraint of the parent, where @e@ is written. Whether it is a set initializer depends on
+--   constraint of the parent, where @e@ is written. The clock of @:=@ is the written one, @:= each e@
+--   (each instance at its birth) or @:= together e@ (all the instances under a parent at its birth;
+--   kbak/clafer-semantics#194); without one, whether it is a set initializer depends on
 --   the multiplicity written for @x@, which is known only here: an abstract clafer has none, and
 --   its default (@0..*@) is not a written @*@ (kbak/clafer-semantics#170). The backends give it
 --   its meaning ("Language.Clafer.Intermediate.Initializers").
 desugarInit :: Maybe Interval -> PosIdent -> Init -> [IElement]
 desugarInit _ _ (InitEmpty _) = []
 desugarInit crd id' (InitSome s inithow exp') =
-    [ IEInitializer (isConstant' inithow) setInit $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
+    [ IEInitializer (isConstant' inithow) setInit explicitClock $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
   where
     isConstant' (InitConstant _) = True
-    isConstant' (InitDefault _) = False
-    -- more than one instance of x under a parent instance
-    setInit = case crd of
-      Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
-      Nothing -> False
+    isConstant' _ = False
+    explicitClock = case inithow of
+      InitEach _ -> True
+      InitTogether _ -> True
+      _ -> False
+    -- the written clock, or more than one instance of x under a parent instance
+    setInit = case inithow of
+      InitEach _ -> False
+      InitTogether _ -> True
+      _ -> case crd of
+        Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
+        Nothing -> False
     cId :: PExp
     cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
     getIdent (PosIdent y) = y
@@ -378,7 +391,7 @@ sugarElement x = case x of
   IEConstraint True constraint -> Subconstraint noSpan $ sugarConstraint constraint
   IEConstraint False assertion -> SubAssertion noSpan $ sugarAssertion assertion
   IEGoal isMaximize' goal -> Subgoal noSpan $ sugarGoal goal isMaximize'
-  IEInitializer _ _ pexp -> error $ "Desugarer.sugarElement: an initializer is part of its clafer, at " ++ show (_inPos pexp)
+  IEInitializer _ _ _ pexp -> error $ "Desugarer.sugarElement: an initializer is part of its clafer, at " ++ show (_inPos pexp)
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of

@@ -59,7 +59,7 @@ astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint' isHard' pexp o -> (\p' -> IEConstraint' isHard' p' o) `liftM` astrPExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
-  IEInitializer k s pexp -> IEInitializer k s `liftM` astrPExp pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk `liftM` astrPExp pexp
 
 astrPExp :: MonadState (Map.Map String Int) m => PExp -> m PExp
 astrPExp (PExp (Just TString) pid' pos' exp') =

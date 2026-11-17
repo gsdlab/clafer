@@ -618,6 +618,10 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 temporalModifiers :: [String]
 temporalModifiers = [ "final", "initial" ]
 
+-- | The clocks of an initializer @:=@: @:= each e@ and @:= together e@ (kbak/clafer-semantics#194)
+initializerClocks :: [String]
+initializerClocks = [ "each", "together" ]
+
 iLet :: String
 iLet = "let"
 
@@ -743,6 +747,7 @@ keywordIdents =
   [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
   [ "abstract", "enum" ] ++ -- keywords
   temporalModifiers ++ -- temporal
+  initializerClocks ++ -- the clocks of :=
   ltlOps ++ -- LTL
   propertyKeywords ++ -- temp patterns
   [ iLet ]

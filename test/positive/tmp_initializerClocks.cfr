@@ -1,0 +1,18 @@
+// The written clocks of := in a temporal model (kbak/clafer-semantics#194): := each
+// initializes each instance at its birth, also of the instances born later, and := together
+// the instances under a parent at its birth, and those of a top-level abstract clafer at time
+// zero. A top-level abstract clafer with a multiplicity, e.g., 0..3, needs a clock.
+// Val and Wal start with no instance: the instances of Val are born with the value 1, and
+// those of Wal with any value, since := together held at time zero.
+
+abstract Val ->> integer 0..3 := each 1
+abstract Wal ->> integer 0..3 := together 1
+Vi : Val *
+Wi : Wal *
+[ initially (no Vi && no Wi) ]
+[ F some Vi && F some Wi ]
+
+A
+    xs ->> integer 0..2 := each 2
+    ys ->> integer 0..2 := together 3
+    [ F #this.xs = 2 ]

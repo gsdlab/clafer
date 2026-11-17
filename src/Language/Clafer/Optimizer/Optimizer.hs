@@ -150,7 +150,7 @@ expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
   IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
-  IEInitializer k s pexp -> IEInitializer k s `liftM` expPExp pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk `liftM` expPExp pexp
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
 expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp pos' exp'
@@ -225,7 +225,7 @@ checkConstraintElement idents x = case x of
   IEClafer claf -> all (checkConstraintElement idents) $ _elements claf
   IEConstraint _ pexp -> checkConstraintPExp idents pexp
   IEGoal _ _ ->  True
-  IEInitializer _ _ pexp -> checkConstraintPExp idents pexp
+  IEInitializer _ _ _ pexp -> checkConstraintPExp idents pexp
 
 checkConstraintPExp :: [String] -> PExp -> Bool
 checkConstraintPExp idents pexp = checkConstraintIExp idents $ _exp pexp
@@ -278,7 +278,7 @@ markTopElement clafers x = case x of
   IEClafer c  -> IEClafer $ markTopClafer clafers c
   IEConstraint isHard' pexp  -> IEConstraint isHard' $ markTopPExp clafers pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' $ markTopPExp clafers pexp
-  IEInitializer k s pexp -> IEInitializer k s $ markTopPExp clafers pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
 markTopPExp clafers pexp =

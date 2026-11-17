@@ -53,6 +53,8 @@ InitSome.       Init ::= InitHow Exp ;
 
 InitConstant.   InitHow ::= "=" ;
 InitDefault.    InitHow ::= ":=" ;
+InitEach.       InitHow ::= ":=" "each" ;
+InitTogether.   InitHow ::= ":=" "together" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;

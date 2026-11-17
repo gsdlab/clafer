@@ -165,7 +165,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
           where
             c = claferWithUid u
     genElement _ (IEGoal isMax PExp{_exp=IFunExp _ [pexp]}) = Just $ CEObjective isMax $ genConstraintPExp pexp
-    genElement _ (IEInitializer k s PExp{_exp=IFunExp _ [_, value]}) = Just $ CEInitializer k s $ genConstraintPExp value
+    genElement _ (IEInitializer k s _ PExp{_exp=IFunExp _ [_, value]}) = Just $ CEInitializer k s $ genConstraintPExp value
     genElement _ _ = Nothing
 
     thisLocal = "this_"

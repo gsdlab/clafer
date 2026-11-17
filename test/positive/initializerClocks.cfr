@@ -1,0 +1,12 @@
+// The written clocks of := (kbak/clafer-semantics#194): := each initializes each instance at
+// its birth, and := together the instances under a parent at its birth (all the instances of
+// a top-level abstract clafer at time zero), whatever the multiplicity.
+// In a static model, which has a single state, := each is an equation for each instance: both
+// instances of xs have the value 1, and each of V has 5. := together is one equation for all
+// the instances: the values of ys are 1 and 2 together.
+
+xs ->> integer 2 := each 1
+ys ->> integer 2 := together 1, 2
+
+abstract Val ->> integer 0..3 := each 5
+V : Val 2

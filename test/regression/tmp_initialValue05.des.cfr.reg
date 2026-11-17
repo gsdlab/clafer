@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --tl=10
 [F (xs.dref = 3)]
-0..* xs -> int 0..3 := 1 ++ 2 {}
+0..* xs -> int 0..3 := together 1 ++ 2 {}
 0..* A 2..2 {
   [F ((#this.ys) >= 1)]
-  0..* ys -> int 0..* := 1 ++ 2 {}
+  0..* ys -> int 0..* := together 1 ++ 2 {}
 }

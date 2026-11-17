@@ -661,7 +661,7 @@ case_InitialValue = do
             take 2 a == take 2 b @? ("differs from =:\n" ++ unlines a)
             not (any ("assert" `isInfixOf`) a) @? ("an assertion:\n" ++ unlines a)
             not ("--tl" `isInfixOf` last a) @? ("temporal:\n" ++ last a)
-            ("0..* x -> int 1..1 := 10 {}" `isInfixOf` last a) @? ("not :=:\n" ++ last a)
+            ("0..* x -> int 1..1 := each 10 {}" `isInfixOf` last a) @? ("not :=:\n" ++ last a)
             ("0..* x -> int 1..1 = 10 {}" `isInfixOf` last b) @? ("not =:\n" ++ last b)
         (Left errs', _) -> assertFailure $ show errs'
         (_, Left errs') -> assertFailure $ show errs'
@@ -670,11 +670,11 @@ case_InitialValue = do
     let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
                    , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := A.y"
                    , "[ F some A.x ]" ]
-    has temporal "0..* x -> int 0..1 := this.A__y.dref + 1 {"
-    has temporal "0..* z -> int 1..1 := this.A__y.dref {}"
-    has temporal "0..* zs -> int 0..* := 1 ++ 2 {}"
+    has temporal "0..* x -> int 0..1 := each this.A__y.dref + 1 {"
+    has temporal "0..* z -> int 1..1 := each this.A__y.dref {}"
+    has temporal "0..* zs -> int 0..* := together 1 ++ 2 {}"
     -- a finalref reference keeps the value it starts with, also when the value of A.y changes
-    has temporal "finalref 0..* f -> int 0..1 := A.A__y.dref {}"
+    has temporal "finalref 0..* f -> int 0..1 := each A.A__y.dref {}"
     x <- explicit temporal
     not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)
 
@@ -748,7 +748,7 @@ case_RichAndCoreExplicit = do
             x <- explicit core'
             (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
     has False "enum Color = red | green"
-    has False "0..* x -> int 1..1 := 3 {}"
+    has False "0..* x -> int 1..1 := each 3 {}"
     has False "[((#this.on) >= 1) --> ((#this.off) >= 1) --> ((#this.on) >= 1)]"
     has False "[never ((#p) >= 1) between ((#q) >= 1) and ((#r) >= 1)]"
     -- the enumeration is final in a temporal model: its literals do not change (#127)
@@ -785,9 +785,9 @@ case_JsonRichAndCore = do
     has True "\"_op\":\"initially\""
 
 -- | The initializers stay as written in the rich explicit model and are lowered to LTL in the
---   core, except a per-instance := whose value has temporal operators: it is evaluated in the
---   parent's context when the instance appears, which the core cannot say without past-time
---   operators (gsdlab/clafer#127), so it stays := in the core (doc/rich-and-core-explicit.md).
+--   core; a per-instance := whose value has temporal operators is evaluated in the parent's
+--   context when the instance appears, which the core says with the past-time operator
+--   previous (gsdlab/clafer#127, doc/rich-and-core-explicit.md).
 case_CoreInitializers :: Assertion
 case_CoreInitializers = do
     let model = [ "P ?", "    b ?", "    x -> integer ? := 1", "    y -> integer = 2"
@@ -805,11 +805,12 @@ case_CoreInitializers = do
         hasNot core' unexpected = do
             x <- explicit core'
             not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
-    -- rich: as written
-    has False "0..* x -> int 0..1 := 1 {}"
+    -- rich: as written, with the clocks of := (kbak/clafer-semantics#194)
+    has False "0..* x -> int 0..1 := each 1 {}"
     has False "0..* y -> int 1..1 = 2 {}"
-    has False "0..* xs -> int 0..* := 1 ++ 2 {}"
-    has False "abstract 0..* Val -> int := 1 {}"
+    has False "0..* xs -> int 0..* := together 1 ++ 2 {}"
+    has False "abstract 0..* Val -> int 0..* := each 1 {}"
+    has False "abstract 0..* Vs -> int 0..* := together 3 {}"
     -- core: per instance, a fixed value, parent birth, time zero
     has True "0..* x -> int 0..1 {\n    [initially (this.dref = 1)]"
     has True "[((#this.y) >= 1) => (this.y.dref = 2)]"
@@ -821,11 +822,52 @@ case_CoreInitializers = do
     has True "[initially (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
     -- per instance with a temporal value: in the context of the parent, each instance that
     -- appears, i.e., was not there in the previous state, has the value (#127)
-    has False "0..* z -> int 1..1 := if (X ((#this.b) >= 1)) then 1 else 2 {}"
+    has False "0..* z -> int 1..1 := each if (X ((#this.b) >= 1)) then 1 else 2 {}"
     has True "[all z_1 : this.z | (!(previous (z_1 in this.z))) => (z_1.dref = (if (X ((#this.b) >= 1)) then 1 else 2))]"
     has True "0..* z -> int 1..1 {}"
     hasNot True ":="
     hasNot True "= 2 {}"
+
+-- The written clocks of := (kbak/clafer-semantics#194): := each initializes each instance at its
+-- birth and := together the instances under a parent at its birth (all the instances of a
+-- top-level abstract clafer at time zero), whatever the multiplicity. On a concrete clafer with
+-- more than one instance, := each is one equation for each instance, also in a static model,
+-- not the equation of all the instances together. The rich explicit model writes the clocks.
+case_InitializerClocks :: Assertion
+case_InitializerClocks = do
+    let model = [ "P ?", "    xs -> integer * := each 1", "    x -> integer ? := together 2"
+                , "    ys -> integer 2 := each 3, 4"
+                , "abstract Val -> integer 0..3 := each 5", "v : Val ?"
+                , "abstract Wal -> integer 0..3 := together 6", "w : Wal ?" ]
+        temporal = model ++ [ "[ G some P ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' m expected = do
+            x <- explicit core' m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    forM_ [model, temporal] $ \m -> mapM_ (has False m)
+      [ "0..* xs -> int 0..* := each 1 {}", "0..* x -> int 0..1 := together 2 {}"
+      , "0..* ys -> int 2..2 := each 3 ++ 4 {}", "abstract 0..* Val -> int 0..3 := each 5 {}"
+      , "abstract 0..* Wal -> int 0..3 := together 6 {}" ]
+    -- static: each instance on its own, or all together; the abstract := each has a value with
+    -- at most one element, so the equation of all its instances is the same
+    mapM_ (has True model)
+      [ "[all xs_1 : this.xs | xs_1.dref = 1]", "[((#this.x) >= 1) => (this.x.dref = 2)]"
+      , "[all ys_1 : this.ys | ys_1.dref = (3 ++ 4)]", "[((#Val) >= 1) => (Val.dref = 5)]"
+      , "[((#Wal) >= 1) => (Wal.dref = 6)]" ]
+    -- temporal: at each instance's birth, at the parent's birth, at time zero
+    mapM_ (has True temporal)
+      [ "0..* xs -> int 0..* {\n    [initially (this.dref = 1)]"
+      , "[initially (((#this.x) >= 1) => (this.x.dref = 2))]"
+      , "0..* ys -> int 2..2 {\n    [initially (this.dref = (3 ++ 4))]"
+      , "abstract 0..* Val -> int 0..* {\n  [initially (this.dref = 5)]"
+      , "[initially (((#Wal) >= 1) => (Wal.dref = 6))]" ]
+    -- both explicit models compile to themselves
+    forM_ [model, temporal] $ \m -> forM_ [False, True] $ \core' -> do
+      x <- explicit core' m
+      y <- explicit core' (lines x)
+      x == y @? ("Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y)
 
 -- The support limits of the initializers (#126, kbak/clafer-semantics#170): a per-instance :=
 -- of an abstract clafer needs a value with at most one element, and on an abstract clafer
@@ -856,8 +898,9 @@ case_InitializerDiagnostics = do
           Left errs' -> show errs'
         scalar = "its initial value, which must have at most one element"
         scalarValue = "could not be established for"
-        bound = "with an initializer ':=' is not supported"
+        bound = "requires an explicit clock"
         several = "is a single reference, which cannot equal the several values"
+        severalEach = "each instance of xs is a single reference"
     -- scalar admission
     rejected scalar "abstract Val -> integer := 1, 2\nv : Val\n"
     rejected scalar "abstract Val -> integer := 1, 2\nv ?\n"
@@ -879,8 +922,17 @@ case_InitializerDiagnostics = do
       , "abstract Val -> integer = 1, 2"
       ]
     -- the multiplicity of an abstract clafer with :=, as written
-    forM_ ["?", "1", "2", "1..*", "+", "0..3"] $ \m ->
-      rejected ("The multiplicity " ++ m ++ " of the abstract clafer Val " ++ bound) ("abstract Val -> integer " ++ m ++ " := 1\nv : Val\n")
+    forM_ ["?", "1", "2", "1..*", "+", "0..3"] $ \m -> do
+      rejected ("the top-level abstract clafer Val with the multiplicity " ++ m ++ " " ++ bound) ("abstract Val -> integer " ++ m ++ " := 1\nv : Val\n")
+      -- with an explicit clock, every multiplicity (kbak/clafer-semantics#194), with the scalar
+      -- admission of a per-instance := of an abstract clafer
+      admitted $ "abstract Val -> integer " ++ m ++ " := each 1\nv : Val\n"
+      admitted $ "abstract Val -> integer " ++ m ++ " := together 1, 2\nv : Val\n"
+      rejected scalar $ "abstract Val -> integer " ++ m ++ " := each 1, 2\nv : Val\n"
+    -- an explicit clock overrides the shorthand of the multiplicity
+    mapM_ (admitted . (++ "\nv : Val\n"))
+      [ "abstract Val -> integer := together 1, 2", "abstract Val -> integer * := each 1" ]
+    rejected scalar "abstract Val -> integer * := each 1, 2\nv : Val\n"
     -- the multiplicity of a nested abstract clafer is not limited (only * is a clock there,
     -- #129); its per-instance := has the same scalar admission, in the parent's context
     let nested m = "abstract Base\n  q -> integer\n  " ++ m ++ "\nv : Base\n  x : Base.Val\n"
@@ -890,9 +942,13 @@ case_InitializerDiagnostics = do
     -- a single reference with several values
     (several `isInfixOf` warnings "P\n  x -> integer ? := 1, 2\n") @? "No warning for := 1, 2"
     ("initializer '='" `isInfixOf` warnings "P\n  x -> integer ? = 1, 2\n") @? "No warning for = 1, 2"
-    mapM_ (\m -> not (several `isInfixOf` warnings m) @? "Warning for\n" ++ m)
+    (several `isInfixOf` warnings "P\n  x -> integer ? := together 1, 2\n") @? "No warning for := together 1, 2"
+    -- each instance with several values (kbak/clafer-semantics#194)
+    (severalEach `isInfixOf` warnings "P\n  xs -> integer * := each 1, 2\n") @? "No warning for := each 1, 2"
+    mapM_ (\m -> not (several `isInfixOf` warnings m || severalEach `isInfixOf` warnings m) @? "Warning for\n" ++ m)
       [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
-      , "abstract Val -> integer = 1, 2\nv : Val\n" ]
+      , "abstract Val -> integer = 1, 2\nv : Val\n", "P\n  xs -> integer * := together 1, 2\n"
+      , "P\n  xs -> integer * := each 1, 1\n" ]
 
 -- The finality modifiers are constraints of the core (kbak/clafer-semantics#192): the explicit
 -- core model has no modifier left, compiles to itself, and the rich model keeps the modifiers.

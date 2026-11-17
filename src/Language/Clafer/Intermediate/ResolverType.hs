@@ -210,7 +210,7 @@ resolveTElement    TAExpressions parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
 -- the equation x = e of the initializer of x, a constraint of the parent of x (the root for a
 -- top-level clafer), where e is written
-resolveTElement    TAExpressions claf'   (IEInitializer k s pexp') =
+resolveTElement    TAExpressions claf'   (IEInitializer k s clk pexp') =
   do
     uidIClaferMap' <- asks iUIDIClaferMap
     parentUID' <- _parentUID <$> claferWithUid uidIClaferMap' claf'
@@ -218,7 +218,7 @@ resolveTElement    TAExpressions claf'   (IEInitializer k s pexp') =
     pexp'' <- resolveTConstraint context' pexp'
     unless (isTBoolean $ typeOf pexp'') $
       throwError $ SemanticErr (_inPos pexp'') ("An initializer requires a value of the type of its reference, but got '" ++ showType pexp'' ++ "'")
-    return $ IEInitializer k s pexp''
+    return $ IEInitializer k s clk pexp''
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
 resolveTConstraint curThis' constraint =

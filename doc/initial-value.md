@@ -240,9 +240,10 @@ any output, so that every mode, also the rich explicit model, gets only supporte
   `if then else`), not from the constraints: `pool.dref` with `pool ->> integer *` is not
   admitted, also with `[ #pool <= 1 ]`. `1 / 0` is admitted: it has one element, and the
   obligation simply cannot be met.
-- **The multiplicity of a top-level abstract clafer with `:=`:** `*` (or `0..*`) makes `:=` a set
-  initializer at time zero, and the absence of a multiplicity a per-instance one; any other,
-  e.g., `?`, `1` or `1..*`, has no meaning as a clock and is an error. In 0.5.8, it gave the
+- **The multiplicity of a top-level abstract clafer with `:=` without a clock:** `*` (or `0..*`)
+  makes `:=` a set initializer at time zero, and the absence of a multiplicity a per-instance
+  one; any other, e.g., `?`, `1` or `1..*`, has no meaning as a clock and is an error, which asks
+  for `:= each` or `:= together` (see below). In 0.5.8, it gave the
   per-instance clock, and it bounded the number of instances in static Alloy only, while the
   other backends and the explicit models ignored it (#129, which proposes one meaning for the
   multiplicity of an abstract clafer). The contract classifies only the top-level abstract
@@ -255,6 +256,36 @@ e.g., `x -> integer ? := 1, 2`, is well-formed but has no instance, so the compi
 Tests: `case_InitializerDiagnostics` in the test suite (every mode, static and temporal models,
 the rich and core explicit models of the admitted forms compile to themselves), and the negative
 models `initializer_value_not_scalar*.cfr` and `initializer_bound_of_abstract.cfr`.
+
+## Explicit clocks (0.5.9)
+
+kbak/clafer-semantics#194 (kbak/clafer-semantics#197) makes the clock of `:=` independent of the
+multiplicity: `x -> T := each e` is per instance, each instance at its birth, and
+`x -> T := together e` per collection, all the instances under the declared parent at the
+parent's birth, or all the instances of a top-level abstract clafer at time zero. A written
+clock overrides the shorthand of the multiplicity, and changing the multiplicity does not
+change it. Without a clock, `:=` keeps the meaning above. `=` has no clock.
+
+- In the IR, `IEInitializer` has `_isExplicitClock`; `_isSetInit` is the clock, written or
+  decided by the multiplicity (`Language.Clafer.Intermediate.Desugarer.desugarInit`).
+- A top-level abstract clafer with any multiplicity may have `:=` with a clock, e.g.,
+  `abstract Val -> integer 0..3 := together 1`. Its multiplicity bounds the number of
+  instances in every state (#129), and the clock decides the value: with an empty collection at
+  time zero and an instance born at 7 later, `:= together 1` holds and `:= each 1` does not
+  (Alloy checks both on `tmp_initializerClocks`).
+- A per-instance `:=` of an abstract clafer needs a value with at most one element, also
+  with `:= each`.
+- On a concrete clafer with more than one instance under a parent, `:= each e` is one
+  equation for each instance, also in a static model, `[ all c : this.xs | c.dref = e ]` in the
+  parent, and not the aggregate `this.xs.dref = e`: with three instances whose values are
+  1, 1 and 2, the aggregate equality to `1, 2` holds, and `:= each 1, 2` does not. A
+  static-first lowering must not erase the per-instance clock. `:= each 1, 2` has no instance,
+  so the compiler warns.
+- The rich explicit model writes the clock of every `:=`, and `--record-provenance` labels the
+  lowered constraints of a written clock `:= each` or `:= together`.
+
+Tests: `case_InitializerClocks` and `case_InitializerDiagnostics` in the test suite, and the
+positive models `initializerClocks.cfr` and `tmp_initializerClocks.cfr`.
 
 ## What 0.5.8 does
 

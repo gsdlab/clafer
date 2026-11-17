@@ -39,7 +39,8 @@ import Language.Clafer.Intermediate.Intclafer
 --   scope, as chocosolver's @AstPrinter@ and @ScopeFile@ print them. The [choco| |] escapes,
 --   which are JavaScript, are left out.
 --   The explicit model keeps the enumerations, initializers, behavioral patterns and
---   transitions; its core, from the IR that "Language.Clafer.Intermediate.Core" lowers, is
+--   transitions, and writes the clock of every initializer @:=@, @:= each@ or @:= together@
+--   (kbak/clafer-semantics#194), so that its meaning does not depend on the multiplicity; its core, from the IR that "Language.Clafer.Intermediate.Core" lowers, is
 --   what the backends solve (for a static model, what chocosolver solves).
 --   A temporal model has its temporal modifiers and operators, which chocosolver does not
 --   read, and its trace length among the options.
@@ -90,14 +91,12 @@ exClafer exOrigin superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard
     ++ ccUid
     ++ maybe "" (" : " ++) ccSuper
     ++ maybe "" (\(isSet', target) -> (if isSet' then " -> " else " ->> ") ++ exTarget target) ccRef
-    -- the multiplicity of an abstract clafer bounds the number of all its instances (#129); a
-    -- written * makes its initializer a set initializer (kbak/clafer-semantics#170), so an
-    -- unrestricted abstract clafer with a per-instance initializer has no multiplicity
+    -- the multiplicity of an abstract clafer bounds the number of all its instances (#129)
     ++ (if ccAbstract
-        then (if ccCard `elem` [Nothing, Just (0, -1)] then (if perInstanceInit then "" else " 0..*") else " " ++ exCard ccCard)
+        then (if ccCard `elem` [Nothing, Just (0, -1)] then " 0..*" else " " ++ exCard ccCard)
         else " " ++ exCard ccCard)
-    -- the initializer as written, with its value in the context of the parent
-    ++ concat [ (if k then " = " else " := ") ++ exExp e | CEInitializer k _ e <- ccElements ]
+    -- the initializer as written, with its clock, and its value in the context of the parent
+    ++ concat [ (if k then " = " else if s then " := together " else " := each ") ++ exExp e | CEInitializer k s e <- ccElements ]
     ++ (if null constraints && null subClafers then " {}" ++ exOrigin ccOrigin ++ "\n"
         else " {" ++ exOrigin ccOrigin ++ "\n"
              ++ concat [ indent' ++ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | (o, e) <- constraints ]
@@ -107,7 +106,6 @@ exClafer exOrigin superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard
     indent' = indent ++ "  "
     constraints = map ((,) Nothing) ccRefConstraints ++ [ (o, e) | CEConstraint o e <- ccElements ]
     subClafers = [ c | CEClafer c <- ccElements ]
-    perInstanceInit = not $ null [ () | CEInitializer _ False _ <- ccElements ]
     inheritedGCard g@(Just _) _ = g
     inheritedGCard Nothing (Just s) | Just CClafer{ccGCard = g, ccSuper = s'} <- Map.lookup s superMap = inheritedGCard g s'
     inheritedGCard _ _ = Nothing

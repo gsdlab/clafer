@@ -144,8 +144,8 @@ resolveElement env x = case x of
   IEConstraint isHard' pexp  -> IEConstraint isHard' <$> resolvePExp env pexp
   IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp
   -- the equation of an initializer, in the context of the parent, where its value is written
-  IEInitializer k s pexp -> case parentEnv env of
-    Just penv -> IEInitializer k s <$> resolvePExp penv pexp
+  IEInitializer k s clk pexp -> case parentEnv env of
+    Just penv -> IEInitializer k s clk <$> resolvePExp penv pexp
     Nothing -> throwError $ SemanticErr (_inPos pexp) "BUG: an initializer outside a clafer"
 
 resolvePExp :: SEnv -> PExp                          -> Resolve PExp

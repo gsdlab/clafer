@@ -35,6 +35,12 @@
        in the context of the parent, which holds in every state of the parent.
      * A set initializer, @xs -> T * := e@, constrains the instances under the parent when the
        parent is born: @[ initially (some xs => xs.dref = e) ]@ in the context of the parent.
+     * The written clocks choose between the two, whatever the multiplicity
+       (kbak/clafer-semantics#194): @:= each e@ is per instance and @:= together e@ a set
+       initializer. On a concrete clafer with more than one instance under a parent, @:= each e@
+       constrains each instance on its own, also in a static model:
+       @[ all c : xs | c.dref = e ]@ in the context of the parent, not @xs.dref = e@, which the
+       instances satisfy together, e.g., with the values @1@ and @2@ for @:= each 1, 2@.
 -}
 module Language.Clafer.Intermediate.Initializers
   ( Semantics (..)
@@ -75,23 +81,54 @@ lowerElements sem taken = concatMap lowerElement
     -- the initializers of c, lowered to constraints of its parent, next to c
     parentConstraints = [ IEConstraint' True (asConstraint c e) (Just $ origin c e) | e <- elements', lowered e ]
     -- the per-instance := of a temporal model, in the context of the clafer
-    own e@(IEInitializer False False eq) | not (hasTemporal $ initializerValue eq) = IEConstraint' True (initialValue c eq) (Just $ origin c e)
+    own e@(IEInitializer False False _ eq) | not (hasTemporal $ initializerValue eq) = IEConstraint' True (initialValue c eq) (Just $ origin c e)
     own e = e
   lowerElement e = [e]
-  -- the initializer of the clafer, @=@ or @:=@, for --record-provenance
-  origin c e = Origin (case e of IEInitializer{_isConstant = True} -> "="; _ -> ":=") (_cinPos c)
+  -- the initializer of the clafer, @=@, @:=@, or @:=@ with its written clock, for --record-provenance
+  origin c e = Origin (case e of
+    IEInitializer{_isConstant = True} -> "="
+    IEInitializer{_isExplicitClock = True, _isSetInit = True} -> ":= together"
+    IEInitializer{_isExplicitClock = True} -> ":= each"
+    _ -> ":=") (_cinPos c)
   -- lowered to a constraint of the parent: all but the per-instance := of a temporal model
   -- whose value has no temporal operators, which becomes a constraint of the clafer
-  lowered (IEInitializer k s eq) = sem == Static || k || s || hasTemporal (initializerValue eq)
+  lowered (IEInitializer k s _ eq) = sem == Static || k || s || hasTemporal (initializerValue eq)
   lowered _ = False
-  asConstraint x (IEInitializer k s eq)
+  asConstraint x (IEInitializer k s _ eq)
     | sem == Temporal && not k && s = bool iInitially [ implied ]
     | sem == Temporal && not k = appearing taken x eq
+    | not k && not s && plural x = eachInstance taken x eq
     | otherwise = implied
     where
     implied = bool iImpl [ PExp (Just TBoolean) (_pid eq) (_inPos eq) $ IDeclPExp ISome [] $ initializedClafer eq, eq ]
     bool op' = PExp (Just TBoolean) (_pid eq) (_inPos eq) . IFunExp op'
   asConstraint _ e = error $ "[bug] Initializers.asConstraint: not an initializer: " ++ show e
+  -- a concrete clafer with more than one instance under a parent, whose per-instance := is
+  -- @:= each@: without the clock, its multiplicity makes := a set initializer
+  plural x = not (_isAbstract x) && maybe False (\(_, m) -> m /= 0 && m /= 1) (_card x)
+
+-- | The per-instance value of the clafer @x@ in a static model, for each instance on its own,
+--   in the context of the parent: @[ all c : this.x | c.dref = e ]@. The local variable has a
+--   name that no clafer and no other local variable has, e.g., @x_1@.
+eachInstance :: [String] -> IClafer -> PExp -> PExp
+eachInstance taken x eq@PExp{_exp = IFunExp op' [lhs, value]} =
+    bool $ IDeclPExp IAll [IDecl False [v] xs] eq{_exp = IFunExp op' [ownRef lhs, value]}
+  where
+  pos' = _inPos eq
+  bool = PExp (Just TBoolean) (_pid eq) pos'
+  xs = initializedClafer eq
+  v = localName taken x
+  -- a local variable, which the backends write as it is (as the name resolver gives it)
+  c = PExp (_iType xs) "" pos' $ IClaferId "" v True (LocalBind v)
+  -- c.dref for this.x.dref (x.dref at the top level)
+  ownRef p@PExp{_exp = IFunExp j [_, dref]} | j == iJoin = p{_exp = IFunExp j [c, dref]}
+  ownRef p = p
+eachInstance _ _ eq = error $ "[bug] Initializers.eachInstance: not an equation: " ++ show eq
+
+-- | A name for a local variable over the instances of @x@ that no clafer and no other local
+--   variable has, e.g., @x_1@.
+localName :: [String] -> IClafer -> String
+localName taken x = fromMaybe (_ident x) $ find (`notElem` taken) [ _ident x ++ "_" ++ show k | k <- [1 :: Int ..] ]
 
 -- | The per-instance initial value of the clafer @x@ whose value has temporal operators, in the
 --   context of the parent, where the value is written (gsdlab/clafer#123): each instance of @x@
@@ -108,7 +145,7 @@ appearing taken x eq@PExp{_exp = IFunExp op' [lhs, value]} =
   pos' = _inPos eq
   bool = PExp (Just TBoolean) (_pid eq) pos'
   xs = initializedClafer eq
-  v = fromMaybe (_ident x) $ find (`notElem` taken) [ _ident x ++ "_" ++ show k | k <- [1 :: Int ..] ]
+  v = localName taken x
   c = PExp (_iType xs) "" pos' $ IClaferId "" v False (LocalBind v)
   -- c.dref for this.x.dref (x.dref at the top level)
   ownRef p@PExp{_exp = IFunExp j [_, dref]} | j == iJoin = p{_exp = IFunExp j [c, dref]}

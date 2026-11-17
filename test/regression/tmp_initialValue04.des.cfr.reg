@@ -2,6 +2,6 @@
 [initially ((#level) = 0)]
 [F ((#level) >= 1)]
 [F (((#level) >= 1) && (level.dref != y.dref))]
-0..* y -> int 1..1 := 2 {}
-finalref 0..* level -> int 0..1 := y.dref {}
-final 0..* mode -> int 1..1 := 1 {}
+0..* y -> int 1..1 := each 2 {}
+finalref 0..* level -> int 0..1 := each y.dref {}
+final 0..* mode -> int 1..1 := each 1 {}

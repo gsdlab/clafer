@@ -28,12 +28,16 @@
      any output, so that every mode, also the rich explicit model, gets only supported forms.
 
      * A per-instance @:=@ of an abstract clafer needs a value with at most one element
-       ('unsupportedInitialValues'), e.g., @abstract Val -> integer := 1, 2@ is rejected.
-     * On a top-level abstract clafer with @:=@, a written multiplicity other than @*@ (or @0..*@) has
-       no meaning ('unsupportedInitializerBounds'), e.g., @abstract Val -> integer ? := 1@.
+       ('unsupportedInitialValues'), e.g., @abstract Val -> integer := 1, 2@ is rejected, also
+       with @:= each@.
+     * On a top-level abstract clafer with @:=@ and no written clock, a written multiplicity other
+       than @*@ (or @0..*@) has no meaning ('unsupportedInitializerBounds'), e.g.,
+       @abstract Val -> integer ? := 1@; with @:= each@ or @:= together@, every multiplicity is
+       supported (kbak/clafer-semantics#194).
 
-     The warning is for a well-formed conflict: a single reference with an initializer of
-     several values, e.g., @x -> integer ? := 1, 2@, has no instance ('severalValues').
+     The warning is for a well-formed conflict: an initializer of several values for a single
+     reference, e.g., @x -> integer ? := 1, 2@, or for each instance, e.g.,
+     @xs -> integer * := each 1, 2@, has no instance ('severalValues').
 -}
 module Language.Clafer.Intermediate.InitializerChecks
   ( atMostOne
@@ -130,20 +134,21 @@ unsupportedInitialValues iModule =
       ++ _ident c ++ " its initial value, which must have at most one element, but that could not"
       ++ " be established for '" ++ written (sugarExp value) ++ "' from the declarations (literals,"
       ++ " clafers with at most one instance, and the operators that keep one element)."
-      ++ " To initialize all the instances of " ++ _ident c ++ " together, write the multiplicity *:"
-      ++ " abstract " ++ _ident c ++ " -> ... * := ..."
+      ++ " To initialize all the instances of " ++ _ident c ++ " together, write ':= together':"
+      ++ " abstract " ++ _ident c ++ " -> ... := together ..."
   | c <- universeOn biplate iModule :: [IClafer]
   , _isAbstract c
-  , IEInitializer False False PExp{_exp = IFunExp _ [_, value]} <- _elements c
+  , IEInitializer False False _ PExp{_exp = IFunExp _ [_, value]} <- _elements c
   , not $ atMostOne uidIClaferMap' value ]
   where
   uidIClaferMap' = createUidIClaferMap iModule
 
--- | The errors for the top-level abstract clafers with an initializer @:=@ and a written
---   multiplicity other than @*@ or @0..*@, at the positions of the multiplicities. On a
---   top-level abstract clafer, which has no parent, @*@ makes @:=@ initialize all its instances
---   at time zero, and other multiplicities have no meaning yet (kbak/clafer-semantics#170): the
---   bound is neither dropped nor read per parent. The contract classifies only the top-level
+-- | The errors for the top-level abstract clafers with an initializer @:=@ without a written
+--   clock and with a written multiplicity other than @*@ or @0..*@, at the positions of the
+--   multiplicities. On a top-level abstract clafer, which has no parent, @*@ makes @:=@ initialize
+--   all its instances at time zero, and other multiplicities do not choose a clock
+--   (kbak/clafer-semantics#170, #194): the bound is neither dropped nor read per parent, and
+--   @:= each@ or @:= together@ chooses the clock. The contract classifies only the top-level
 --   abstract clafers: on a nested one, @*@ makes @:=@ a set initializer under the parent, as for
 --   a concrete clafer (the meaning of the multiplicity of an abstract clafer as a bound on the
 --   number of instances is gsdlab/clafer#129). The multiplicity is
@@ -155,24 +160,30 @@ unsupportedInitializerBounds (Module _ declarations) =
   boundErr (Clafer _ (Abstract _) _ _ (PosIdent (_, name)) _ _ crd (InitSome _ (InitDefault _) _) _ _)
     | Just bound <- desugarCard crd, bound /= (0, -1) =
         Just $ SemanticErr (getSpan crd) $
-          "The multiplicity " ++ written crd ++ " of the abstract clafer " ++ name
-          ++ " with an initializer ':=' is not supported. Without a multiplicity, ':=' initializes"
-          ++ " each instance of " ++ name ++ ", and with * (or 0..*), all the instances of " ++ name
-          ++ " together at time zero; other multiplicities have no meaning. For a number of"
-          ++ " instances, write a constraint, e.g., [ G (#" ++ name ++ " = 2) ]."
+          "The initializer ':=' of the top-level abstract clafer " ++ name ++ " with the multiplicity "
+          ++ written crd ++ " requires an explicit clock: ':= each' initializes each instance of "
+          ++ name ++ " at its birth, and ':= together' all the instances of " ++ name
+          ++ " together at time zero. Without a clock, ':=' initializes each instance without a"
+          ++ " multiplicity, and all the instances together with * (or 0..*)."
   boundErr _ = Nothing
 
--- | The initializers of single references whose value has several different literals, e.g.,
---   @x -> integer ? := 1, 2@, with whether they are @=@: no instance can satisfy them, since a
---   single reference cannot equal several targets. Such a model is well-formed, so this is a
---   warning. The initializers of abstract clafers are not single references: @=@ there is a
---   constraint on all instances together, and @:=@ is an error ('unsupportedInitialValues').
-severalValues :: IModule -> [(IClafer, PExp, Bool)]
+-- | The initializers whose value has several different literals, e.g., @x -> integer ? := 1, 2@,
+--   that a single reference has to equal, with whether they are @=@ and whether the clafer has at
+--   most one instance under a parent: no instance can satisfy them, since a single reference
+--   cannot equal several targets. These are the initializers of the clafers with at most one
+--   instance under a parent, and the per-instance @:= each@ of the others, e.g.,
+--   @xs -> integer * := each 1, 2@, which each instance has to equal at its birth
+--   (kbak/clafer-semantics#194). Such a model is well-formed, so this is a warning. The
+--   initializers of abstract clafers are not single references: @=@ there is a constraint on all
+--   instances together, and a per-instance @:=@ is an error ('unsupportedInitialValues').
+severalValues :: IModule -> [(IClafer, PExp, Bool, Bool)]
 severalValues iModule =
-  [ (c, value, constant)
+  [ (c, value, constant, single)
   | c <- universeOn biplate iModule :: [IClafer]
   , not $ _isAbstract c
-  , IEInitializer constant False PExp{_exp = IFunExp _ [_, value]} <- _elements c
+  , let single = maybe False (\(_, m) -> m == 0 || m == 1) $ _card c
+  , IEInitializer constant setInit _ PExp{_exp = IFunExp _ [_, value]} <- _elements c
+  , single || not (constant || setInit)
   , Just literals <- [unionOfLiterals value]
   , length (nub $ map fst literals) == 1
   , length (nub literals) > 1 ]

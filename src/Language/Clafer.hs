@@ -933,7 +933,7 @@ fixedInitialValues ast' iModule =
     initKinds = Map.fromList $ mapMaybe initKind (universeOnOf biplate uniplate ast' :: [Clafer])
     initKind (Clafer s _ _ _ _ _ reference' _ init' _ _) = case init' of
       InitSome _ (InitConstant _) _ -> Just (s, True)
-      InitSome _ (InitDefault _) _  -> Just (s, False)
+      InitSome _ _ _                -> Just (s, False)
       InitEmpty _ | isJust (referenceToConstant reference') -> Just (s, True)
       _ -> Nothing
 
@@ -952,18 +952,24 @@ showFixedInitialValues files = unlines . map showFixedInitialValue
 
 -- | Warnings about the single references with an initializer of several values, at their
 --   positions in the files
-showSeveralValues :: [ModelFile] -> [(IClafer, PExp, Bool)] -> String
+showSeveralValues :: [ModelFile] -> [(IClafer, PExp, Bool, Bool)] -> String
 showSeveralValues files = unlines . map showSeveralValue
   where
-  showSeveralValue (claf, PExp{_inPos = Span (Pos l c) _}, constant) =
+  showSeveralValue (claf, PExp{_inPos = Span (Pos l c) _}, constant, single) =
     let
       (path, l') = modelPosition files l
       kind = if constant then "'='" else "':='"
+      name = _ident claf
     in
-      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": " ++ _ident claf
-      ++ " is a single reference, which cannot equal the several values of its initializer " ++ kind
-      ++ ", so no instance of " ++ _ident claf ++ " can satisfy it. For several values, give "
-      ++ _ident claf ++ " the multiplicity *."
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": "
+      ++ (if single
+          then name ++ " is a single reference, which cannot equal the several values of its initializer " ++ kind
+               ++ ", so no instance of " ++ name ++ " can satisfy it. For several values, give "
+               ++ name ++ " the multiplicity *."
+          else "each instance of " ++ name ++ " is a single reference, which cannot equal the several"
+               ++ " values of its initializer ':= each' at its birth, so no instance of " ++ name
+               ++ " can be born. To initialize the instances of " ++ name ++ " under a parent together,"
+               ++ " write ':= together'.")
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
