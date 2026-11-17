@@ -30,6 +30,7 @@ its lowering. The principle decides each construct:
 | Construct | In the core | Why |
 |---|---|---|
 | `enum Color = red \| green` | no: an abstract clafer and a clafer for each literal | it is written with clafers |
+| `final x`, `finalref x`, `finaltarget x` | no: constraints in `x` with `X` and `previous`, e.g., `[ all c : this \| X (c in parent.x) ]` and `[ all c : this \| previous (some parent) => previous (c in parent.x) ]` for the instances of a final `x` | they are written with the temporal operators |
 | the multiplicity of an abstract clafer, e.g., `abstract Tools 3..6` | no: `[ (#Tools >= 3) && (#Tools <= 6) ]` next to it, at the top level, or `#this.Tools` in the parent of a nested one, and `abstract Tools 0..*` | it is written with a constraint |
 | behavioral patterns, e.g., `never p between q and r` | no: their LTL formula | they are written with `X`, `F`, `G`, `U`, `W` |
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
@@ -166,15 +167,16 @@ The patterns and transitions in the rich and the core explicit model of a constr
 
 ## Open points
 
-1. **The modifiers `final`, `finalref` and `finaltarget` are in the core**, and the principle
-   asks whether they can be lowered. `finalref` seems to be: the reference of an instance
-   keeps its value while the instance exists, e.g., for a reference to integers,
-   `[ G (all v : integer | (this.dref = v) => X (some this => this.dref = v)) ]` in `x`.
-   `final` and `finaltarget` also forbid new instances or targets, which needs either a
-   past-time operator or a quantifier over instances that do not exist yet. Since 0.5.9 the
-   past-time operators exist (gsdlab/clafer#127), so they could be lowered, e.g., `final`
-   as "no instance appears after the first state of the parent". To be decided with the
-   semantics.
+1. **The modifiers `final`, `finalref` and `finaltarget` are lowered** since 0.5.9
+   (kbak/clafer-semantics#192, "Language.Clafer.Intermediate.Finality"). Each keeps a set from
+   one state to the next while the parent exists, without additions (`previous`) and without
+   losses (`X`). The constraints are in the context of the clafer, where a quantifier captures
+   the instance: `this` is empty in a state in which the instance does not exist. The temporal
+   Alloy output of the test models is equivalent to the one of 0.5.8 (Alloy, up to 10 states).
+   The temporal Alloy generator still declares the relations of the clafers that are final with
+   all their ancestors in the rich IR without `var`, which the constraints allow: a backend may
+   use the rich construct when it agrees with its lowering. The modifier `initial` is still in
+   the core.
 2. **The clock of `:=` has no syntax of its own.** Under kbak/clafer-semantics#170, a written
    `*` or `0..*` on an abstract clafer makes `:=` a set initializer. The rich explicit model
    leaves the multiplicity of an abstract clafer with a per-instance `:=` out, so that it

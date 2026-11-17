@@ -72,11 +72,15 @@ data GenEnv = GenEnv
   , uidIClaferMap :: UIDIClaferMap
   , allClafers :: [IClafer]   -- ^ the clafers of the model, without the root
   , forScopes :: String
+  , statics :: ([UID], [UID])  -- ^ the clafers that are final with all their ancestors in the rich
+                               --   IR, and those of them whose own references are final
   }
 
 -- | Alloy 6 code generation
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+-- | The finality modifiers are constraints of the core ("Language.Clafer.Intermediate.Finality");
+--   the relations of the static clafers of the rich IR do not change, and are not @var@.
+genAlloyLtlModule :: ([UID], [UID]) -> ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    statics'          claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   uidIClaferMap' = uidClaferMap genv
   -- the clafers of the module, as the optimizer left them: the map of the environment still has
@@ -85,7 +89,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherT
            { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
-  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'
+  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' statics'
 
   -- a scope bounds the instance identities across the trace, which may be reused when an
   -- instance reappears; the multiplicities bound the existing instances in each snapshot
@@ -139,7 +143,7 @@ containedClafers = filter hasContainment . getSubclafers . _elements
 isStatic :: GenEnv -> IClafer -> Bool
 isStatic genEnv c
   | isRoot c  = True
-  | otherwise = _isFinal c && maybe True (isStatic genEnv) (parentOf genEnv c)
+  | otherwise = _uid c `elem` fst (statics genEnv)
 
 -- | The nearest super clafer that declares a reference, and the reference.
 inheritedReference :: GenEnv -> IClafer -> Maybe (IClafer, IReference)
@@ -239,7 +243,7 @@ genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
     | otherwise = []
   sigName p = if isRoot p then rootIdent else _uid p
   reference' = case _reference c of
-    Just r  -> [CString $ var' (isStatic genEnv c && not (null (_refModifiers r))) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
+    Just _  -> [CString $ var' (_uid c `elem` snd (statics genEnv)) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
     Nothing -> []
   mkRel c' = Concat NoTrace [CString $ var' (isStatic genEnv c') ++ genRelName (_uid c') ++ " : set " ++ _uid c']
   var' static = if static then "" else "var "
@@ -279,7 +283,7 @@ genStructure genEnv c
 
 -- | The constraints in the signature fact of the clafer, which hold for every existing instance.
 genConstraints :: GenEnv -> IClafer -> [Concat]
-genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts ++ initialConsts ++ finalConsts
+genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts ++ initialConsts
   where
   uid' = _uid c
   alive = aliveName uid'
@@ -313,30 +317,6 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
   appears x
     | isRoot c  = x
     | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
-  -- the relation does not change while this instance exists
-  unchanged x
-    | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
-    | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
-  -- final and finalref fix the target of each instance, finaltarget only the set of targets
-  fixesEach s r = _isFinal s || any (`elem` [FinalRefTarget, FinalRef]) (_refModifiers r)
-  finalConsts =
-    -- the instances of a final child do not change while this instance exists
-    [ unchanged $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
-    [ unchanged $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
-    -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
-    -- from engine, unless engine's modifier fixes it already (#109)
-    [ unchanged $ "this.@" ++ genRefName (_uid sup)
-    | Nothing <- [_reference c], _isFinal c || FinalRef `elem` _finalReferences (_modifiers c)
-    , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
-    -- a finaltarget child points to the same set of targets while this instance exists; its
-    -- instances may change and swap their targets
-    [ unchanged $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
-  finalTargetRef c' = case _reference c' of
-    Just r | FinalTarget `elem` _refModifiers r, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
-    Just _ -> Nothing
-    Nothing
-      | FinalTarget `elem` _finalReferences (_modifiers c'), not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
-      | otherwise -> Nothing
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find

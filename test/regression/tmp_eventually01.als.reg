@@ -14,6 +14,8 @@ fun alive_a : set a { root.@r_a }
 fact { always ~@r_a in @p_a }
 
 fact { all self_ : a | always (self_ in alive_a implies (lone self_.@r_b)) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | after (a_1 in (alive_a)))) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | (not before not (!(some root))) || (before (a_1 in (alive_a))))) }
 
 
 sig b

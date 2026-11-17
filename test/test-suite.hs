@@ -616,17 +616,18 @@ case_ParentOfTopLevel = do
 case_FinalInheritedReference :: Assertion
 case_FinalInheritedReference =
     forM_ ["final", "finalref", "finaltarget", ""] $ \modifier ->
-        case compileOneFragment defaultClaferArgs{mode = [Alloy]} (unlines
+        case compileOneFragment defaultClaferArgs{mode = [Clafer], core = True} (unlines
                 [ "abstract Engine", "gas : Engine", "abstract Car", "    abstract engine -> Engine"
                 , "    xor gear", "        initial park --> drive", "        drive"
                 , "tesla : Car", "    " ++ modifier ++ " motor : engine" ]) of
-            Right r -> let alloy = outputCode $ fromJust $ Map.lookup Alloy r
+            Right r -> let explicit = outputCode $ fromJust $ Map.lookup Clafer r
                            -- final and finalref fix the reference of each motor, finaltarget the
-                           -- targets of the motors of a tesla (kbak/clafer-semantics#127)
-                           eachFixed = "implies (this.@engine_ref)' = this.@engine_ref)" `isInfixOf` alloy
-                           targetsFixed = "implies (this.@r_motor.@engine_ref)' = this.@r_motor.@engine_ref)" `isInfixOf` alloy
-                       in (eachFixed, targetsFixed) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget")
-                            @? (modifier ++ ": " ++ alloy)
+                           -- targets of the motors of a tesla (kbak/clafer-semantics#127), as
+                           -- constraints of the core (kbak/clafer-semantics#192)
+                           eachFixed = "[all motor_1 : this | all motor_2 : motor_1.dref | X (((#motor_1.dref) >= 1) => (motor_2 in motor_1.dref))]" `isInfixOf` explicit
+                           targetsFixed = "[all motor_2 : this.dref | X (motor_2 in this.parent.motor.dref)]" `isInfixOf` explicit
+                       in (eachFixed, targetsFixed, "final" `isInfixOf` explicit) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget", False)
+                            @? (modifier ++ ": " ++ explicit)
             Left errs' -> assertFailure $ modifier ++ ": " ++ show errs'
 
 -- A clafer which extends itself is reported as such, not as a missing super.
@@ -749,7 +750,9 @@ case_RichAndCoreExplicit = do
     has False "0..* x -> int 1..1 := 3 {}"
     has False "[((#this.on) >= 1) --> ((#this.off) >= 1) --> ((#this.on) >= 1)]"
     has False "[never ((#p) >= 1) between ((#q) >= 1) and ((#r) >= 1)]"
-    has True "abstract final 0..* Color 0..* {}"
+    -- the enumeration is final in a temporal model: its literals do not change (#127)
+    has True "abstract 0..* Color 0..* {}"
+    has True "[all red_1 : this | X (red_1 in red)]"
     has True "[initially (this.dref = 3)]"
     has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
     has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
@@ -889,6 +892,28 @@ case_InitializerDiagnostics = do
     mapM_ (\m -> not (several `isInfixOf` warnings m) @? "Warning for\n" ++ m)
       [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
       , "abstract Val -> integer = 1, 2\nv : Val\n" ]
+
+-- The finality modifiers are constraints of the core (kbak/clafer-semantics#192): the explicit
+-- core model has no modifier left, compiles to itself, and the rich model keeps the modifiers.
+case_FinalityLowered :: Assertion
+case_FinalityLowered = do
+    let model = [ "abstract engine -> integer", "A ?", "    final b ?", "    finalref r -> integer"
+                , "    finaltarget ts -> integer *", "    final m : engine", "final top ?", "[ G some A ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    rich <- explicit False model
+    all (`isInfixOf` rich) ["final 0..* b", "finalref", "finaltarget", "final 0..* m : engine", "final 0..* top"] @? ("modifiers not kept:\n" ++ rich)
+    x <- explicit True model
+    not (any (`isInfixOf` x) ["final", "finalref", "finaltarget"]) @? ("a modifier in the core:\n" ++ x)
+    all (`isInfixOf` x)
+      [ "[all b_1 : this | X (b_1 in this.parent.b)]"
+      , "[all r_1 : this | all r_2 : r_1.dref | X (((#r_1.dref) >= 1) => (r_2 in r_1.dref))]"
+      , "[all ts_2 : this.dref | (previous ((#this.parent) >= 1)) => (previous (ts_2 in this.parent.ts.dref))]"
+      , "[all m_1 : this | all m_2 : m_1.dref | X (((#m_1.dref) >= 1) => (m_2 in m_1.dref))]"
+      , "[all top_1 : this | X (top_1 in top)]" ] @? ("constraints missing:\n" ++ x)
+    y <- explicit True (lines x)
+    x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
 -- The multiplicity of an abstract clafer bounds the number of all its instances (#129,
 -- kbak/clafer-semantics#193): globally at the top level, per parent instance when nested, in

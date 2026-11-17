@@ -18,6 +18,8 @@ fun alive_a : set a { root.@r_a }
 fact { always ~@r_a in @p_a }
 
 fact { all self_ : a | always (self_ in alive_a implies (one self_.@r_b)) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | after (a_1 in (alive_a)))) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | (not before not (!(some root))) || (before (a_1 in (alive_a))))) }
 
 
 sig b
@@ -37,6 +39,8 @@ fact { all self_ : b | always (self_ in alive_b implies ((not some self_.(@p_b :
 fact { all self_ : b | always (self_ in alive_b implies ((not before self_ in alive_b) implies (eventually (not some self_.(@p_b :> alive_a) or (some self_.@r_d))))) }
 fact { all self_ : b | always (self_ in alive_b implies ((not before self_ in alive_b) implies (eventually (not some self_.(@p_b :> alive_a) or (some self_.@r_c))))) }
 fact { all self_ : b | always (self_ in alive_b implies ((not before self_ in alive_b) implies (eventually (not some self_.(@p_b :> alive_a) or (some self_.@r_e))))) }
+fact { all self_ : b | always (self_ in alive_b implies (all  b_1 : (self_ & alive_b) | after (not some self_.(@p_b :> alive_a) or (b_1 in ((self_.(@p_b :> alive_a)).@r_b))))) }
+fact { all self_ : b | always (self_ in alive_b implies (all  b_1 : (self_ & alive_b) | (not before (some self_.(@p_b :> alive_a) and not (!(some self_.(@p_b :> alive_a))))) || (before (some self_.(@p_b :> alive_a) and (b_1 in ((self_.(@p_b :> alive_a)).@r_b)))))) }
 
 
 sig c

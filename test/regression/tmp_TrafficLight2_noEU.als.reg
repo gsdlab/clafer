@@ -17,6 +17,8 @@ fun alive_feature_model : set feature_model { root.@r_feature_model }
 fact { always ~@r_feature_model in @p_feature_model }
 
 fact { all self_ : feature_model | always (self_ in alive_feature_model implies (lone self_.@r_EU)) }
+fact { all self_ : feature_model | always (self_ in alive_feature_model implies (all  feature_model_1 : (self_ & alive_feature_model) | after (feature_model_1 in (alive_feature_model)))) }
+fact { all self_ : feature_model | always (self_ in alive_feature_model implies (all  feature_model_1 : (self_ & alive_feature_model) | (not before not (!(some root))) || (before (feature_model_1 in (alive_feature_model))))) }
 
 
 sig EU
@@ -24,6 +26,9 @@ sig EU
 fun alive_EU : set EU { feature_model.@r_EU }
 fact { always ~@r_EU in @p_EU
   always @r_EU.univ in alive_feature_model }
+
+fact { all self_ : EU | always (self_ in alive_EU implies (all  EU_1 : (self_ & alive_EU) | after (not some self_.(@p_EU :> alive_feature_model) or (EU_1 in ((self_.(@p_EU :> alive_feature_model)).@r_EU))))) }
+fact { all self_ : EU | always (self_ in alive_EU implies (all  EU_1 : (self_ & alive_EU) | (not before (some self_.(@p_EU :> alive_feature_model) and not (!(some self_.(@p_EU :> alive_feature_model))))) || (before (some self_.(@p_EU :> alive_feature_model) and (EU_1 in ((self_.(@p_EU :> alive_feature_model)).@r_EU)))))) }
 
 
 abstract sig TrafficLight_2

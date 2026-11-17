@@ -451,6 +451,7 @@ For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
 `final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
 `finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both, and `finalref finaltarget` means both.
 A clafer that inherits its reference can add these modifiers: `final motor : engine` fixes the reference that `motor` inherits from `abstract engine -> Engine`.
+In the explicit core model (`-m clafer --core`), the modifiers are constraints in the context of the clafer ([kbak/clafer-semantics#192](https://github.com/kbak/clafer-semantics/issues/192)), which exclude both additions and losses while the parent exists, e.g., for `final x`: `[ all c : this | X (c in parent.x) ]` and `[ all c : this | previous (some parent) => previous (c in parent.x) ]`.
 
 `<temporal modifier>`:
 ```

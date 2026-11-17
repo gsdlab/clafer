@@ -81,6 +81,8 @@ fact { always ~@r_TLSFeatures in @p_TLSFeatures }
 fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (lone self_.@r_annonymousMode)) }
 fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (lone self_.@r_clientAuthentication)) }
 fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies ((some self_.@r_clientAuthentication) => (no self_.@r_annonymousMode))) }
+fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (all  TLSFeatures_1 : (self_ & alive_TLSFeatures) | after (TLSFeatures_1 in (alive_TLSFeatures)))) }
+fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (all  TLSFeatures_1 : (self_ & alive_TLSFeatures) | (not before not (!(some root))) || (before (TLSFeatures_1 in (alive_TLSFeatures))))) }
 
 
 sig annonymousMode extends Feature
@@ -89,12 +91,18 @@ fun alive_annonymousMode : set annonymousMode { TLSFeatures.@r_annonymousMode }
 fact { always ~@r_annonymousMode in @p_annonymousMode
   always @r_annonymousMode.univ in alive_TLSFeatures }
 
+fact { all self_ : annonymousMode | always (self_ in alive_annonymousMode implies (all  annonymousMode_1 : (self_ & alive_annonymousMode) | after (not some self_.(@p_annonymousMode :> alive_TLSFeatures) or (annonymousMode_1 in ((self_.(@p_annonymousMode :> alive_TLSFeatures)).@r_annonymousMode))))) }
+fact { all self_ : annonymousMode | always (self_ in alive_annonymousMode implies (all  annonymousMode_1 : (self_ & alive_annonymousMode) | (not before (some self_.(@p_annonymousMode :> alive_TLSFeatures) and not (!(some self_.(@p_annonymousMode :> alive_TLSFeatures))))) || (before (some self_.(@p_annonymousMode :> alive_TLSFeatures) and (annonymousMode_1 in ((self_.(@p_annonymousMode :> alive_TLSFeatures)).@r_annonymousMode)))))) }
+
 
 sig clientAuthentication extends Feature
 { p_clientAuthentication : lone TLSFeatures }
 fun alive_clientAuthentication : set clientAuthentication { TLSFeatures.@r_clientAuthentication }
 fact { always ~@r_clientAuthentication in @p_clientAuthentication
   always @r_clientAuthentication.univ in alive_TLSFeatures }
+
+fact { all self_ : clientAuthentication | always (self_ in alive_clientAuthentication implies (all  clientAuthentication_1 : (self_ & alive_clientAuthentication) | after (not some self_.(@p_clientAuthentication :> alive_TLSFeatures) or (clientAuthentication_1 in ((self_.(@p_clientAuthentication :> alive_TLSFeatures)).@r_clientAuthentication))))) }
+fact { all self_ : clientAuthentication | always (self_ in alive_clientAuthentication implies (all  clientAuthentication_1 : (self_ & alive_clientAuthentication) | (not before (some self_.(@p_clientAuthentication :> alive_TLSFeatures) and not (!(some self_.(@p_clientAuthentication :> alive_TLSFeatures))))) || (before (some self_.(@p_clientAuthentication :> alive_TLSFeatures) and (clientAuthentication_1 in ((self_.(@p_clientAuthentication :> alive_TLSFeatures)).@r_clientAuthentication)))))) }
 
 
 abstract sig Domain
@@ -110,11 +118,17 @@ sig SSL2_0 extends ProtocolVersion
 fun alive_SSL2_0 : set SSL2_0 { root.@r_SSL2_0 }
 fact { always ~@r_SSL2_0 in @p_SSL2_0 }
 
+fact { all self_ : SSL2_0 | always (self_ in alive_SSL2_0 implies (all  SSL2_0_1 : (self_ & alive_SSL2_0) | after (SSL2_0_1 in (alive_SSL2_0)))) }
+fact { all self_ : SSL2_0 | always (self_ in alive_SSL2_0 implies (all  SSL2_0_1 : (self_ & alive_SSL2_0) | (not before not (!(some root))) || (before (SSL2_0_1 in (alive_SSL2_0))))) }
+
 
 sig SSL3_0 extends ProtocolVersion
 { p_SSL3_0 : lone root }
 fun alive_SSL3_0 : set SSL3_0 { root.@r_SSL3_0 }
 fact { always ~@r_SSL3_0 in @p_SSL3_0 }
+
+fact { all self_ : SSL3_0 | always (self_ in alive_SSL3_0 implies (all  SSL3_0_1 : (self_ & alive_SSL3_0) | after (SSL3_0_1 in (alive_SSL3_0)))) }
+fact { all self_ : SSL3_0 | always (self_ in alive_SSL3_0 implies (all  SSL3_0_1 : (self_ & alive_SSL3_0) | (not before not (!(some root))) || (before (SSL3_0_1 in (alive_SSL3_0))))) }
 
 
 sig TLS1_0 extends ProtocolVersion
@@ -122,17 +136,26 @@ sig TLS1_0 extends ProtocolVersion
 fun alive_TLS1_0 : set TLS1_0 { root.@r_TLS1_0 }
 fact { always ~@r_TLS1_0 in @p_TLS1_0 }
 
+fact { all self_ : TLS1_0 | always (self_ in alive_TLS1_0 implies (all  TLS1_0_1 : (self_ & alive_TLS1_0) | after (TLS1_0_1 in (alive_TLS1_0)))) }
+fact { all self_ : TLS1_0 | always (self_ in alive_TLS1_0 implies (all  TLS1_0_1 : (self_ & alive_TLS1_0) | (not before not (!(some root))) || (before (TLS1_0_1 in (alive_TLS1_0))))) }
+
 
 sig TLS1_1 extends ProtocolVersion
 { p_TLS1_1 : lone root }
 fun alive_TLS1_1 : set TLS1_1 { root.@r_TLS1_1 }
 fact { always ~@r_TLS1_1 in @p_TLS1_1 }
 
+fact { all self_ : TLS1_1 | always (self_ in alive_TLS1_1 implies (all  TLS1_1_1 : (self_ & alive_TLS1_1) | after (TLS1_1_1 in (alive_TLS1_1)))) }
+fact { all self_ : TLS1_1 | always (self_ in alive_TLS1_1 implies (all  TLS1_1_1 : (self_ & alive_TLS1_1) | (not before not (!(some root))) || (before (TLS1_1_1 in (alive_TLS1_1))))) }
+
 
 sig TLS1_2 extends ProtocolVersion
 { p_TLS1_2 : lone root }
 fun alive_TLS1_2 : set TLS1_2 { root.@r_TLS1_2 }
 fact { always ~@r_TLS1_2 in @p_TLS1_2 }
+
+fact { all self_ : TLS1_2 | always (self_ in alive_TLS1_2 implies (all  TLS1_2_1 : (self_ & alive_TLS1_2) | after (TLS1_2_1 in (alive_TLS1_2)))) }
+fact { all self_ : TLS1_2 | always (self_ in alive_TLS1_2 implies (all  TLS1_2_1 : (self_ & alive_TLS1_2) | (not before not (!(some root))) || (before (TLS1_2_1 in (alive_TLS1_2))))) }
 
 
 abstract sig HandshakeStatus
@@ -144,17 +167,26 @@ sig initiated extends HandshakeStatus
 fun alive_initiated : set initiated { root.@r_initiated }
 fact { always ~@r_initiated in @p_initiated }
 
+fact { all self_ : initiated | always (self_ in alive_initiated implies (all  initiated_1 : (self_ & alive_initiated) | after (initiated_1 in (alive_initiated)))) }
+fact { all self_ : initiated | always (self_ in alive_initiated implies (all  initiated_1 : (self_ & alive_initiated) | (not before not (!(some root))) || (before (initiated_1 in (alive_initiated))))) }
+
 
 sig completed extends HandshakeStatus
 { p_completed : lone root }
 fun alive_completed : set completed { root.@r_completed }
 fact { always ~@r_completed in @p_completed }
 
+fact { all self_ : completed | always (self_ in alive_completed implies (all  completed_1 : (self_ & alive_completed) | after (completed_1 in (alive_completed)))) }
+fact { all self_ : completed | always (self_ in alive_completed implies (all  completed_1 : (self_ & alive_completed) | (not before not (!(some root))) || (before (completed_1 in (alive_completed))))) }
+
 
 sig failed extends HandshakeStatus
 { p_failed : lone root }
 fun alive_failed : set failed { root.@r_failed }
 fact { always ~@r_failed in @p_failed }
+
+fact { all self_ : failed | always (self_ in alive_failed implies (all  failed_1 : (self_ & alive_failed) | after (failed_1 in (alive_failed)))) }
+fact { all self_ : failed | always (self_ in alive_failed implies (all  failed_1 : (self_ & alive_failed) | (not before not (!(some root))) || (before (failed_1 in (alive_failed))))) }
 
 
 abstract sig Port
@@ -170,11 +202,17 @@ sig serverHelloRequestMessage extends Message
 fun alive_serverHelloRequestMessage : set serverHelloRequestMessage { root.@r_serverHelloRequestMessage }
 fact { always ~@r_serverHelloRequestMessage in @p_serverHelloRequestMessage }
 
+fact { all self_ : serverHelloRequestMessage | always (self_ in alive_serverHelloRequestMessage implies (all  serverHelloRequestMessage_1 : (self_ & alive_serverHelloRequestMessage) | after (serverHelloRequestMessage_1 in (alive_serverHelloRequestMessage)))) }
+fact { all self_ : serverHelloRequestMessage | always (self_ in alive_serverHelloRequestMessage implies (all  serverHelloRequestMessage_1 : (self_ & alive_serverHelloRequestMessage) | (not before not (!(some root))) || (before (serverHelloRequestMessage_1 in (alive_serverHelloRequestMessage))))) }
+
 
 sig serverHelloMessage extends Message
 { p_serverHelloMessage : lone root }
 fun alive_serverHelloMessage : set serverHelloMessage { root.@r_serverHelloMessage }
 fact { always ~@r_serverHelloMessage in @p_serverHelloMessage }
+
+fact { all self_ : serverHelloMessage | always (self_ in alive_serverHelloMessage implies (all  serverHelloMessage_1 : (self_ & alive_serverHelloMessage) | after (serverHelloMessage_1 in (alive_serverHelloMessage)))) }
+fact { all self_ : serverHelloMessage | always (self_ in alive_serverHelloMessage implies (all  serverHelloMessage_1 : (self_ & alive_serverHelloMessage) | (not before not (!(some root))) || (before (serverHelloMessage_1 in (alive_serverHelloMessage))))) }
 
 
 sig serverCertificateMessage extends Message
@@ -182,11 +220,17 @@ sig serverCertificateMessage extends Message
 fun alive_serverCertificateMessage : set serverCertificateMessage { root.@r_serverCertificateMessage }
 fact { always ~@r_serverCertificateMessage in @p_serverCertificateMessage }
 
+fact { all self_ : serverCertificateMessage | always (self_ in alive_serverCertificateMessage implies (all  serverCertificateMessage_1 : (self_ & alive_serverCertificateMessage) | after (serverCertificateMessage_1 in (alive_serverCertificateMessage)))) }
+fact { all self_ : serverCertificateMessage | always (self_ in alive_serverCertificateMessage implies (all  serverCertificateMessage_1 : (self_ & alive_serverCertificateMessage) | (not before not (!(some root))) || (before (serverCertificateMessage_1 in (alive_serverCertificateMessage))))) }
+
 
 sig serverKeyExchangeMessage extends Message
 { p_serverKeyExchangeMessage : lone root }
 fun alive_serverKeyExchangeMessage : set serverKeyExchangeMessage { root.@r_serverKeyExchangeMessage }
 fact { always ~@r_serverKeyExchangeMessage in @p_serverKeyExchangeMessage }
+
+fact { all self_ : serverKeyExchangeMessage | always (self_ in alive_serverKeyExchangeMessage implies (all  serverKeyExchangeMessage_1 : (self_ & alive_serverKeyExchangeMessage) | after (serverKeyExchangeMessage_1 in (alive_serverKeyExchangeMessage)))) }
+fact { all self_ : serverKeyExchangeMessage | always (self_ in alive_serverKeyExchangeMessage implies (all  serverKeyExchangeMessage_1 : (self_ & alive_serverKeyExchangeMessage) | (not before not (!(some root))) || (before (serverKeyExchangeMessage_1 in (alive_serverKeyExchangeMessage))))) }
 
 
 sig serverCertificateRequestMessage extends Message
@@ -194,11 +238,17 @@ sig serverCertificateRequestMessage extends Message
 fun alive_serverCertificateRequestMessage : set serverCertificateRequestMessage { root.@r_serverCertificateRequestMessage }
 fact { always ~@r_serverCertificateRequestMessage in @p_serverCertificateRequestMessage }
 
+fact { all self_ : serverCertificateRequestMessage | always (self_ in alive_serverCertificateRequestMessage implies (all  serverCertificateRequestMessage_1 : (self_ & alive_serverCertificateRequestMessage) | after (serverCertificateRequestMessage_1 in (alive_serverCertificateRequestMessage)))) }
+fact { all self_ : serverCertificateRequestMessage | always (self_ in alive_serverCertificateRequestMessage implies (all  serverCertificateRequestMessage_1 : (self_ & alive_serverCertificateRequestMessage) | (not before not (!(some root))) || (before (serverCertificateRequestMessage_1 in (alive_serverCertificateRequestMessage))))) }
+
 
 sig serverHelloDoneMessage extends Message
 { p_serverHelloDoneMessage : lone root }
 fun alive_serverHelloDoneMessage : set serverHelloDoneMessage { root.@r_serverHelloDoneMessage }
 fact { always ~@r_serverHelloDoneMessage in @p_serverHelloDoneMessage }
+
+fact { all self_ : serverHelloDoneMessage | always (self_ in alive_serverHelloDoneMessage implies (all  serverHelloDoneMessage_1 : (self_ & alive_serverHelloDoneMessage) | after (serverHelloDoneMessage_1 in (alive_serverHelloDoneMessage)))) }
+fact { all self_ : serverHelloDoneMessage | always (self_ in alive_serverHelloDoneMessage implies (all  serverHelloDoneMessage_1 : (self_ & alive_serverHelloDoneMessage) | (not before not (!(some root))) || (before (serverHelloDoneMessage_1 in (alive_serverHelloDoneMessage))))) }
 
 
 sig serverChangeCipherSpecMessage extends Message
@@ -206,11 +256,17 @@ sig serverChangeCipherSpecMessage extends Message
 fun alive_serverChangeCipherSpecMessage : set serverChangeCipherSpecMessage { root.@r_serverChangeCipherSpecMessage }
 fact { always ~@r_serverChangeCipherSpecMessage in @p_serverChangeCipherSpecMessage }
 
+fact { all self_ : serverChangeCipherSpecMessage | always (self_ in alive_serverChangeCipherSpecMessage implies (all  serverChangeCipherSpecMessage_1 : (self_ & alive_serverChangeCipherSpecMessage) | after (serverChangeCipherSpecMessage_1 in (alive_serverChangeCipherSpecMessage)))) }
+fact { all self_ : serverChangeCipherSpecMessage | always (self_ in alive_serverChangeCipherSpecMessage implies (all  serverChangeCipherSpecMessage_1 : (self_ & alive_serverChangeCipherSpecMessage) | (not before not (!(some root))) || (before (serverChangeCipherSpecMessage_1 in (alive_serverChangeCipherSpecMessage))))) }
+
 
 sig serverFinishedMessage extends Message
 { p_serverFinishedMessage : lone root }
 fun alive_serverFinishedMessage : set serverFinishedMessage { root.@r_serverFinishedMessage }
 fact { always ~@r_serverFinishedMessage in @p_serverFinishedMessage }
+
+fact { all self_ : serverFinishedMessage | always (self_ in alive_serverFinishedMessage implies (all  serverFinishedMessage_1 : (self_ & alive_serverFinishedMessage) | after (serverFinishedMessage_1 in (alive_serverFinishedMessage)))) }
+fact { all self_ : serverFinishedMessage | always (self_ in alive_serverFinishedMessage implies (all  serverFinishedMessage_1 : (self_ & alive_serverFinishedMessage) | (not before not (!(some root))) || (before (serverFinishedMessage_1 in (alive_serverFinishedMessage))))) }
 
 
 sig protocolMismatch extends Message
@@ -218,11 +274,17 @@ sig protocolMismatch extends Message
 fun alive_protocolMismatch : set protocolMismatch { root.@r_protocolMismatch }
 fact { always ~@r_protocolMismatch in @p_protocolMismatch }
 
+fact { all self_ : protocolMismatch | always (self_ in alive_protocolMismatch implies (all  protocolMismatch_1 : (self_ & alive_protocolMismatch) | after (protocolMismatch_1 in (alive_protocolMismatch)))) }
+fact { all self_ : protocolMismatch | always (self_ in alive_protocolMismatch implies (all  protocolMismatch_1 : (self_ & alive_protocolMismatch) | (not before not (!(some root))) || (before (protocolMismatch_1 in (alive_protocolMismatch))))) }
+
 
 sig clientHelloMessage extends Message
 { p_clientHelloMessage : lone root }
 fun alive_clientHelloMessage : set clientHelloMessage { root.@r_clientHelloMessage }
 fact { always ~@r_clientHelloMessage in @p_clientHelloMessage }
+
+fact { all self_ : clientHelloMessage | always (self_ in alive_clientHelloMessage implies (all  clientHelloMessage_1 : (self_ & alive_clientHelloMessage) | after (clientHelloMessage_1 in (alive_clientHelloMessage)))) }
+fact { all self_ : clientHelloMessage | always (self_ in alive_clientHelloMessage implies (all  clientHelloMessage_1 : (self_ & alive_clientHelloMessage) | (not before not (!(some root))) || (before (clientHelloMessage_1 in (alive_clientHelloMessage))))) }
 
 
 sig clientCertificateMessage extends Message
@@ -230,11 +292,17 @@ sig clientCertificateMessage extends Message
 fun alive_clientCertificateMessage : set clientCertificateMessage { root.@r_clientCertificateMessage }
 fact { always ~@r_clientCertificateMessage in @p_clientCertificateMessage }
 
+fact { all self_ : clientCertificateMessage | always (self_ in alive_clientCertificateMessage implies (all  clientCertificateMessage_1 : (self_ & alive_clientCertificateMessage) | after (clientCertificateMessage_1 in (alive_clientCertificateMessage)))) }
+fact { all self_ : clientCertificateMessage | always (self_ in alive_clientCertificateMessage implies (all  clientCertificateMessage_1 : (self_ & alive_clientCertificateMessage) | (not before not (!(some root))) || (before (clientCertificateMessage_1 in (alive_clientCertificateMessage))))) }
+
 
 sig clientKeyExchangeMessage extends Message
 { p_clientKeyExchangeMessage : lone root }
 fun alive_clientKeyExchangeMessage : set clientKeyExchangeMessage { root.@r_clientKeyExchangeMessage }
 fact { always ~@r_clientKeyExchangeMessage in @p_clientKeyExchangeMessage }
+
+fact { all self_ : clientKeyExchangeMessage | always (self_ in alive_clientKeyExchangeMessage implies (all  clientKeyExchangeMessage_1 : (self_ & alive_clientKeyExchangeMessage) | after (clientKeyExchangeMessage_1 in (alive_clientKeyExchangeMessage)))) }
+fact { all self_ : clientKeyExchangeMessage | always (self_ in alive_clientKeyExchangeMessage implies (all  clientKeyExchangeMessage_1 : (self_ & alive_clientKeyExchangeMessage) | (not before not (!(some root))) || (before (clientKeyExchangeMessage_1 in (alive_clientKeyExchangeMessage))))) }
 
 
 sig certificateVerifyMessage extends Message
@@ -242,11 +310,17 @@ sig certificateVerifyMessage extends Message
 fun alive_certificateVerifyMessage : set certificateVerifyMessage { root.@r_certificateVerifyMessage }
 fact { always ~@r_certificateVerifyMessage in @p_certificateVerifyMessage }
 
+fact { all self_ : certificateVerifyMessage | always (self_ in alive_certificateVerifyMessage implies (all  certificateVerifyMessage_1 : (self_ & alive_certificateVerifyMessage) | after (certificateVerifyMessage_1 in (alive_certificateVerifyMessage)))) }
+fact { all self_ : certificateVerifyMessage | always (self_ in alive_certificateVerifyMessage implies (all  certificateVerifyMessage_1 : (self_ & alive_certificateVerifyMessage) | (not before not (!(some root))) || (before (certificateVerifyMessage_1 in (alive_certificateVerifyMessage))))) }
+
 
 sig clientChangeCipherSpecMessage extends Message
 { p_clientChangeCipherSpecMessage : lone root }
 fun alive_clientChangeCipherSpecMessage : set clientChangeCipherSpecMessage { root.@r_clientChangeCipherSpecMessage }
 fact { always ~@r_clientChangeCipherSpecMessage in @p_clientChangeCipherSpecMessage }
+
+fact { all self_ : clientChangeCipherSpecMessage | always (self_ in alive_clientChangeCipherSpecMessage implies (all  clientChangeCipherSpecMessage_1 : (self_ & alive_clientChangeCipherSpecMessage) | after (clientChangeCipherSpecMessage_1 in (alive_clientChangeCipherSpecMessage)))) }
+fact { all self_ : clientChangeCipherSpecMessage | always (self_ in alive_clientChangeCipherSpecMessage implies (all  clientChangeCipherSpecMessage_1 : (self_ & alive_clientChangeCipherSpecMessage) | (not before not (!(some root))) || (before (clientChangeCipherSpecMessage_1 in (alive_clientChangeCipherSpecMessage))))) }
 
 
 sig clientFinishedMessage extends Message
@@ -254,11 +328,17 @@ sig clientFinishedMessage extends Message
 fun alive_clientFinishedMessage : set clientFinishedMessage { root.@r_clientFinishedMessage }
 fact { always ~@r_clientFinishedMessage in @p_clientFinishedMessage }
 
+fact { all self_ : clientFinishedMessage | always (self_ in alive_clientFinishedMessage implies (all  clientFinishedMessage_1 : (self_ & alive_clientFinishedMessage) | after (clientFinishedMessage_1 in (alive_clientFinishedMessage)))) }
+fact { all self_ : clientFinishedMessage | always (self_ in alive_clientFinishedMessage implies (all  clientFinishedMessage_1 : (self_ & alive_clientFinishedMessage) | (not before not (!(some root))) || (before (clientFinishedMessage_1 in (alive_clientFinishedMessage))))) }
+
 
 sig applicationDataMessage extends Message
 { p_applicationDataMessage : lone root }
 fun alive_applicationDataMessage : set applicationDataMessage { root.@r_applicationDataMessage }
 fact { always ~@r_applicationDataMessage in @p_applicationDataMessage }
+
+fact { all self_ : applicationDataMessage | always (self_ in alive_applicationDataMessage implies (all  applicationDataMessage_1 : (self_ & alive_applicationDataMessage) | after (applicationDataMessage_1 in (alive_applicationDataMessage)))) }
+fact { all self_ : applicationDataMessage | always (self_ in alive_applicationDataMessage implies (all  applicationDataMessage_1 : (self_ & alive_applicationDataMessage) | (not before not (!(some root))) || (before (applicationDataMessage_1 in (alive_applicationDataMessage))))) }
 
 
 abstract sig Node extends Domain
@@ -338,6 +418,8 @@ fun alive_OurServer : set OurServer { root.@r_OurServer }
 fact { always ~@r_OurServer in @p_OurServer }
 
 fact { all self_ : OurServer | always (self_ in alive_OurServer implies (((self_.@r_protocolversion).@protocolversion_ref) = ((alive_SSL2_0 + alive_SSL3_0) + alive_TLS1_2))) }
+fact { all self_ : OurServer | always (self_ in alive_OurServer implies (all  OurServer_1 : (self_ & alive_OurServer) | after (OurServer_1 in (alive_OurServer)))) }
+fact { all self_ : OurServer | always (self_ in alive_OurServer implies (all  OurServer_1 : (self_ & alive_OurServer) | (not before not (!(some root))) || (before (OurServer_1 in (alive_OurServer))))) }
 
 
 sig aClient extends Client
@@ -347,6 +429,8 @@ fact { always ~@r_aClient in @p_aClient }
 
 fact { all self_ : aClient | always (self_ in alive_aClient implies (some self_.@r_certificate)) }
 fact { all self_ : aClient | always (self_ in alive_aClient implies (((self_.@r_protocolversion).@protocolversion_ref) = alive_TLS1_2)) }
+fact { all self_ : aClient | always (self_ in alive_aClient implies (all  aClient_1 : (self_ & alive_aClient) | after (aClient_1 in (alive_aClient)))) }
+fact { all self_ : aClient | always (self_ in alive_aClient implies (all  aClient_1 : (self_ & alive_aClient) | (not before not (!(some root))) || (before (aClient_1 in (alive_aClient))))) }
 
 
 sig Protocol extends Domain
@@ -362,6 +446,8 @@ fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_
 fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_server)) }
 fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_handshakeStatus)) }
 fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_channel)) }
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (all  Protocol_1 : (self_ & alive_Protocol) | after (Protocol_1 in (alive_Protocol)))) }
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (all  Protocol_1 : (self_ & alive_Protocol) | (not before not (!(some root))) || (before (Protocol_1 in (alive_Protocol))))) }
 
 
 sig client
@@ -374,6 +460,10 @@ fun alive_client : set client { Protocol.@r_client }
 fact { always ~@r_client in @p_client
   always @r_client.univ in alive_Protocol }
 
+fact { all self_ : client | always (self_ in alive_client implies (all  client_1 : (self_ & alive_client) | after (not some self_.(@p_client :> alive_Protocol) or (client_1 in ((self_.(@p_client :> alive_Protocol)).@r_client))))) }
+fact { all self_ : client | always (self_ in alive_client implies (all  client_1 : (self_ & alive_client) | (not before (some self_.(@p_client :> alive_Protocol) and not (!(some self_.(@p_client :> alive_Protocol))))) || (before (some self_.(@p_client :> alive_Protocol) and (client_1 in ((self_.(@p_client :> alive_Protocol)).@r_client)))))) }
+fact { all self_ : client | always (self_ in alive_client implies (all  client_1 : (self_ & alive_client) | all  client_2 : client_1.@client_ref | after (not some self_.(@p_client :> alive_Protocol) or ((some client_1.@client_ref) => (client_2 in (client_1.@client_ref)))))) }
+
 
 sig server
 { p_server : lone Protocol
@@ -384,6 +474,10 @@ sig server
 fun alive_server : set server { Protocol.@r_server }
 fact { always ~@r_server in @p_server
   always @r_server.univ in alive_Protocol }
+
+fact { all self_ : server | always (self_ in alive_server implies (all  server_1 : (self_ & alive_server) | after (not some self_.(@p_server :> alive_Protocol) or (server_1 in ((self_.(@p_server :> alive_Protocol)).@r_server))))) }
+fact { all self_ : server | always (self_ in alive_server implies (all  server_1 : (self_ & alive_server) | (not before (some self_.(@p_server :> alive_Protocol) and not (!(some self_.(@p_server :> alive_Protocol))))) || (before (some self_.(@p_server :> alive_Protocol) and (server_1 in ((self_.(@p_server :> alive_Protocol)).@r_server)))))) }
+fact { all self_ : server | always (self_ in alive_server implies (all  server_1 : (self_ & alive_server) | all  server_2 : server_1.@server_ref | after (not some self_.(@p_server :> alive_Protocol) or ((some server_1.@server_ref) => (server_2 in (server_1.@server_ref)))))) }
 
 
 sig handshakeStatus

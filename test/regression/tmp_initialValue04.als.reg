@@ -29,12 +29,12 @@ sig level
 { p_level : lone root
 , var level_ref : set Int }
 { always (this in alive_level implies (one this.@level_ref))
-  always (this not in alive_level implies no this.@level_ref)
-  always (this in alive_level and after this in alive_level implies (this.@level_ref)' = this.@level_ref) }
+  always (this not in alive_level implies no this.@level_ref) }
 fun alive_level : set level { root.@r_level }
 fact { always ~@r_level in @p_level }
 
 fact { all self_ : level | always (self_ in alive_level implies ((not before self_ in alive_level) implies ((self_.@level_ref) = (alive_y.@y_ref)))) }
+fact { all self_ : level | always (self_ in alive_level implies (all  level_1 : (self_ & alive_level) | all  level_2 : level_1.@level_ref | after ((some level_1.@level_ref) => (level_2 in (level_1.@level_ref))))) }
 
 
 sig mode
@@ -46,5 +46,8 @@ fun alive_mode : set mode { root.@r_mode }
 fact { always ~@r_mode in @p_mode }
 
 fact { all self_ : mode | always (self_ in alive_mode implies ((not before self_ in alive_mode) implies ((self_.@mode_ref) = 1))) }
+fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | after (mode_1 in (alive_mode)))) }
+fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | (not before not (!(some root))) || (before (mode_1 in (alive_mode))))) }
+fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | all  mode_2 : mode_1.@mode_ref | after ((some mode_1.@mode_ref) => (mode_2 in (mode_1.@mode_ref))))) }
 
 

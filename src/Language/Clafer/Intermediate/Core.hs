@@ -26,6 +26,7 @@
 
      * An enumeration is an abstract clafer with a concrete clafer for each literal.
      * The initializers are constraints ("Language.Clafer.Intermediate.Initializers").
+     * The finality modifiers are constraints ("Language.Clafer.Intermediate.Finality").
      * The patterns are the LTL formulas of Dwyer et al.'s catalogue, Patterns in Property
        Specifications for Finite-State Verification (ICSE 1999), for the scopes globally,
        before r, after q, between q and r, and after q until r.
@@ -47,12 +48,13 @@ import Control.Lens (over)
 import Control.Lens.Plated (plate, transformOn)
 import Data.Data.Lens (biplate)
 import Language.Clafer.Common
+import Language.Clafer.Intermediate.Finality (lowerFinality)
 import Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
 import Language.Clafer.Intermediate.Intclafer
 
 -- | The core of the module, for a backend that reads it with the given semantics.
 lowerToCore :: Semantics -> IModule -> IModule
-lowerToCore sem = lowerEnums . over biplate lowerPExp . lowerInitializers sem
+lowerToCore sem = lowerFinality . lowerEnums . over biplate lowerPExp . lowerInitializers sem
 
 -- | The clafers of the enumerations are ordinary clafers.
 lowerEnums :: IModule -> IModule
