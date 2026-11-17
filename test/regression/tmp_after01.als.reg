@@ -3,11 +3,16 @@ pred show {}
 
 
 one sig root
-{ var r_a : set a }
+{ var r_a : set a
+, r_e : set e }
 fact { always (lone root.@r_a) }
+fact { always (one root.@r_e) }
 
-assert assertAt_14_9 { always (all  b1 : alive_a.@r_b | always ((!(some b1.@r_c)) || (after (!(some b1.@r_d))))) }
-check assertAt_14_9 for 1 but 10 steps
+assert assertAt_12_9 { always (all  b1 : alive_a.@r_b | always ((!(some b1.@r_c)) || (after (!(some b1.@r_d))))) }
+check assertAt_12_9 for 1 but 10 steps
+
+assert assertAt_22_9 { always (always ((some (alive_e.@r_f).@r_g) => (always (no (alive_e.@r_f).@r_h)))) }
+check assertAt_22_9 for 1 but 10 steps
 
 
 
@@ -46,5 +51,46 @@ sig d
 fun alive_d : set d { b.@r_d }
 fact { always ~@r_d in @p_d
   always @r_d.univ in alive_b }
+
+
+sig e
+{ p_e : lone root
+, r_f : set f }
+fun alive_e : set e { root.@r_e }
+fact { always ~@r_e in @p_e }
+
+fact { all self_ : e | always (self_ in alive_e implies (one self_.@r_f)) }
+fact { all self_ : e | always (self_ in alive_e implies (all  e_1 : (self_ & alive_e) | after (e_1 in (alive_e)))) }
+fact { all self_ : e | always (self_ in alive_e implies (all  e_1 : (self_ & alive_e) | (not before not (!(some root))) || (before (e_1 in (alive_e))))) }
+
+
+sig f
+{ p_f : lone e
+, var r_g : set g
+, var r_h : set h }
+{ always (this in alive_f implies (let children = (this.@r_g + this.@r_h) | one children)) }
+fun alive_f : set f { e.@r_f }
+fact { always ~@r_f in @p_f
+  always @r_f.univ in alive_e }
+
+fact { all self_ : f | always (self_ in alive_f implies (lone self_.@r_g)) }
+fact { all self_ : f | always (self_ in alive_f implies (lone self_.@r_h)) }
+fact { all self_ : f | always (self_ in alive_f implies ((not some self_.(@p_f :> alive_e)) releases (not some self_.(@p_f :> alive_e) or ((some self_.@r_g) => ((not some self_.(@p_f :> alive_e)) releases (not some self_.(@p_f :> alive_e) or (no self_.@r_h))))))) }
+fact { all self_ : f | always (self_ in alive_f implies (all  f_1 : (self_ & alive_f) | after (not some self_.(@p_f :> alive_e) or (f_1 in ((self_.(@p_f :> alive_e)).@r_f))))) }
+fact { all self_ : f | always (self_ in alive_f implies (all  f_1 : (self_ & alive_f) | (not before (some self_.(@p_f :> alive_e) and not (!(some self_.(@p_f :> alive_e))))) || (before (some self_.(@p_f :> alive_e) and (f_1 in ((self_.(@p_f :> alive_e)).@r_f)))))) }
+
+
+sig g
+{ p_g : lone f }
+fun alive_g : set g { f.@r_g }
+fact { always ~@r_g in @p_g
+  always @r_g.univ in alive_f }
+
+
+sig h
+{ p_h : lone f }
+fun alive_h : set h { f.@r_h }
+fact { always ~@r_h in @p_h
+  always @r_h.univ in alive_f }
 
 

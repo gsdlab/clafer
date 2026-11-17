@@ -7,3 +7,6 @@
   [(this.dref >= -2) && (this.dref <= 2)]
 }
 0..* z -> int 1..1 {}
+
+assert [z.dref = ((sum x.dref) + (sum y.dref))]
+assert [((all v : x | v.dref = 1) && (all w : y | w.dref = 1)) => (z.dref = ((#x) + (#y)))]

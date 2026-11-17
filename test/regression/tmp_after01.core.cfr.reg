@@ -6,5 +6,17 @@
     0..* d 0..1 {}
   }
 }
+0..* e 1..1 {
+  [all e_1 : this | X (e_1 in e)] // final, tmp_after01.cfr:16:1
+  [all e_1 : this | (previous ((#root) >= 1)) => (previous (e_1 in e))] // final, tmp_after01.cfr:16:1
+  1..1 f 1..1 {
+    [G (((#this.g) >= 1) => (G ((#this.h) = 0)))] // never after, tmp_after01.cfr:20:4
+    [all f_1 : this | X (f_1 in this.parent.f)] // final, tmp_after01.cfr:17:2
+    [all f_1 : this | (previous ((#this.parent) >= 1)) => (previous (f_1 in this.parent.f))] // final, tmp_after01.cfr:17:2
+    0..* g 0..1 {}
+    0..* h 0..1 {}
+  }
+}
 
-assert [all b1 : a.b | G (!(((#b1.c) >= 1) && (X ((#b1.d) >= 1))))] // never, tmp_after01.cfr:14:24
+assert [all b1 : a.b | G (!(((#b1.c) >= 1) && (X ((#b1.d) >= 1))))] // never, tmp_after01.cfr:12:24
+assert [G (((#e.f.g) >= 1) => (G ((#e.f.h) = 0)))] // never after, tmp_after01.cfr:22:9

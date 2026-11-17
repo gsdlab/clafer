@@ -11,3 +11,5 @@ $z.refToUnique(Int);
 $x.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessThanEqual(joinRef($this()), constant(2))));
 $y.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessThanEqual(joinRef($this()), constant(2))));
 Constraint(implies(some(global($z)), equal(joinRef(global($z)), add(sum(global($x)), sum(global($y))))));
+assert(equal(joinRef(global($z)), add(sum(global($x)), sum(global($y)))));
+assert(implies(and(all([decl([$_v = local("v")], global($x))], equal(joinRef($_v), constant(1))), all([decl([$_w = local("w")], global($y))], equal(joinRef($_w), constant(1)))), equal(joinRef(global($z)), add(card(global($x)), card(global($y))))));

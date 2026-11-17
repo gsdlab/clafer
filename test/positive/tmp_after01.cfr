@@ -7,8 +7,16 @@ a ?
 
 // The constraint is one of its instance of b, whose obligations last while a exists: a may
 // replace its b with another instance, and a may disappear and reappear, and then the
-// constraint starts again, so these assertions do not hold
-// assert [never a.b.c after a.b.d ]
-// assert [never a.b.d after a.b.c ]
+// constraint starts again, so `never a.b.d after a.b.c` does not hold.
 // While an instance of b exists, its d does not follow its c
 assert [all b1 : a.b | never (b1.c && X b1.d) ]
+
+// The instances of final clafers stay for the whole trace, so the scope holds for their paths.
+// The converse, `never e.f.g after e.f.h`, does not hold: g may follow h.
+final e
+ final xor f 1
+  g ?
+  h ?
+  [never h after g ]
+
+assert [never e.f.h after e.f.g ]

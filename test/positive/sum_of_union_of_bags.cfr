@@ -6,4 +6,6 @@ y ->> integer 2..*
   [ this >= -2 && this <= 2 ]
 z -> integer = sum (x ++ y)
 
-// assert [ z.dref = (sum x) + (sum y)]
+assert [ z.dref = (sum x) + (sum y) ]
+// the union of bags keeps the duplicates: a value in both bags counts twice
+assert [ ((all v : x | v.dref = 1) && (all w : y | w.dref = 1)) => z.dref = #x + #y ]

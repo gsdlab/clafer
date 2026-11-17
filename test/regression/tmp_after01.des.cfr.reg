@@ -6,5 +6,13 @@
     0..* d 0..1 {}
   }
 }
+final 0..* e 1..1 {
+  final 1..1 f 1..1 {
+    [never ((#this.h) >= 1) after ((#this.g) >= 1)]
+    0..* g 0..1 {}
+    0..* h 0..1 {}
+  }
+}
 
 assert [all b1 : a.b | never (((#b1.c) >= 1) && (X ((#b1.d) >= 1)))]
+assert [never ((#e.f.h) >= 1) after ((#e.f.g) >= 1)]
