@@ -1,0 +1,12 @@
+digraph "tmp_abstract_multiplicity"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Tools" [label="abstract Tools 3..6" URL="#Tools" tooltip="abstract Tools 3..6&#10;"];
+"hammer" [label="hammer : Tools *" URL="#hammer" tooltip="hammer : Tools *&#10;"];
+"saw" [label="saw : Tools 0..4" URL="#saw" tooltip="saw : Tools 0..4&#10;"];
+}

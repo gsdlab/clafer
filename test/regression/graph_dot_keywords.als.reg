@@ -3,7 +3,9 @@ pred show {}
 
 
 abstract sig Node
-{ r_Edge : lone Edge }
+{ r_Edge : set Edge }
+{ all disj x, y : this.@r_Edge | (x.@Edge_ref) != (y.@Edge_ref) 
+  (#(this.@r_Edge)) <= 1 }
 
 abstract sig Edge
 { Edge_ref : one Node }

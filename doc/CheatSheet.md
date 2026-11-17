@@ -132,6 +132,10 @@ Useful shorthands are
 <int literal>..*
 ```
 
+The multiplicity of an abstract clafer bounds the number of all its instances, of all its subclafers together ([#129](https://github.com/gsdlab/clafer/issues/129)): `abstract Tools 3..6` with `hammer : Tools *` and `saw : Tools *` has three to six tools in all, and `hammer : Tools 4` with `saw : Tools 4` has no instance.
+For a top-level abstract clafer, the count is global, across all parents; for a nested one, it is per instance of its declared parent; in a temporal model, the bound holds in every state.
+Without a multiplicity, the number is unrestricted, and the multiplicity of a subclafer is not checked against the abstract clafer's.
+
 Reference clafers can be given values using an initializer:
 a constant using `=`, and an initial value using `:=`.
 

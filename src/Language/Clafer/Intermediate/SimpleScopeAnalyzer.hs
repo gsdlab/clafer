@@ -61,7 +61,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     constraints = concatMap findConstraints decls'
 
     lowerOrUpperFixedCard analysis' clafer =
-        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar, lowFromGroupCard ]
+        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar, lowFromGroupCard, lowFromAbstractSupers ]
         where
         (cardLb, cardUb) = case _card clafer of
             (Just c) -> c
@@ -79,6 +79,11 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
             Just (IGCard _ (groupLb, _)) | cardUb == -1 -> groupLb
                                          | otherwise    -> min groupLb cardUb
             Nothing -> 0
+        -- The lower bound of an abstract super clafer counts all its instances (#129), which
+        -- this clafer may have to supply alone, unless its own upper bound is smaller.
+        lowFromAbstractSupers =
+            let low = maximum (0 : [ l | s <- findHierarchy getSuper uidClaferMap' clafer, _isAbstract s, Just (l, _) <- [_card s] ])
+            in if cardUb == -1 then low else min low cardUb
 
     analyzeComponent analysis' component =
         case flattenSCC component of

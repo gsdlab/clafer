@@ -890,6 +890,50 @@ case_InitializerDiagnostics = do
       [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
       , "abstract Val -> integer = 1, 2\nv : Val\n" ]
 
+-- The multiplicity of an abstract clafer bounds the number of all its instances (#129,
+-- kbak/clafer-semantics#193): globally at the top level, per parent instance when nested, in
+-- every state. The rich model keeps it as written, the core has it as a constraint, which
+-- static and temporal Alloy and Choco get, and a subclafer's multiplicity is not checked
+-- against it. Only the authored multiplicity is a bound.
+case_AbstractMultiplicity :: Assertion
+case_AbstractMultiplicity = do
+    let
+        compileIn modes' core' m = compileOneFragment defaultClaferArgs{mode = modes', core = core'} $ unlines m
+        outputOf modes' core' m = case compileIn modes' core' m of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup (fromJust $ listToMaybe modes') r
+            Left errs' -> assertFailure (show errs') >> return ""
+        hasOut modes' core' m expected = do
+            x <- outputOf modes' core' m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        lacksOut modes' core' m unexpected = do
+            x <- outputOf modes' core' m
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+        tools = [ "abstract Tools 3..6", "hammer : Tools 4", "saw : Tools 4" ]
+        nested = [ "abstract Base", "    abstract Val ?", "P : Base 2", "    x : Base.Val ?", "    y : Base.Val ?" ]
+    -- no refinement error, although each subclafer has more instances than the bound allows together
+    hasOut [Clafer] False tools "abstract 0..* Tools 3..6 {}"
+    hasOut [Clafer] True tools "[((#Tools) >= 3) && ((#Tools) <= 6)]"
+    hasOut [Clafer] True tools "abstract 0..* Tools 0..* {}"
+    hasOut [Alloy] False tools "fact { ((#Tools) >= 3) && ((#Tools) <= 6) }"
+    hasOut [Choco] False tools "Constraint(and(greaterThanEqual(card(global($Tools)), constant(3)), lessThanEqual(card(global($Tools)), constant(6))));"
+    -- in every state of a temporal model
+    hasOut [Alloy] False (tools ++ ["[ G some hammer ]"]) "fact { always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6)) }"
+    -- per parent instance
+    hasOut [Clafer] True nested "[(#this.Val) <= 1]"
+    hasOut [Alloy] False nested "(#(this.@r_Val)) <= 1"
+    -- both explicit models compile to themselves
+    forM_ [tools, nested] $ \m -> forM_ [False, True] $ \core' -> do
+        x <- outputOf [Clafer] core' m
+        y <- outputOf [Clafer] core' (lines x)
+        x == y @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y
+    -- without a multiplicity, no bound; an unused abstract clafer has no instances, which is no bound
+    lacksOut [Clafer] True [ "abstract Tools", "hammer : Tools 4" ] "#Tools"
+    lacksOut [Clafer] True [ "abstract Tools", "b ?" ] "#Tools"
+    -- an unused abstract clafer with a lower bound is kept, and the bound leaves no instance
+    hasOut [Clafer] True [ "abstract Tools 2", "b ?" ] "[(#Tools) = 2]"
+    -- the scope leaves room for the lower bound
+    hasOut [Alloy] False [ "abstract Tools 3..6", "hammer : Tools *" ] "3 hammer"
+
 -- The past-time operators (#127): previous, once, historically, since and triggered are core
 -- operators, which both explicit models print as written; their keywords are reserved; a model
 -- with them is temporal; in the temporal Alloy output, they are Alloy's operators at the top

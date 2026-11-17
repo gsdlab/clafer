@@ -1,0 +1,15 @@
+digraph "abstract_multiplicity"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Tools" [label="abstract Tools 3..6" URL="#Tools" tooltip="abstract Tools 3..6&#10;"];
+"hammer" [label="hammer : Tools 1..2" URL="#hammer" tooltip="hammer : Tools 1..2&#10;"];
+"saw" [label="saw : Tools 0..5" URL="#saw" tooltip="saw : Tools 0..5&#10;"];
+"Bench" [label="abstract Bench" URL="#Bench" tooltip="abstract Bench&#10;  abstract Rack ?&#10;"];
+"Rack" [label="abstract Rack ?" URL="#Rack" tooltip="abstract Rack ?&#10;"];
+"Workbench" [label="Workbench : Bench 2" URL="#Workbench" tooltip="Workbench : Bench 2&#10;  big : Bench.Rack ?&#10;  small : Bench.Rack ?&#10;"];
+}

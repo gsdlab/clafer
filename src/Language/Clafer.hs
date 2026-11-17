@@ -135,6 +135,7 @@ import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.AbstractMultiplicity (authoredBounds, lowerAbstractBounds, withAuthoredBounds)
 import           Language.Clafer.Intermediate.Core (Semantics (..), lowerToCore)
 import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
@@ -610,11 +611,13 @@ generate =
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       -- the core of the model, which the backends get; Choco solves static models only, where := is =
-      coreModule = lowerToCore (if staticClaferSubset then Static else Temporal) iModule
-      chocoModule = lowerToCore Static iModule
+      -- the bounds of the abstract clafers, as written (#129): the optimizer changes the IR's
+      bounds = authoredBounds ast'
+      coreModule = lowerAbstractBounds bounds $ lowerToCore (if staticClaferSubset then Static else Temporal) iModule
+      chocoModule = lowerAbstractBounds bounds $ lowerToCore Static iModule
       -- the explicit model and the JSON IR keep the modeling intent; their core (--core) is
       -- what the backends get
-      explicitModule = if core cargs then coreModule else iModule
+      explicitModule = if core cargs then coreModule else withAuthoredBounds bounds iModule
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs

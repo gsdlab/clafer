@@ -3,7 +3,9 @@ pred show {}
 
 
 abstract sig Station
-{ r_Link : lone Link }
+{ r_Link : set Link }
+{ all disj x, y : this.@r_Link | (x.@Link_ref) != (y.@Link_ref) 
+  (#(this.@r_Link)) <= 1 }
 
 abstract sig Link
 { Link_ref : one Station }

@@ -1,0 +1,36 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_hammer : set hammer
+, var r_saw : set saw }
+fact { always (#(root.@r_saw) <= 4) }
+fact { always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6)) }
+fact { always ((not before some root) implies (((#alive_hammer) = 3) && (no alive_saw))) }
+fact { always ((not before some root) implies (after ((#alive_saw) = 4))) }
+
+assert assertAt_12_10 { always (always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6))) }
+check assertAt_12_10 for 1 but 7 Tools, 3 hammer, 4 saw, 10 steps
+
+assert assertAt_13_10 { always ((not before some root) implies (after ((#alive_hammer) <= 2))) }
+check assertAt_13_10 for 1 but 7 Tools, 3 hammer, 4 saw, 10 steps
+
+
+
+abstract sig Tools
+{}
+fun alive_Tools : set Tools { alive_hammer + alive_saw }
+
+sig hammer extends Tools
+{ p_hammer : lone root }
+fun alive_hammer : set hammer { root.@r_hammer }
+fact { always ~@r_hammer in @p_hammer }
+
+
+sig saw extends Tools
+{ p_saw : lone root }
+fun alive_saw : set saw { root.@r_saw }
+fact { always ~@r_saw in @p_saw }
+
+

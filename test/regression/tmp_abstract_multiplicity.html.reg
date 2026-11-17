@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/tmp_abstract_multiplicity.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Tools">Tools</span> 3..6 </div>
+
+
+<div>
+<span class="claferDecl" id="hammer">hammer</span><span class="keyword"> : </span><a href="#Tools"><span class="reference">Tools</span></a> *</div>
+
+
+<div>
+<span class="claferDecl" id="saw">saw</span><span class="keyword"> : </span><a href="#Tools"><span class="reference">Tools</span></a> 0..4 </div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span># <a href="#hammer"><span class="reference">hammer</span></a> = 3 &amp;&amp; <span class="keyword">no</span> <a href="#saw"><span class="reference">saw</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>X # <a href="#saw"><span class="reference">saw</span></a> = 4 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> G (# <a href="#Tools"><span class="reference">Tools</span></a> &gt;= 3 &amp;&amp; # <a href="#Tools"><span class="reference">Tools</span></a> &lt;= 6) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">initially </span>X # <a href="#hammer"><span class="reference">hammer</span></a> &lt;= 2 <span class="keyword">]</span></div>
+
+</body>
+</html>

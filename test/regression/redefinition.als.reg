@@ -33,9 +33,11 @@ one sig stop extends Request
 {}
 
 abstract sig Controller extends Component
-{ r_Controller__req : lone Controller__req
+{ r_Controller__req : set Controller__req
 , r_down : one down }
-{ r_Controller__req in r_InPort }
+{ r_Controller__req in r_InPort
+  all disj x, y : this.@r_Controller__req | (x.@Controller__req_ref) != (y.@Controller__req_ref) 
+  (#(this.@r_Controller__req)) <= 1 }
 
 abstract sig Controller__req extends InPort
 { Controller__req_ref : one Request }

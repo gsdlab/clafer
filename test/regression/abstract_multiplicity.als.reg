@@ -1,0 +1,48 @@
+open util/integer
+pred show {}
+
+
+abstract sig Tools
+{}
+
+fact { ((#Tools) >= 3) && ((#Tools) <= 6) }
+fact { 1 <= #hammer and #hammer <= 2 }
+sig hammer extends Tools
+{}
+
+fact { #saw <= 5 }
+sig saw extends Tools
+{}
+
+abstract sig Bench
+{ r_Rack : set Rack }
+{ (#(this.@r_Rack)) <= 1 }
+
+abstract sig Rack
+{}
+{ one @r_Rack.this }
+
+fact { 2 <= #Workbench and #Workbench <= 2 }
+sig Workbench extends Bench
+{ r_big : lone big
+, r_small : lone small }
+{ r_big in r_Rack
+  r_small in r_Rack }
+
+sig big extends Rack
+{}
+{ one @r_big.this }
+
+sig small extends Rack
+{}
+{ one @r_small.this }
+
+assert assertAt_17_10 { ((#Tools) >= 3) && ((#Tools) <= 6) }
+check assertAt_17_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+
+assert assertAt_18_10 { (#saw) <= 5 }
+check assertAt_18_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+
+assert assertAt_19_10 { all  w : Workbench | ((#(w.@r_big)).plus[(#(w.@r_small))]) <= 1 }
+check assertAt_19_10 for 1 but 2 Bench, 4 Rack, 7 Tools, 2 Workbench, 2 big, 2 hammer, 5 saw, 2 small
+

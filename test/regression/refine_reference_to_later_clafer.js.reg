@@ -17,3 +17,4 @@ $S3.extending($Station);
 $Link.refToUnique($Station);
 $L1.refToUnique($S2);
 $L2.refToUnique($S3);
+$Station.addConstraint(lessThanEqual(card(join($this(), $Link)), constant(1)));

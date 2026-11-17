@@ -284,6 +284,9 @@ isProperRefinement    uidIClaferMap    (Just m)
     , properBagToSetRefinement m
     , properTargetSubtyping m )
   where
+    -- the multiplicity of an abstract clafer bounds the number of all its instances, of all its
+    -- subclafers together, not the multiplicity of each subclafer (#129)
+    properCardinalityRefinement NestedInheritanceMatch{_superClafer=hcs} | _isAbstract hcs = True
     properCardinalityRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
       = case (_card hc, _card hcs) of
           (Just (hcl, hcu), Just (hcsl, hcsu)) -> hcl >= hcsl && (hcu <= hcsu || hcsu == -1)

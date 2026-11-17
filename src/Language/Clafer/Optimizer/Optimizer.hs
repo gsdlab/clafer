@@ -89,12 +89,14 @@ remUnusedAbs decls' = makeZeroUnusedAbs $ decls' \\ unneededAbs
   unneededAbs = map IEClafer $ findUnneededAbs clafers $ neededRoots decls'
   clafers     = toClafers decls'
 
--- | The clafers needed to begin with: the concrete clafers and the clafers
--- named in constraints.
+-- | The clafers needed to begin with: the concrete clafers, the clafers named in constraints,
+-- and the abstract clafers with a lower bound, which a model without their instances violates
+-- (#129).
 neededRoots :: [IElement] -> [String]
 neededRoots decls' =
   map _uid (filter (not . _isAbstract) $ toClafers decls')
   ++ [ sid | pexp <- constraints decls', IClaferId{_sident = sid} <- universeOn biplate pexp ]
+  ++ [ _uid c | c <- toClafers decls', _isAbstract c, maybe False ((> 0) . fst) (_card c) ]
   where
   constraints = concatMap constraint
   constraint (IEConstraint _ pexp) = [pexp]

@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --tl=10
+[initially (((#hammer) = 3) && ((#saw) = 0))]
+[initially (X ((#saw) = 4))]
+abstract 0..* Tools 3..6 {}
+0..* hammer : Tools 0..* {}
+0..* saw : Tools 0..4 {}
+
+assert [G (((#Tools) >= 3) && ((#Tools) <= 6))]
+assert [initially (X ((#hammer) <= 2))]

@@ -30,6 +30,7 @@ its lowering. The principle decides each construct:
 | Construct | In the core | Why |
 |---|---|---|
 | `enum Color = red \| green` | no: an abstract clafer and a clafer for each literal | it is written with clafers |
+| the multiplicity of an abstract clafer, e.g., `abstract Tools 3..6` | no: `[ (#Tools >= 3) && (#Tools <= 6) ]` next to it, at the top level, or `#this.Tools` in the parent of a nested one, and `abstract Tools 0..*` | it is written with a constraint |
 | behavioral patterns, e.g., `never p between q and r` | no: their LTL formula | they are written with `X`, `F`, `G`, `U`, `W` |
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
 | `x -> T = e` | no: `[ some x => x.dref = e ]` in the parent | it is written with a constraint |

@@ -85,10 +85,12 @@ exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard
     ++ ccUid
     ++ maybe "" (" : " ++) ccSuper
     ++ maybe "" (\(isSet', target) -> (if isSet' then " -> " else " ->> ") ++ exTarget target) ccRef
-    -- an abstract clafer has no multiplicity of its own, but a written * makes its initializer
-    -- a set initializer (kbak/clafer-semantics#170), so the multiplicity of an abstract clafer
-    -- with a per-instance initializer is left out
-    ++ (if ccAbstract then (if perInstanceInit then "" else " 0..*") else " " ++ exCard ccCard)
+    -- the multiplicity of an abstract clafer bounds the number of all its instances (#129); a
+    -- written * makes its initializer a set initializer (kbak/clafer-semantics#170), so an
+    -- unrestricted abstract clafer with a per-instance initializer has no multiplicity
+    ++ (if ccAbstract
+        then (if ccCard `elem` [Nothing, Just (0, -1)] then (if perInstanceInit then "" else " 0..*") else " " ++ exCard ccCard)
+        else " " ++ exCard ccCard)
     -- the initializer as written, with its value in the context of the parent
     ++ concat [ (if k then " = " else " := ") ++ exExp e | CEInitializer k _ e <- ccElements ]
     ++ (if null constraints && null subClafers then " {}\n"
