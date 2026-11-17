@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --core --tl=10
+[initially ((#x) >= 1)]
+0..* x -> int 0..1 {
+  [initially (X (this.dref = 7))]
+}
+
+assert [initially (X ((#x) >= 1))]

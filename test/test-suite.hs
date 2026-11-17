@@ -36,6 +36,7 @@ import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
 import Language.Clafer.Generator.Html (highlightErrorsIn)
+import Language.Clafer.Generator.Explicit (withoutOrigins)
 
 import Network.URI (parseURI)
 import Network.Socket (tupleToHostAddress)
@@ -934,6 +935,34 @@ case_InitialLowered = do
       , "[initially ((#this.b) >= 1)]", "[initially ((#this.c) >= 1)]" ] @? ("constraints missing:\n" ++ x)
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
+
+-- With --record-provenance, the explicit core model has the origin of each clafer and constraint
+-- that a lowering made, as a comment with the rich construct and its position, as in the messages; the comments do not
+-- change the core, which compiles to the same core. Without the flag, the core and the JSON have
+-- no origins.
+case_RecordProvenance :: Assertion
+case_RecordProvenance = do
+    let model = [ "enum Color = red | green", "abstract Tools 1..3", "hammer : Tools ?", "initial a ?"
+                , "    final b ?", "x -> integer := 1", "xor m", "    initial idle --> busy", "    busy"
+                , "[ never busy before a ]" ]
+        output mode' provenance m = case compileOneFragment defaultClaferArgs{mode = [mode'], core = True, record_provenance = provenance} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup mode' r
+            Left errs' -> assertFailure (show errs') >> return ""
+    x <- output Clafer True model
+    all (`isInfixOf` x)
+      [ "] // abstract multiplicity, 2:1", "{} // enum, 1:1", "] // final, 5:5", "] // :=, 6:1"
+      , "] // initial, 4:1", "] // initial, 8:5", "] // transition, 8:13", "] // never before, 10:3" ] @? ("origins missing:\n" ++ x)
+    plain <- output Clafer False model
+    not ("//" `isInfixOf` drop 1 (dropWhile (/= '\n') plain)) @? ("an origin without the flag:\n" ++ plain)
+    -- the comments of the origins are what a core with them compiles to without
+    withoutOrigins x == plain @? ("the comments of the origins not removed:\n" ++ withoutOrigins x)
+    withoutOrigins "[x = \"a // b\"]\n" == "[x = \"a // b\"]\n" @? "a comment that is not an origin removed"
+    y <- output Clafer False (lines x)
+    plain == y @? ("The core with origins is not the core:\n" ++ plain ++ "\n" ++ y)
+    json <- output JSON False model
+    not ("Origin" `isInfixOf` json) @? "an origin in the JSON without the flag"
+    jsonWith <- output JSON True model
+    ("\"_eOrigin\"" `isInfixOf` jsonWith && "\"_cOrigin\"" `isInfixOf` jsonWith) @? "no origin in the JSON with the flag"
 
 -- The multiplicity of an abstract clafer bounds the number of all its instances (#129,
 -- kbak/clafer-semantics#193): globally at the top level, per parent instance when nested, in

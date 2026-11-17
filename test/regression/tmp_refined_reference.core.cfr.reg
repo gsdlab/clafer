@@ -1,0 +1,6 @@
+//# OPTIONS --explicit --core --tl=10
+[G (r.dref = 1)]
+abstract 0..* Ref -> int 0..* {}
+0..* r : Ref -> int 1..1 {}
+
+assert [G (all q : Ref | q.dref = 1)]

@@ -121,9 +121,9 @@ jsLinks _ (CEClafer CClafer{ccUid, ccLinked, ccRefConstraints, ccElements})
         concatMap (\c -> jsVar ccUid ++ ".addConstraint(" ++ jsExp c ++ ");\n") ccRefConstraints
         ++ (jsLinks ccUid =<< ccElements)
     | otherwise = jsLinks ccUid =<< ccElements
-jsLinks "root" (CEConstraint e) = "Constraint(" ++ jsExp e ++ ");\n"
-jsLinks pUID (CEConstraint e) = jsVar pUID ++ ".addConstraint(" ++ jsExp e ++ ");\n"
-jsLinks _ (CEAssert e) = "assert(" ++ jsExp e ++ ");\n"
+jsLinks "root" (CEConstraint _ e) = "Constraint(" ++ jsExp e ++ ");\n"
+jsLinks pUID (CEConstraint _ e) = jsVar pUID ++ ".addConstraint(" ++ jsExp e ++ ");\n"
+jsLinks _ (CEAssert _ e) = "assert(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective True e) = "max(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective False e) = "min(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEInitializer _ _ e) = error $ "[bug] Choco: an initializer that was not lowered to a constraint, with the value " ++ jsExp e

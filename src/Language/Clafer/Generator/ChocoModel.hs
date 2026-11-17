@@ -57,8 +57,8 @@ data CModel = CModel
 
 data CElement
     = CEClafer CClafer
-    | CEConstraint CExp
-    | CEAssert CExp               -- ^ an assertion, quantified over its clafer if nested
+    | CEConstraint (Maybe Origin) CExp  -- ^ a constraint, with its origin (@--record-provenance@)
+    | CEAssert (Maybe Origin) CExp      -- ^ an assertion, quantified over its clafer if nested
     | CEObjective Bool CExp       -- ^ maximize, or minimize
     | CEInitializer Bool Bool CExp  -- ^ the initializer of the clafer, @=@ or @:=@, whether a set
                                   --   initializer, and its value in
@@ -78,6 +78,7 @@ data CClafer = CClafer
     , ccRef      :: Maybe (Bool, String)   -- ^ its own reference: whether a set, and the target
     , ccRefConstraints :: [CExp]  -- ^ the constraints of a reference to a set expression
     , ccElements :: [CElement]
+    , ccOrigin   :: Maybe Origin  -- ^ the rich construct that a lowering made it from (@--record-provenance@)
     }
 
 -- | An expression, by the functions of chocosolver's JavaScript API.
@@ -127,7 +128,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     uidIClaferMap' = uidClaferMap genv'
 
     genElement :: String -> IElement -> Maybe CElement
-    genElement _ (IEClafer c@IClafer{_uid, _card, _gcard, _super, _reference, _elements, _parentUID, _modifiers}) = Just $ CEClafer CClafer
+    genElement _ (IEClafer c@IClafer{_uid, _card, _gcard, _super, _reference, _elements, _parentUID, _modifiers, _cOrigin}) = Just $ CEClafer CClafer
         { ccUid = _uid
         , ccParent = _parentUID
         , ccAbstract = _abstract _modifiers
@@ -144,15 +145,16 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
              Just (IReference _ _ ref') | isSetExp ref', Just _ <- setExpType ref' -> genSetExpTarget ref'
              _                                                                     -> []
         , ccElements = mapMaybe (genElement _uid) _elements
+        , ccOrigin = _cOrigin
         }
-    genElement _ (IEConstraint True pexp) = Just $ CEConstraint $ genConstraintPExp pexp
-    genElement "root" (IEConstraint False pexp) = Just $ CEAssert $ genConstraintPExp pexp
+    genElement _ (IEConstraint' True pexp o) = Just $ CEConstraint o $ genConstraintPExp pexp
+    genElement "root" (IEConstraint' False pexp o) = Just $ CEAssert o $ genConstraintPExp pexp
     -- chocosolver's assertions have no context: a nested assertion holds for each instance of its
     -- clafer, so it is quantified over them, with `this` as the local this_, e.g., in clafer P:
     -- assert(all([decl([this_ = local("this_")], global(P))], ... join(this_, age) ...)); the
     -- instances of a nested clafer by the path from its top-level clafer, as clafer resolves
     -- its name, e.g., machine . ctx
-    genElement pUID (IEConstraint False pexp) = Just $ CEAssert $
+    genElement pUID (IEConstraint' False pexp o) = Just $ CEAssert o $
         CQuant IAll [CDecl False [thisLocal] (instancesOf pUID)] (genConstraintPExp (transformOn biplate thisToLocal pexp))
       where
         thisToLocal e@IClaferId{_sident = "this"} = e{_sident = thisLocal}

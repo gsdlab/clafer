@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --core --tl=10
+0..* a 1..1 {
+  [F ((#this.b) >= 1)]
+  [all a_1 : this | X (a_1 in a)] // final, tmp_eventually02.cfr:3:1
+  [all a_1 : this | (previous ((#root) >= 1)) => (previous (a_1 in a))] // final, tmp_eventually02.cfr:3:1
+  0..* b 1..1 {}
+}
+
+assert [F ((#a.b) >= 1)]

@@ -1,0 +1,3 @@
+//# OPTIONS --explicit --core
+0..* A 1..1 {}
+0..* B 1..1 {}

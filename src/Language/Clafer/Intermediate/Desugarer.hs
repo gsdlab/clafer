@@ -144,7 +144,7 @@ desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' refer
   =  [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
                           crd'' (0, -1)
-                          elements'')]
+                          elements'' Nothing)]
   where
     iClaferModifiers = desugarModifiers abstract' tmods' reference'
     crd'' = desugarCard crd'
@@ -185,7 +185,7 @@ getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements') =
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements' _) =
     Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
       (sugarSuper super') (sugarReference reference') (sugarCard crd') init' (TransitionEmpty s) (sugarElements elements')
   where

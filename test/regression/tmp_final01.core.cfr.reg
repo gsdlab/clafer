@@ -1,0 +1,11 @@
+//# OPTIONS --explicit --core --tl=10
+0..* a 1..1 {
+  0..* b 0..1 {
+    0..* c 0..1 {}
+    0..* d 0..1 {}
+    0..* e 0..1 {
+      [all e_1 : this | X (e_1 in this.parent.e)] // final, tmp_final01.cfr:7:3
+      [all e_1 : this | (previous ((#this.parent) >= 1)) => (previous (e_1 in this.parent.e))] // final, tmp_final01.cfr:7:3
+    }
+  }
+}

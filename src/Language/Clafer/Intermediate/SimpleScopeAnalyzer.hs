@@ -292,7 +292,7 @@ directSuper uidClaferMap' clafer =
 
 -- Find all constraints
 findConstraints :: IElement -> [PExp]
-findConstraints IEConstraint{_cpexp = c} = [c]
+findConstraints IEConstraint'{_cpexp = c} = [c]
 findConstraints (IEClafer clafer) = concatMap findConstraints (_elements clafer)
 findConstraints _ = []
 

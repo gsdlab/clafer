@@ -10,12 +10,14 @@ ifeq ($(UNAME), darwin)
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \)   | sed s/$(SUITE_DIR)\\///
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///
     FIND_DES_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.des.cfr" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_CORE_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.core.cfr" \)   | sed s/$(SUITE_DIR)\\///
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///
 else
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \) -printf "%f\n"
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \) -printf "%f\n"
     FIND_DES_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.des.cfr" \) -printf "%f\n"
+    FIND_CORE_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.core.cfr" \) -printf "%f\n"
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \) -printf "%f\n"
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \) -printf "%f\n"
 endif
@@ -60,6 +62,9 @@ generateAlloyJSHTMLDot:
 	@# and validate the outputs, $(JOBS) models at a time; fails, after all the models, if one
 	@# fails to compile or an output fails to validate (a counterexample is not a failure)
 	@bash compile-positive.sh $(SUITE_DIR) $(JOBS) $(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained
+	@# and the explicit core model (--core), which also compiles to itself, with the origin of
+	@# each lowered construct (--record-provenance), for reviewing its regression
+	@bash compile-positive.sh $(SUITE_DIR) $(JOBS) $(CLAFER) -m=clafer --core --record-provenance
 
 diffRegressions:
 	@echo "======================================================="
@@ -89,6 +94,10 @@ newReg:
 	@echo "| Explicit form regressions |"
 	@echo "-------------------------------"
 	@$(FIND_DES_COMMAND) | $(XARGS_CP_REGS)
+	@echo "------------------------------------"
+	@echo "| Explicit core model regressions |"
+	@echo "------------------------------------"
+	@$(FIND_CORE_COMMAND) | $(XARGS_CP_REGS)
 	@echo "---------------------"
 	@echo "| HTML regressions |"
 	@echo "---------------------"
@@ -109,7 +118,7 @@ clean:
 	@echo ""
 	@# Only the outputs generated in $(SUITE_DIR), so that tracked files with
 	@# these extensions in other directories are kept.
-	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.des.cfr, *.html, *.dot, *.dot.svg'
-	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.des.cfr' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
+	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.des.cfr, *.core.cfr, *.html, *.dot, *.dot.svg'
+	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.des.cfr' -o -name '*.core.cfr' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f

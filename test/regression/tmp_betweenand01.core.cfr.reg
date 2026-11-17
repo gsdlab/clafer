@@ -1,0 +1,18 @@
+//# OPTIONS --explicit --core --tl=10
+0..* a 1..1 {
+  [all a_1 : this | X (a_1 in a)] // final, tmp_betweenand01.cfr:3:1
+  [all a_1 : this | (previous ((#root) >= 1)) => (previous (a_1 in a))] // final, tmp_betweenand01.cfr:3:1
+  1..1 b 1..1 {
+    [G (((((#this.d) >= 1) && ((#this.e) = 0)) && (F ((#this.e) >= 1))) => (((#this.c) >= 1) U ((#this.e) >= 1)))] // always between, tmp_betweenand01.cfr:8:4
+    [initially (F ((#this.d) >= 1))] // sometime, tmp_betweenand01.cfr:12:15
+    [initially (F ((#this.c) >= 1))] // sometime, tmp_betweenand01.cfr:13:15
+    [initially (F ((#this.e) >= 1))] // sometime, tmp_betweenand01.cfr:14:15
+    [all b_1 : this | X (b_1 in this.parent.b)] // final, tmp_betweenand01.cfr:4:2
+    [all b_1 : this | (previous ((#this.parent) >= 1)) => (previous (b_1 in this.parent.b))] // final, tmp_betweenand01.cfr:4:2
+    0..* c 0..1 {}
+    0..* d 0..1 {}
+    0..* e 0..1 {}
+  }
+}
+
+assert [G (((((#a.b.d) >= 1) && ((#a.b.e) = 0)) && (F ((#a.b.e) >= 1))) => (((#a.b.c) >= 1) U ((#a.b.e) >= 1)))] // always between, tmp_betweenand01.cfr:15:8

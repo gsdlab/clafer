@@ -1,0 +1,12 @@
+//# OPTIONS --explicit --core --tl=10
+[G (a.dref = c.dref)]
+[G ((#b.dref) = 1)]
+0..* Target 2..2 {}
+abstract 0..* Ref -> Target 0..* {}
+0..* r : Ref 2..2 {}
+0..* a : Ref 1..1 {}
+0..* c : Ref 1..1 {}
+abstract 0..* BagRef ->> Target 0..* {}
+0..* b : BagRef 2..2 {}
+
+assert [G ((#r.dref) = 2)]

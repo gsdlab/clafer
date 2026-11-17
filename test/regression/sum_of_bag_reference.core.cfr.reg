@@ -1,0 +1,5 @@
+//# OPTIONS --explicit --core
+[((#b) >= 1) => (b.dref = (sum a.dref))] // =, sum_of_bag_reference.cfr:5:1
+[b.dref = 2]
+0..* a ->> int 0..* {}
+0..* b -> int 1..1 {}

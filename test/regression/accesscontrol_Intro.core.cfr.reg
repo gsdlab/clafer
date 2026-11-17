@@ -1,0 +1,20 @@
+//# OPTIONS --explicit --core
+abstract 0..* Value 0..* {}
+abstract 0..* Attribute 0..* {
+  0..* value -> Value 1..1 {}
+}
+abstract 0..* ActionName : Attribute 0..* {}
+abstract 0..* Role : Attribute 0..* {}
+abstract 0..* ResourceName : Attribute 0..* {}
+abstract 0..* Element 0..* {
+  abstract 0..* attributes : Attribute 0..* {}
+}
+abstract 0..* Effect 0..* {} // enum, accesscontrol_Intro.cfr:13:1
+0..* Permit : Effect 1..1 {} // enum, accesscontrol_Intro.cfr:13:15
+0..* Deny : Effect 1..1 {} // enum, accesscontrol_Intro.cfr:13:24
+0..* NotApplicable : Effect 1..1 {} // enum, accesscontrol_Intro.cfr:13:31
+0..* Indeterminate : Effect 1..1 {} // enum, accesscontrol_Intro.cfr:13:47
+abstract 0..* CombiningAlgo 0..* {} // enum, accesscontrol_Intro.cfr:15:1
+0..* PermitOverrides : CombiningAlgo 1..1 {} // enum, accesscontrol_Intro.cfr:15:22
+0..* DenyOverrides : CombiningAlgo 1..1 {} // enum, accesscontrol_Intro.cfr:15:40
+0..* OnlyOneApplicable : CombiningAlgo 1..1 {} // enum, accesscontrol_Intro.cfr:15:56

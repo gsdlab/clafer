@@ -63,18 +63,18 @@ lowerFinality imodule = unmark $ transformOn biplate lowerClafer imodule
        ++ concat [ concatMap _decls ds | PExp{_exp = IDeclPExp _ ds _} <- universeOn biplate imodule :: [PExp] ]
   lowerClafer c
     | isRoot c = c
-    | otherwise = c{_elements = _elements c ++ map (IEConstraint True) (finality uidIClaferMap' taken c)}
+    | otherwise = c{_elements = _elements c ++ [ IEConstraint' True p (Just $ Origin m $ _cinPos c) | (m, p) <- finality uidIClaferMap' taken c ]}
   -- no modifier is left
   unmark = transformOn biplate $ \c -> c
     { _modifiers = (_modifiers c){_final = False, _finalReferences = []}
     , _reference = (\r -> r{_refModifiers = []}) <$> _reference c }
 
--- | The constraints of the finality modifiers of the clafer, in its context.
-finality :: UIDIClaferMap -> [String] -> IClafer -> [PExp]
+-- | The constraints of the finality modifiers of the clafer, in its context, each with its modifier.
+finality :: UIDIClaferMap -> [String] -> IClafer -> [(String, PExp)]
 finality uidIClaferMap' taken x =
-  [ p | _isFinal x, not (_isAbstract x), p <- heads ]
-  ++ [ p | fixesEach, Just _ <- [targetType], p <- eachTarget ]
-  ++ [ p | fixesTargets, Just _ <- [targetType], p <- targets ]
+  [ ("final", p) | _isFinal x, not (_isAbstract x), p <- heads ]
+  ++ [ (if _isFinal x then "final" else "finalref", p) | fixesEach, Just _ <- [targetType], p <- eachTarget ]
+  ++ [ ("finaltarget", p) | fixesTargets, Just _ <- [targetType], p <- targets ]
   where
   uid' = _uid x
   pos' = _cinPos x
@@ -145,7 +145,7 @@ lowerInitial :: IModule -> IModule
 lowerInitial imodule = imodule{_mDecls = lowerElements Nothing $ _mDecls imodule}
   where
   lowerElements parent' es = map lowerElement es ++
-    [ IEConstraint True $ initially' parent' x | IEClafer x <- es, _isInitial x, not (_isAbstract x && isTopLevel x) ]
+    [ IEConstraint' True (initially' parent' x) (Just $ Origin "initial" $ _cinPos x) | IEClafer x <- es, _isInitial x, not (_isAbstract x && isTopLevel x) ]
   lowerElement (IEClafer c) = IEClafer c
     { _elements = lowerElements (Just c) $ _elements c
     , _modifiers = (_modifiers c){_initial = False} }

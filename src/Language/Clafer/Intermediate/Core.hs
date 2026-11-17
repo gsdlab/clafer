@@ -41,12 +41,13 @@
 module Language.Clafer.Intermediate.Core
   ( Semantics (..)
   , lowerToCore
+  , forgetOrigins
   , lowerPExp
   ) where
 
 import Control.Lens (over)
-import Control.Lens.Plated (plate, transformOn)
-import Data.Data.Lens (biplate)
+import Control.Lens.Plated (plate, transformOn, transformOnOf, universe)
+import Data.Data.Lens (biplate, uniplate)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Finality (lowerFinality, lowerInitial)
 import Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
@@ -54,13 +55,33 @@ import Language.Clafer.Intermediate.Intclafer
 
 -- | The core of the module, for a backend that reads it with the given semantics.
 lowerToCore :: Semantics -> IModule -> IModule
-lowerToCore sem = lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . lowerInitializers sem
+lowerToCore sem = lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . markRich . lowerInitializers sem
+
+-- | The module without the origins of its clafers and constraints, without @--record-provenance@.
+forgetOrigins :: IModule -> IModule
+forgetOrigins = transformOnOf biplate uniplate forgetE . transformOn biplate forgetC
+  where
+  forgetC c = c{_cOrigin = Nothing}
+  forgetE (IEConstraint' h p _) = IEConstraint' h p Nothing
+  forgetE e = e
+
+-- | The constraints with a pattern or a transition, with the origin of the first one, for
+--   @--record-provenance@.
+markRich :: IModule -> IModule
+markRich = transformOnOf biplate uniplate mark
+  where
+  mark (IEConstraint' h p Nothing)
+    | q@PExp{_exp = IFunExp op' _} : _ <- [ q | q@PExp{_exp = IFunExp op' _} <- universe p, op' `elem` richTemporalOps ]
+    = IEConstraint' h p $ Just $ Origin (if op' `elem` transitionOps then "transition" else op') (_inPos q)
+  mark e = e
 
 -- | The clafers of the enumerations are ordinary clafers.
 lowerEnums :: IModule -> IModule
 lowerEnums = transformOn biplate unmark
   where
-  unmark c = c{_modifiers = (_modifiers c){_enum = False}}
+  unmark c
+    | _enum (_modifiers c) = c{_modifiers = (_modifiers c){_enum = False}, _cOrigin = Just $ Origin "enum" (_cinPos c)}
+    | otherwise = c
 
 -- | The expression with its patterns and transitions in LTL.
 lowerPExp :: PExp -> PExp

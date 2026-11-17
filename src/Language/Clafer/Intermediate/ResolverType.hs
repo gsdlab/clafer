@@ -189,7 +189,7 @@ resolveTElement    TAReferences  _         (IEClafer iclafer) =
         Just t -> if isTBoolean t
                   then Nothing
                   else Just $ oRef{_ref=r'}
-resolveTElement    TAReferences  _         iec@IEConstraint{} = return iec
+resolveTElement    TAReferences  _         iec@IEConstraint'{} = return iec
 resolveTElement    TAReferences  _         ieg@IEGoal{} = return ieg
 resolveTElement    TAReferences  _         iei@IEInitializer{} = return iei
 

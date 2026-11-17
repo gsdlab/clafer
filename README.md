@@ -235,7 +235,20 @@ Common flags:
                                           behavioral patterns and transitions,
                                           which the explicit model keeps,
                                           lowered to clafers, constraints and
-                                          LTL operators.
+                                          LTL operators. The explicit core
+                                          model is written to '.core.cfr'; its
+                                          first line, '//# OPTIONS --explicit
+                                          --core', makes it compile to itself.
+     --record-provenance                  With --core, in 'clafer' and 'json'
+                                          modes, record the origin of each
+                                          clafer and constraint that a lowering
+                                          makes: the rich construct, and its
+                                          position as in the messages but with
+                                          the file name only, e.g., '// final,
+                                          model.cfr:56:5' or '// enum,
+                                          model.cfr:12:1' in the explicit core
+                                          model, which compiles to the same
+                                          core without them.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
@@ -280,7 +293,8 @@ Common flags:
                                           the scopes map ('.cfr-scope'); in
                                           Clafer mode, the explicit model's
                                           scope file with every scope
-                                          ('.des.cfr-scope').
+                                          ('.des.cfr-scope', or
+                                          '.core.cfr-scope' with --core).
      --minint=INT                         Smallest integer value ('choco'
                                           mode only). Default: -128, chosen by
                                           chocosolver.
@@ -383,6 +397,8 @@ The outputs write the UIDs in the form their language allows: the Alloy output r
 ### Explicit models
 
 `-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -k -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+
+`-m clafer --core` writes the explicit core model, what the backends solve, to `model.core.cfr` (and `model.core.cfr-scope`); its first line, `//# OPTIONS --explicit --core`, makes it compile to itself, also without `--core` on the command line. With `--record-provenance`, it has the origin of each lowered clafer and constraint as a comment, e.g., `// final, model.cfr:56:5` ([doc/rich-and-core-explicit.md](doc/rich-and-core-explicit.md)).
 
 ### Integer range of the Choco output
 

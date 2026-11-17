@@ -85,7 +85,7 @@ lowerAbstractBounds bounds imodule = imodule{_mDecls = lowerElements $ _mDecls i
         -- instances, which meets a bound without a lower bound
         let optimized = _card c /= Just b
         in ( if optimized then c else c{_card = Just unrestricted}
-           , [ IEConstraint True p | not optimized || fst b > 0, Just p <- [boundOf c b] ] )
+           , [ IEConstraint' True p (Just $ Origin "abstract multiplicity" $ _cinPos c) | not optimized || fst b > 0, Just p <- [boundOf c b] ] )
       _ -> (c, [])
   lowerElement e = [e]
 

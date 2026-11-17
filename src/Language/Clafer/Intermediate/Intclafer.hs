@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric, DeriveAnyClass, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric, DeriveAnyClass, OverloadedStrings, PatternSynonyms #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -27,6 +27,7 @@ import Language.Clafer.Front.AbsClafer
 
 import Control.Lens hiding ((.=))
 import Data.Aeson
+import qualified Data.Aeson.KeyMap as KeyMap
 import Data.Data
 import GHC.Generics
 import Data.Monoid
@@ -111,8 +112,29 @@ data IClafer
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
     , _elements :: [IElement] -- ^ nested elements
+    , _cOrigin :: Maybe Origin -- ^ the rich construct that a lowering made the clafer from, with @--record-provenance@
+    }
+  deriving (Eq,Ord,Show,Data,Generic)
+
+-- | As derived, without @_cOrigin@ when there is none, so the JSON output is the same as without
+--   @--record-provenance@.
+instance ToJSON IClafer where
+  toJSON c = withoutNothing "_cOrigin" (_cOrigin c) $ genericToJSON defaultOptions c
+
+-- | Where a construct of the core comes from, recorded with @--record-provenance@: the rich
+--   construct that a lowering made it from, e.g., @final@, @enum@ or @never between@, and the
+--   position of that construct in the model.
+data Origin
+  = Origin
+    { _construct :: String
+    , _originPos :: Span
     }
   deriving (Eq,Ord,Show,Data,Generic,ToJSON)
+
+-- | The JSON object without the field, when the field has no value.
+withoutNothing :: Key -> Maybe a -> Value -> Value
+withoutNothing k Nothing (Object o) = Object $ KeyMap.delete k o
+withoutNothing _ _ v = v
 
 isMutable :: IClafer -> Bool
 isMutable = not . _final . _modifiers
@@ -143,9 +165,10 @@ data IElement
   = IEClafer
     { _iClafer :: IClafer  -- ^ the actual clafer
     }
-  | IEConstraint
+  | IEConstraint'
     { _isHard :: Bool      -- ^ whether hard constraint or assertion
     , _cpexp :: PExp       -- ^ the container of the actual expression
+    , _eOrigin :: Maybe Origin -- ^ the rich construct that a lowering made the constraint from, with @--record-provenance@
     }
   -- | The initializer of the reference of the clafer in whose elements it is: @x -> T = e@, a
   --   constant, or @x -> T := e@, the initial value (kbak/clafer-semantics#164). The IR keeps it
@@ -166,7 +189,22 @@ data IElement
     { _isMaximize :: Bool     -- ^ whether maximize or minimize
     , _cpexp :: PExp          -- ^ the expression
     }
-  deriving (Eq,Ord,Show,Data,Generic,ToJSON)
+  deriving (Eq,Ord,Show,Data,Generic)
+
+-- | A constraint, without an origin when built, whatever its origin when matched.
+pattern IEConstraint :: Bool -> PExp -> IElement
+pattern IEConstraint h p <- IEConstraint' h p _
+  where IEConstraint h p = IEConstraint' h p Nothing
+{-# COMPLETE IEClafer, IEConstraint, IEInitializer, IEGoal #-}
+
+-- | As derived, with the tag @IEConstraint@ and without @_eOrigin@ when there is none, so the
+--   JSON output is the same as without @--record-provenance@.
+instance ToJSON IElement where
+  toJSON e = case e of
+      IEConstraint' _ _ o -> withoutNothing "_eOrigin" o v
+      _ -> v
+    where
+    v = genericToJSON defaultOptions{constructorTagModifier = filter (/= '\'')} e
 
 -- | A type of reference.
 --   ->    values unique (set)
@@ -350,16 +388,16 @@ them if you wish to start from somewhere other than IModule.
 iMap :: (Ir -> Ir) -> Ir -> Ir
 iMap f (IRIElement (IEClafer c)) =
   f $ IRIElement $ IEClafer $ unWrapIClafer $ iMap f $ IRClafer c
-iMap f (IRIElement (IEConstraint h pexp)) =
-  f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
+iMap f (IRIElement (IEConstraint' h pexp o)) =
+  f $ IRIElement $ (\p' -> IEConstraint' h p' o) $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEInitializer k s pexp)) =
   f $ IRIElement $ IEInitializer k s $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc elems)) =
-  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc elems)) =
-  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu (Just $ unWrapPExp $ iMap f $ IRPExp s) (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc elems o)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc (map (unWrapIElement . iMap f . IRIElement) elems) o
+iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc elems o)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu (Just $ unWrapPExp $ iMap f $ IRPExp s) (unWrapIReference $ iMap f $ IRIReference r) c goc (map (unWrapIElement . iMap f . IRIElement) elems) o
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) =
@@ -382,9 +420,9 @@ iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEInitializer _ _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ elems _)) =
   f i `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ (Just s) r _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ (Just s) r _ _ elems _)) =
   f i `mappend` (iFoldMap f $ IRPExp s) `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs

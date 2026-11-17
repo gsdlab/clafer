@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --core
+[((#z) >= 1) => (z.dref = ((sum x.dref) + (sum y.dref)))] // =, sum_of_union_of_bags.cfr:7:1
+0..* x ->> int 2..* {
+  [(this.dref >= -2) && (this.dref <= 2)]
+}
+0..* y ->> int 2..* {
+  [(this.dref >= -2) && (this.dref <= 2)]
+}
+0..* z -> int 1..1 {}

@@ -9,6 +9,10 @@ compiled again, it prints itself. Clafer has two explicit models, both fixpoints
 | keeps | the modeling intent: enumerations, initializers, behavioral patterns, transitions | the core language only |
 | for | reading, editing, storing, diffing; backends that use the intent | the meaning; what the backends solve |
 | IR | the IR as resolved; `-m json` prints it | the IR after `lowerToCore`; `-m json --core` prints it |
+| file | `model.des.cfr`, first line `//# OPTIONS --explicit` | `model.core.cfr`, first line `//# OPTIONS --explicit --core` |
+
+Each file declares its options in its first line, so it compiles to itself without options on
+the command line: `clafer -m clafer model.core.cfr` prints the core again.
 
 Up to Clafer 0.5.8 there was one explicit model, in which everything that is not a default was
 desugared: enumerations became clafers, initializers constraints, and behavioral patterns and
@@ -147,10 +151,46 @@ The patterns and transitions in the rich and the core explicit model of a constr
 `a --> b --> c` is a sequence. The core is their LTL formula: `a --> b` is `a => X b`,
 `a --> b --> c` is `a => X (b && X c)`, and `a -->> b` is `a => ((this && a) U b)`.
 
+## Provenance
+
+With `--record-provenance`, the explicit core model shows where each lowered construct comes
+from: a comment after each clafer and constraint that a lowering made names the rich construct
+and its position, `file:line:column` as in the messages, so that tools can find it; the line is
+the one in its file, also in a model with imports. The file is its name only, without the
+folders, which depend on where the compiler runs.
+
+```
+[((#Tools) >= 1) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
+abstract 0..* Color 0..* {} // enum, model.cfr:1:1
+0..* a 0..1 {
+  0..* b 0..1 {
+    [all b_1 : this | X (b_1 in this.parent.b)] // final, model.cfr:5:5
+  }
+}
+0..* x -> int 1..1 {
+  [initially (this.dref = 1)] // :=, model.cfr:6:1
+}
+```
+
+The constructs are `enum`, `=`, `:=`, `initial`, `final`, `finalref`, `finaltarget`,
+`abstract multiplicity`, `transition` and the patterns (e.g., `never before`). The IR records the
+origin (`_cOrigin` of a clafer, `_eOrigin` of a constraint, with the position in the file, in
+`-m json --core`). The flag is off by default: the comments are for reading the core against
+the model, and the core without them is what the backends get. A comment does not change the
+model, so the core with comments compiles to the same core: the positive suite checks it without
+the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), for review.
+
 ## Checks
 
-- Each rich and each core explicit model of the test models compiles to itself, and the core
-  of each test model is the explicit model that Clafer 0.5.8, which desugared everything,
+- Each rich and each core explicit model of the test models compiles to itself (the positive
+  suite validates both, `-m clafer` and `-m clafer --core`), and both are regressions,
+  `test/regression/*.des.cfr.reg` and `*.core.cfr.reg`, so a change of a lowering shows in the
+  core directly. An abstract clafer is `0..*` in the core, whose bound is a constraint: one
+  that the optimizer gives no instances (`0..0`, nothing extends it) was printed with `0..0`,
+  which the next compilation read as a bound, so the core of 18 test models was not a
+  fixpoint.
+- Before 0.5.9 lowered the temporal modifiers and the multiplicities of abstract clafers, the
+  core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
   printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),
   which 0.5.8 kept and 0.5.9 lowers with `previous`.
 - The pattern expansions are verified: for every pattern and scope, nuXmv checks that the

@@ -1,0 +1,11 @@
+//# OPTIONS --explicit --core
+[((#a) >= 1) => (a.dref = (6 % 4))] // =, reminder-modulo_division.cfr:1:1
+[((#b) >= 1) => (b.dref = (0 % 4))] // =, reminder-modulo_division.cfr:4:1
+[((#c) >= 1) => (c.dref = (4 % 2))] // =, reminder-modulo_division.cfr:7:1
+0..* a -> int 1..1 {}
+0..* b -> int 1..1 {}
+0..* c -> int 1..1 {}
+
+assert [a.dref = 2]
+assert [b.dref = 0]
+assert [c.dref = 0]

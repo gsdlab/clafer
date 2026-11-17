@@ -1,0 +1,45 @@
+//# OPTIONS --explicit --core --tl=10
+[(#feature_model.EU) = 0]
+0..* feature_model 1..1 {
+  [all feature_model_1 : this | X (feature_model_1 in feature_model)] // final, tmp_TrafficLight2.cfr:8:1
+  [all feature_model_1 : this | (previous ((#root) >= 1)) => (previous (feature_model_1 in feature_model))] // final, tmp_TrafficLight2.cfr:8:1
+  0..* EU 0..1 {
+    [all EU_1 : this | X (EU_1 in this.parent.EU)] // final, tmp_TrafficLight2.cfr:9:5
+    [all EU_1 : this | (previous ((#this.parent) >= 1)) => (previous (EU_1 in this.parent.EU))] // final, tmp_TrafficLight2.cfr:9:5
+  }
+}
+abstract 1..1 TrafficLight_2 0..* {
+  [initially ((#this.on) >= 1)] // initial, tmp_TrafficLight2.cfr:12:5
+  1..1 on 0..1 {
+    [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.off) >= 1))] // transition, tmp_TrafficLight2.cfr:12:17
+    [initially ((#this.normal) >= 1)] // initial, tmp_TrafficLight2.cfr:13:9
+    1..1 normal 0..1 {
+      [initially ((#this.green) >= 1)] // initial, tmp_TrafficLight2.cfr:14:13
+      0..* green 0..1 {
+        [((#this) >= 1) => (X ((#this.parent.yellow) >= 1))] // transition, tmp_TrafficLight2.cfr:14:21
+      }
+      0..* yellow 0..1 {
+        [((#this) >= 1) => (X (((#this.parent.red) >= 1) || (((#feature_model.EU) >= 1) && ((#this.parent.green) >= 1))))] // transition, tmp_TrafficLight2.cfr:15:13
+      }
+      0..* red 0..1 {
+        [((#this) >= 1) => (X (((#this.parent.green) >= 1) || (((#feature_model.EU) >= 1) && ((#this.parent.yellow) >= 1))))] // transition, tmp_TrafficLight2.cfr:16:13
+      }
+    }
+    1..1 flashing 0..1 {
+      [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.normal) >= 1))] // transition, tmp_TrafficLight2.cfr:17:13
+      [initially ((#this.yellow_on) >= 1)] // initial, tmp_TrafficLight2.cfr:18:13
+      0..* yellow_on 0..1 {
+        [((#this) >= 1) => (X ((#this.parent.yellow_off) >= 1))] // transition, tmp_TrafficLight2.cfr:18:21
+      }
+      0..* yellow_off 0..1 {
+        [((#this) >= 1) => (X ((#this.parent.yellow_on) >= 1))] // transition, tmp_TrafficLight2.cfr:19:13
+      }
+    }
+  }
+  0..* off 0..1 {
+    [((#this) >= 1) => (X ((#this.parent.on) >= 1))] // transition, tmp_TrafficLight2.cfr:20:5
+  }
+}
+1..1 tl : TrafficLight_2 1..1 {
+  [initially (((#this.on.normal.green) >= 1) => (X (((#this.on.normal.yellow) >= 1) && (X (((#this.on.normal.red) >= 1) && (X ((#this.on.normal.green) >= 1)))))))] // transition, tmp_TrafficLight2_noEU.cfr:8:18
+}

@@ -107,7 +107,7 @@ import qualified Data.Map as Map
 import           Data.Maybe
 import           Data.String.Conversions
 import           System.Exit
-import           System.FilePath (dropExtension, takeBaseName)
+import           System.FilePath (dropExtension, takeBaseName, takeFileName)
 import           System.IO
 import           System.Process (readProcessWithExitCode, system)
 import           System.Environment (getExecutablePath)
@@ -136,7 +136,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.AbstractMultiplicity (authoredBounds, lowerAbstractBounds, withAuthoredBounds)
-import           Language.Clafer.Intermediate.Core (Semantics (..), lowerToCore)
+import           Language.Clafer.Intermediate.Core (Semantics (..), forgetOrigins, lowerToCore)
 import           Language.Clafer.Intermediate.Finality (staticClafers)
 import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
@@ -262,8 +262,8 @@ save args'=
       liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
       liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
       -- the explicit form's scope file: every scope chocosolver solves it with
-      liftIO $ when (meta_data args' && extension == "des.cfr") $ writeFile (f ++ ".des.cfr-scope") $
-        snd $ genExplicitModule (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
+      liftIO $ when (meta_data args' && extension `elem` ["des.cfr", "core.cfr"]) $ writeFile (f ++ "." ++ extension ++ "-scope") $
+        snd $ genExplicitModule False (const "") (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
       return f'
     saveResult _ _ NoCompilerResult { reason } = do
       liftIO $ putStrLn reason
@@ -312,7 +312,7 @@ runValidate args' fo
   | Graph `elem` modes && ".dot" `isSuffixOf` fo = do
     putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
     run $ validateGraph ++ fo
-  | Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo = do
+  | Mode.Clafer `elem` modes && any (`isSuffixOf` fo) [".des.cfr", ".core.cfr"] = do
     putStrLn ("=========== Compiling the explicit model " ++ fo ++ " =============")
     validateClafer (core args') fo
   | otherwise = return []
@@ -323,8 +323,15 @@ runValidate args' fo
     code <- system command
     return [ fo | code /= ExitSuccess ]
 
+-- | The position of a construct, as in the messages, but with the name of its file only, without
+--   the folders, which depend on where the compiler runs: @file:line:column@, the line in its
+--   file; @line:column@ without a file.
+originPosition :: [ModelFile] -> Pos -> String
+originPosition files (Pos l c) = let (path, l') = modelPosition files l in (if null path then "" else takeFileName path ++ ":") ++ show l' ++ ":" ++ show c
+
 -- | The explicit model, or its core (--core), compiles to itself: clafer -m clafer on it prints
---   it (its first line, //# OPTIONS --explicit, gives the options).
+--   it (its first line, //# OPTIONS --explicit, gives the options), without the comments of the
+--   origins (--record-provenance), which only the lowering of the model records.
 validateClafer :: Bool -> FilePath -> IO [String]
 validateClafer core' fo = do
   clafer' <- getExecutablePath
@@ -332,7 +339,7 @@ validateClafer core' fo = do
   (code, out, err) <- readProcessWithExitCode clafer' (["-s", "-m", "clafer", "-o", fo] ++ [ "--core" | core' ]) ""
   case code of
     -- the console output ends with one more newline
-    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') explicit -> return []
+    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') (withoutOrigins explicit) -> return []
                 | otherwise       -> do
                     putStrLn $ "The explicit model does not compile to itself: " ++ fo
                     return [fo]
@@ -477,7 +484,7 @@ compile desugaredMod = do
         else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) IClaferModifiers{_abstract=False} _ _ _ _ _ _ (Just (_, m)) _ _)) = if m > 1 || m < 0 then "Line " ++ show l ++ " column " ++ show c ++ "\n" else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) IClaferModifiers{_abstract=False} _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if m > 1 || m < 0 then "Line " ++ show l ++ " column " ++ show c ++ "\n" else ""
       gt1 _ = ""
 
 
@@ -618,7 +625,13 @@ generate =
       chocoModule = lowerAbstractBounds bounds $ lowerToCore Static iModule
       -- the explicit model and the JSON IR keep the modeling intent; their core (--core) is
       -- what the backends get
-      explicitModule = if core cargs then coreModule else withAuthoredBounds bounds iModule
+      explicitModule
+        | core cargs = unrestrictAbstracts $ if record_provenance cargs then coreModule else forgetOrigins coreModule
+        | otherwise = withAuthoredBounds bounds iModule
+      -- the core has the bounds of the abstract clafers as constraints, so an abstract clafer is
+      -- unrestricted, also one that the optimizer gave no instances (0..0), which would be read
+      -- as a bound when the core is compiled again
+      unrestrictAbstracts = transformOn biplate $ \c -> if _isAbstract c then c{_card = Just (0, -1)} else c
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
@@ -704,8 +717,9 @@ generate =
           then if hasNoRealLiterals && hasNoReferenceToReal
                then [ (Mode.Clafer,
                   CompilerResult {
-                   extension = "des.cfr",
-                   outputCode = fst $ genExplicitModule (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                   -- the explicit core model has an extension of its own
+                   extension = if core cargs then "core.cfr" else "des.cfr",
+                   outputCode = fst $ genExplicitModule (core cargs) (originPosition $ inputFiles env) (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
                                   (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,

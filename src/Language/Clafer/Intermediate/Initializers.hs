@@ -73,11 +73,13 @@ lowerElements sem taken = concatMap lowerElement
     elements' = lowerElements sem taken $ _elements c
     kept = [ own e | e <- elements', not (lowered e) ]
     -- the initializers of c, lowered to constraints of its parent, next to c
-    parentConstraints = [ IEConstraint True $ asConstraint c e | e <- elements', lowered e ]
+    parentConstraints = [ IEConstraint' True (asConstraint c e) (Just $ origin c e) | e <- elements', lowered e ]
     -- the per-instance := of a temporal model, in the context of the clafer
-    own (IEInitializer False False eq) | not (hasTemporal $ initializerValue eq) = IEConstraint True $ initialValue c eq
+    own e@(IEInitializer False False eq) | not (hasTemporal $ initializerValue eq) = IEConstraint' True (initialValue c eq) (Just $ origin c e)
     own e = e
   lowerElement e = [e]
+  -- the initializer of the clafer, @=@ or @:=@, for --record-provenance
+  origin c e = Origin (case e of IEInitializer{_isConstant = True} -> "="; _ -> ":=") (_cinPos c)
   -- lowered to a constraint of the parent: all but the per-instance := of a temporal model
   -- whose value has no temporal operators, which becomes a constraint of the clafer
   lowered (IEInitializer k s eq) = sem == Static || k || s || hasTemporal (initializerValue eq)

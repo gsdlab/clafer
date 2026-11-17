@@ -23,12 +23,13 @@
 -- | Generates the explicit form of a model: the Clafer model the
 --   <https://github.com/gsdlab/chocosolver Chocosolver> solves, with nothing left implicit, and
 --   its scope file (@clafer -m clafer@, @--meta-data@).
-module Language.Clafer.Generator.Explicit (genExplicitModule) where
+module Language.Clafer.Generator.Explicit (genExplicitModule, withoutOrigins) where
 
 import Data.List
 import qualified Data.Map as Map
 import Data.Maybe
 import Language.Clafer.Common
+import Language.Clafer.Front.AbsClafer (Pos (..), Span (..), noPos)
 import Language.Clafer.Generator.ChocoModel
 import Language.Clafer.Intermediate.Intclafer
 
@@ -42,29 +43,33 @@ import Language.Clafer.Intermediate.Intclafer
 --   what the backends solve (for a static model, what chocosolver solves).
 --   A temporal model has its temporal modifiers and operators, which chocosolver does not
 --   read, and its trace length among the options.
-genExplicitModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> Maybe Integer -> (Result, String)
-genExplicitModule ir scopes intRange decimalDigits traceLength =
+--   The explicit core model declares itself the core (@--core@), so that it compiles to itself.
+--   The origins of @--record-provenance@ are positions as in the messages, @file:line:column@,
+--   which the given function makes of a position of the model.
+genExplicitModule :: Bool -> (Pos -> String) -> (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> Maybe Integer -> (Result, String)
+genExplicitModule core' position ir scopes intRange decimalDigits traceLength =
     let model = chocoModel ir scopes intRange decimalDigits []
-    in (explicitModel traceLength model, explicitScopes model)
+    in (explicitModel core' position traceLength model, explicitScopes model)
 
 -- | The explicit model, with the trace length of a temporal model
-explicitModel :: Maybe Integer -> CModel -> Result
-explicitModel traceLength CModel{cmElements} =
-    -- the model declares itself explicit, for clafer and chocosolver
-    "//# OPTIONS --explicit" ++ maybe "" (\tl -> " --tl=" ++ show tl) traceLength ++ "\n"
-    ++ concat [ "[" ++ exExp e ++ "]\n" | CEConstraint e <- cmElements ]
+explicitModel :: Bool -> (Pos -> String) -> Maybe Integer -> CModel -> Result
+explicitModel core' position traceLength CModel{cmElements} =
+    -- the model declares itself explicit, for clafer and chocosolver, and the core
+    "//# OPTIONS --explicit" ++ (if core' then " --core" else "") ++ maybe "" (\tl -> " --tl=" ++ show tl) traceLength ++ "\n"
+    ++ concat [ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | CEConstraint o e <- cmElements ]
     ++ concat [ exEnum c | CEClafer c <- cmElements, isEnum c, ccAbstract c ]
-    ++ concat [ exClafer superMap "" c | CEClafer c <- cmElements, not (isEnum c) ]
+    ++ concat [ exClafer exOrigin superMap "" c | CEClafer c <- cmElements, not (isEnum c) ]
     ++ (if null objectives && null assertions then "" else "\n")
     ++ concat [ "<< " ++ (if isMax then "max " else "min ") ++ exExp e ++ " >>\n" | (isMax, e) <- objectives ]
-    ++ concat [ "assert [" ++ exExp e ++ "]\n" | e <- assertions ]
+    ++ concat [ "assert [" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | (o, e) <- assertions ]
   where
     allElements = concatMap preOrder cmElements
     preOrder e@(CEClafer c) = e : concatMap preOrder (ccElements c)
     preOrder e = [e]
     objectives = [ (isMax, e) | CEObjective isMax e <- allElements ]
-    assertions = [ e | CEAssert e <- allElements ]
+    assertions = [ (o, e) | CEAssert o e <- allElements ]
     superMap = Map.fromList [ (ccUid c, c) | CEClafer c <- allElements ]
+    exOrigin = originComment position
     -- an enumeration, with its literals in their order
     exEnum c = "enum " ++ ccUid c ++ " = "
         ++ intercalate " | " [ ccUid l | CEClafer l <- cmElements, isEnum l, ccSuper l == Just (ccUid c) ] ++ "\n"
@@ -76,8 +81,8 @@ isEnum c = "enum" `elem` ccModifiers c
 -- | A clafer with its block: its group card (its own, otherwise its super clafer's, which it
 --   inherits), its super clafer, its own reference, its card (0..* if abstract), then its
 --   constraints and children
-exClafer :: Map.Map UID CClafer -> String -> CClafer -> Result
-exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard, ccSuper, ccRef, ccRefConstraints, ccElements} =
+exClafer :: (Maybe Origin -> String) -> Map.Map UID CClafer -> String -> CClafer -> Result
+exClafer exOrigin superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard, ccSuper, ccRef, ccRefConstraints, ccElements, ccOrigin} =
     indent
     ++ (if ccAbstract then "abstract " else "")
     ++ concatMap (++ " ") (filter (/= "enum") ccModifiers)
@@ -93,14 +98,14 @@ exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard
         else " " ++ exCard ccCard)
     -- the initializer as written, with its value in the context of the parent
     ++ concat [ (if k then " = " else " := ") ++ exExp e | CEInitializer k _ e <- ccElements ]
-    ++ (if null constraints && null subClafers then " {}\n"
-        else " {\n"
-             ++ concat [ indent' ++ "[" ++ exExp e ++ "]\n" | e <- constraints ]
-             ++ concatMap (exClafer superMap indent') subClafers
+    ++ (if null constraints && null subClafers then " {}" ++ exOrigin ccOrigin ++ "\n"
+        else " {" ++ exOrigin ccOrigin ++ "\n"
+             ++ concat [ indent' ++ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | (o, e) <- constraints ]
+             ++ concatMap (exClafer exOrigin superMap indent') subClafers
              ++ indent ++ "}\n")
   where
     indent' = indent ++ "  "
-    constraints = ccRefConstraints ++ [ e | CEConstraint e <- ccElements ]
+    constraints = map ((,) Nothing) ccRefConstraints ++ [ (o, e) | CEConstraint o e <- ccElements ]
     subClafers = [ c | CEClafer c <- ccElements ]
     perInstanceInit = not $ null [ () | CEInitializer _ False _ <- ccElements ]
     inheritedGCard g@(Just _) _ = g
@@ -108,6 +113,35 @@ exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard
     inheritedGCard _ _ = Nothing
     exTarget "integer" = "int"
     exTarget target = target
+
+-- | The comment with the origin of a construct of the core, @--record-provenance@: the rich
+--   construct that a lowering made it from, and the position of that construct, as in the
+--   messages, e.g., @// final, model.cfr:56:5@.
+originComment :: (Pos -> String) -> Maybe Origin -> String
+originComment _ Nothing = ""
+originComment position (Just Origin{_construct, _originPos = Span start _})
+  | start /= noPos = " // " ++ _construct ++ ", " ++ position start
+  | otherwise = " // " ++ _construct
+
+-- | The explicit model without the comments of the origins, which a core with them compiles to:
+--   a comment at the end of a line that ends with a position, @line:column@.
+withoutOrigins :: String -> String
+withoutOrigins = unlines . map withoutOrigin . lines
+  where
+  withoutOrigin l = case breakLast " // " l of
+    Just (code, comment) | endsWithPosition comment -> code
+    _ -> l
+  breakLast sep s = case [ i | i <- [0 .. length s - length sep], sep `isPrefixOf` drop i s ] of
+    [] -> Nothing
+    is -> let i = last is in Just (take i s, drop (i + length sep) s)
+  endsWithPosition comment = case reverse (splitOn' ':' comment) of
+    column' : line' : _ -> isNumber' column' && isNumber' (lastWord line')
+    _ -> False
+  lastWord = reverse . takeWhile (`notElem` " ,") . reverse
+  isNumber' s = not (null s) && all (`elem` ['0' .. '9']) s
+  splitOn' c s = case break (== c) s of
+    (a, []) -> [a]
+    (a, _ : rest) -> a : splitOn' c rest
 
 exCard :: Maybe Interval -> String
 exCard (Just (low, high)) = show low ++ ".." ++ (if high < 0 then "*" else show high)

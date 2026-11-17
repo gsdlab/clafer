@@ -57,6 +57,7 @@ data ClaferArgs = ClaferArgs {
       skip_resolver :: Bool,
       explicit_model :: Bool,
       core :: Bool,
+      record_provenance :: Bool,
       keep_unused :: Bool,
       no_stats :: Bool,
       validate :: Bool,
@@ -92,7 +93,8 @@ clafer = ClaferArgs {
   check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
   skip_resolver       = def &= help "The names of the clafers are their UIDs, as in an explicit model: skip renaming them. Names must be unique; they are still resolved and checked." &= name "f",
   explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -k -l --ss=none." &= explicit &= name "explicit",
-  core                = def &= help "In 'clafer' and 'json' modes, print the explicit core model and its IR, which the backends solve: the enumerations, initializers, behavioral patterns and transitions, which the explicit model keeps, lowered to clafers, constraints and LTL operators." &= explicit &= name "core",
+  core                = def &= help "In 'clafer' and 'json' modes, print the explicit core model and its IR, which the backends solve: the enumerations, initializers, behavioral patterns and transitions, which the explicit model keeps, lowered to clafers, constraints and LTL operators. The explicit core model is written to '.core.cfr'; its first line, '//# OPTIONS --explicit --core', makes it compile to itself." &= explicit &= name "core",
+  record_provenance   = def &= help "With --core, in 'clafer' and 'json' modes, record the origin of each clafer and constraint that a lowering makes: the rich construct, and its position as in the messages but with the file name only, e.g., '// final, model.cfr:56:5' or '// enum, model.cfr:12:1' in the explicit core model, which compiles to the same core without them." &= explicit &= name "record-provenance",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
   validate            = def &= help "Validate outputs of all modes, and exit with 1 if a tool rejects one. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, dot for graphs, and clafer itself for explicit models, which must compile to themselves. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
@@ -106,7 +108,7 @@ clafer = ClaferArgs {
   trace_len           = 10 &= help "Define the maximum trace length." &= name "tl",
   scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
-  meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope'); in Clafer mode, the explicit model's scope file with every scope ('.des.cfr-scope').",
+  meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope'); in Clafer mode, the explicit model's scope file with every scope ('.des.cfr-scope', or '.core.cfr-scope' with --core).",
   minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
   maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
   decimal_digits      = def &= help "Number of fractional digits of decimals ('choco' mode only). Default: the most fractional digits of the model's decimal literals." &= typ "INT" &= explicit &= name "decimal-digits",
@@ -142,6 +144,7 @@ mergeArgs a1 a2  = withExplicit ClaferArgs
   , skip_resolver = mergeArg skip_resolver
   , explicit_model = mergeArg explicit_model
   , core = mergeArg core
+  , record_provenance = mergeArg record_provenance
   , keep_unused = mergeArg keep_unused
   , no_stats = mergeArg no_stats
   , validate = mergeArg validate
@@ -200,6 +203,7 @@ defaultClaferArgs = ClaferArgs
   , skip_resolver = False
   , explicit_model = False
   , core = False
+  , record_provenance = False
   , keep_unused = False
   , no_stats = False
   , validate = False

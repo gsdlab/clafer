@@ -44,10 +44,10 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements') = do
+astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements' o) = do
     reference'' <- astrReference reference'
     elements'' <- astrElement `mapM` elements'
-    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements''
+    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements'' o
 
 astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
@@ -57,7 +57,7 @@ astrReference (Just (IReference isSet' mod' ref')) = Just <$> IReference isSet' 
 astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
+  IEConstraint' isHard' pexp o -> (\p' -> IEConstraint' isHard' p' o) `liftM` astrPExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
   IEInitializer k s pexp -> IEInitializer k s `liftM` astrPExp pexp
 

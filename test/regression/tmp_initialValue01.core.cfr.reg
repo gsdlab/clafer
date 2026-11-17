@@ -1,0 +1,6 @@
+//# OPTIONS --explicit --core --tl=10
+[initially ((#level) = 0)]
+[F ((#level) >= 1)]
+0..* level -> int 0..1 {
+  [initially (this.dref = 3)] // :=, tmp_initialValue01.cfr:5:1
+}

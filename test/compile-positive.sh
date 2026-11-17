@@ -28,7 +28,7 @@ compile() {
 }
 export -f compile
 
-find "$SUITE_DIR" -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) -print0 | sort -z |
+find "$SUITE_DIR" -type f \( -iname "*.cfr" ! -iname "*.des.cfr" ! -iname "*.core.cfr" \) -print0 | sort -z |
   xargs -0 -n 1 -P "$JOBS" bash -c 'compile "$@"' compile "$@"
 
 if [ -s "$WORK/failed" ]; then
