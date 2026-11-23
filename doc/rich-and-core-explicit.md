@@ -96,8 +96,8 @@ The criterion decides each construct:
 | `final x`, `finalref x`, `finaltarget x` | no: constraints in `x` with `X` and `previous`, e.g., `[ all c : this \| X (c in parent.x) ]` and `[ all c : this \| previous (some parent) => previous (c in parent.x) ]` for the instances of a final `x` | stability over a lifetime, defined with the temporal operators |
 | `initial x` | no: `[ initially (some this.x) ]` in the parent, `[ initially (some x) ]` at the top level | defined with `initially` |
 | the multiplicity of a top-level abstract clafer, e.g., `abstract Tools 3..6` | no: `[ (#Tools >= 3) && (#Tools <= 6) ]` next to it, and `abstract Tools 0..*` | a global count over all the instances of its subclafers, defined with a constraint |
-| the multiplicity of a nested abstract clafer | yes (0.5.9 still lowers it to `#this.Tools` in the parent, see [below](#where-the-core-of-059-differs-from-the-criterion)) | an ordinary multiplicity, counted over the instances of its subclafers |
-| `initially p`, `finally p` | no (0.5.9 still keeps them, see [below](#where-the-core-of-059-differs-from-the-criterion)) | anchored to the lifetime of an instance |
+| the multiplicity of a nested abstract clafer | yes (0.6.0 still lowers it to `#this.Tools` in the parent, see [below](#where-the-core-of-060-differs-from-the-criterion)) | an ordinary multiplicity, counted over the instances of its subclafers |
+| `initially p`, `finally p` | no (0.6.0 still keeps them, see [below](#where-the-core-of-060-differs-from-the-criterion)) | anchored to the lifetime of an instance |
 | behavioral patterns, e.g., `never p between q and r` | no: their LTL formula | LTL templates |
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
 | `x -> T = e` | no: `[ some x => x.dref = e ]` in the parent | defined with a constraint |
@@ -106,7 +106,7 @@ The criterion decides each construct:
 | concrete multiplicities, group cardinalities, set and bag references | yes | the structural vocabulary |
 | the connectives, quantifiers, temporal and past-time operators | yes | the logic of the vocabulary |
 
-The last row was the one exception until 0.5.9. The value of such an initializer is evaluated
+The last row was the one exception until 0.6.0. The value of such an initializer is evaluated
 in the parent's context, when the instance appears (gsdlab/clafer#123). The core can write
 `initially` only in the context of `x`, where the temporal operators of the value would mean
 something else, and in the context of the parent, "the instance appears now" needs a
@@ -137,7 +137,7 @@ The criterion makes it checkable:
 A new construct is then either inside the vocabulary, a primitive with its own meaning in
 the semantics, or outside it, with its lowering and the theorem.
 
-### Where the core of 0.5.9 differs from the criterion
+### Where the core of 0.6.0 differs from the criterion
 
 - **The anchors `initially p` and `finally p` are kept, but they are outside the
   vocabulary:** they anchor `p` to the lifetime of the instance, not to the start of the
@@ -343,10 +343,10 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
   that the optimizer gives no instances (`0..0`, nothing extends it) was printed with `0..0`,
   which the next compilation read as a bound, so the core of 18 test models was not a
   fixpoint.
-- Before 0.5.9 lowered the temporal modifiers and the multiplicities of abstract clafers, the
+- Before 0.6.0 lowered the temporal modifiers and the multiplicities of abstract clafers, the
   core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
   printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),
-  which 0.5.8 kept and 0.5.9 lowers with `previous`.
+  which 0.5.8 kept and 0.6.0 lowers with `previous`.
 - The pattern expansions are verified: for every pattern and scope, nuXmv checks that the
   formula of the core is equivalent, on all traces, to a reference written from the
   definition of the pattern with past-time operators. All 30 pairs of pattern and scope are
@@ -366,7 +366,7 @@ These are decided, and to be done for 0.6.0:
 
 1. **Lower the anchors** in `Core.hs`, nested and at the top level, and `initial x` through
    them (see
-   [Where the core of 0.5.9 differs from the criterion](#where-the-core-of-059-differs-from-the-criterion)).
+   [Where the core of 0.6.0 differs from the criterion](#where-the-core-of-060-differs-from-the-criterion)).
    The explicit core then has no `initially` or `finally`, and its fixpoint check covers
    `some root` in a core model.
 2. **Keep a nested abstract multiplicity in the core**, as a multiplicity. Only a top-level

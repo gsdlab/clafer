@@ -214,7 +214,7 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
 - Negative: `:=` on a clafer that is not a reference, which `=` rejects with a type error
   (`x = 10`: "Function '=' cannot be performed on TClafer … = TInteger").
 
-## The lowering of a value with temporal operators (0.5.9)
+## The lowering of a value with temporal operators (0.6.0)
 
 A per-instance `:=` whose value has temporal operators is evaluated in the context of the
 parent (gsdlab/clafer#123). Since the past-time operators (gsdlab/clafer#127), it is a
@@ -223,9 +223,9 @@ constraint of the parent in the core, `[ all c : this.x | (not previous (c in th
 parent's lifetime. The temporal Alloy generator has no interpretation of its own for it any
 more; its output for `tmp_initialValue07` is equivalent to the one of 0.5.8.
 
-## Support limits (0.5.9)
+## Support limits (0.6.0)
 
-kbak/clafer-semantics#170 has two support limits, which 0.5.9 checks (#126) right after name
+kbak/clafer-semantics#170 has two support limits, which 0.6.0 checks (#126) right after name
 resolution, before the optimizer removes the abstract clafers that nothing extends and before
 any output, so that every mode, also the rich explicit model, gets only supported forms
 (`Language.Clafer.Intermediate.InitializerChecks`):
@@ -257,7 +257,7 @@ Tests: `case_InitializerDiagnostics` in the test suite (every mode, static and t
 the rich and core explicit models of the admitted forms compile to themselves), and the negative
 models `initializer_value_not_scalar*.cfr` and `initializer_bound_of_abstract.cfr`.
 
-## Explicit clocks (0.5.9)
+## Explicit clocks (0.6.0)
 
 kbak/clafer-semantics#194 (kbak/clafer-semantics#197) makes the clock of `:=` independent of the
 multiplicity: `x -> T := each e` is per instance, each instance at its birth, and

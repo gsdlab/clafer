@@ -1,4 +1,4 @@
-##### Clafer Version 0.5.9, unreleased
+##### Clafer Version 0.6.0, unreleased
 
 * Builds with GHC 9.12.4 (Stackage nightly-2026-11-15) and still with GHC 9.6.7.
 * The finality modifiers `final`, `finalref` and `finaltarget` are lowered to constraints of the core ([#127](https://github.com/gsdlab/clafer/issues/127), kbak/clafer-semantics#192), in the context of the clafer, with `X` against losses and `previous` against additions, e.g., `[ all c : this | X (c in parent.x) ]` and `[ all c : this | previous (some parent) => previous (c in parent.x) ]` for a final `x`. The explicit core model has no finality modifier left, and the temporal Alloy generator no encoding of its own for them, except that the relations of the clafers that are final with all their ancestors are still not `var`. Alloy finds no counterexample, up to 10 states, to the equivalence of the new output with the one of 0.5.8 for the test models with finality modifiers.
