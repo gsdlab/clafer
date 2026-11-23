@@ -2,15 +2,15 @@
 0..* go 0..1 {}
 0..* ready 0..1 {}
 0..* done 0..1 {}
-[G (((#done) >= 1) => (once ((#go) >= 1)))]
-[G (((#done) >= 1) => (((#ready) >= 1) since ((#go) >= 1)))]
-[G (((#go) >= 1) => (!(previous ((#go) >= 1))))]
-[initially ((((#go) >= 1) && ((#ready) = 0)) && ((#done) = 0))]
-[initially (X (((#ready) >= 1) && ((#go) = 0)))]
-[initially (X (X (((#ready) >= 1) && ((#done) >= 1))))]
+[G ((some done) => (once (some go)))]
+[G ((some done) => ((some ready) since (some go)))]
+[G ((some go) => (!(previous (some go))))]
+[initially (((some go) && (no ready)) && (no done))]
+[initially (X ((some ready) && (no go)))]
+[initially (X (X ((some ready) && (some done))))]
 
-assert [initially (!(previous ((#go) >= 1)))]
-assert [initially (X (X (once ((#go) >= 1))))]
-assert [initially (X (X (((#ready) >= 1) since ((#go) >= 1))))]
-assert [initially (X (X (!(historically ((#ready) >= 1)))))]
-assert [G ((!(once ((#go) >= 1))) => (((#done) = 0) triggered ((#go) = 0)))]
+assert [initially (!(previous (some go)))]
+assert [initially (X (X (once (some go))))]
+assert [initially (X (X ((some ready) since (some go))))]
+assert [initially (X (X (!(historically (some ready)))))]
+assert [G ((!(once (some go))) => ((no done) triggered (no go)))]

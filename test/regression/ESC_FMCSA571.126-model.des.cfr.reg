@@ -16,9 +16,9 @@ abstract 0..* Vehicle 0..* {
     0..* givenAckermanSteerAngle 1..1 {}
   }
   0..* hasOversteer 0..1 {}
-  [(this.yawRate.dref.dref > this.normalYawRate.dref.dref) <=> ((#this.hasOversteer) >= 1)]
+  [(this.yawRate.dref.dref > this.normalYawRate.dref.dref) <=> (some this.hasOversteer)]
   0..* hasUndersteer 0..1 {}
-  [(this.yawRate.dref.dref < this.normalYawRate.dref.dref) <=> ((#this.hasUndersteer) >= 1)]
+  [(this.yawRate.dref.dref < this.normalYawRate.dref.dref) <=> (some this.hasUndersteer)]
   0..* GVWR -> int 1..1 {}
 }
 abstract 1..1 root__DriveConfiguration 0..* {

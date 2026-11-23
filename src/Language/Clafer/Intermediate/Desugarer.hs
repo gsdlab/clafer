@@ -273,6 +273,8 @@ desugarTransition s e1 arrow e2 = case arrow of
     dop = desugarOp desugarExp
     this' = [ mkClaferIdExp s thisIdent | not (isThis e1) ]
     isThis (ClaferId _ (Path _ [ModIdIdent _ i])) = transIdent i == thisIdent
+    -- the explicit model writes the source as a formula, @some this@
+    isThis (EQuantExp _ (QuantSome _) e) = isThis e
     isThis _ = False
 
 -- | A behavioral pattern, which the IR keeps ('patternOp'); "Language.Clafer.Intermediate.Core"

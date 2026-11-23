@@ -1,7 +1,7 @@
 //# OPTIONS --explicit
 abstract 0..* Feature 0..* {}
 0..* express : Feature 0..1 {}
-[((#express) >= 1) <=> ((#downX) >= 1)]
+[(some express) <=> (some downX)]
 abstract 0..* Component 0..* {
   abstract 1..1 Port 0..* {
     0..* input 0..1 {}
@@ -16,9 +16,9 @@ abstract 0..* Request 0..* {}
 0..* stop : Request 1..1 {}
 0..* WinCtrl : Component 1..1 {
   1..1 cmd : Port -> Command 1..1 {
-    [(#this.output) >= 1]
+    [some this.output]
   }
   1..1 req : Port -> Request 1..1 {
-    [(#this.input) >= 1]
+    [some this.input]
   }
 }

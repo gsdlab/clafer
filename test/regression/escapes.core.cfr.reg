@@ -7,9 +7,9 @@ abstract 0..* Person 0..* {
 }
 0..* Bob : Person 1..1 {}
 0..* Carol : Person 1..1 {
-  [(#this.spouse) = 0]
+  [no this.spouse]
 }
 0..* Dave : Person 1..1 {}
 
 assert [Bob.spouse.dref = Alice]
-assert [(#Dave.spouse) = 0]
+assert [no Dave.spouse]

@@ -625,7 +625,7 @@ case_FinalInheritedReference =
                            -- final and finalref fix the reference of each motor, finaltarget the
                            -- targets of the motors of a tesla (kbak/clafer-semantics#127), as
                            -- constraints of the core (kbak/clafer-semantics#192)
-                           eachFixed = "[all motor_1 : this | all motor_2 : motor_1.dref | X (((#motor_1.dref) >= 1) => (motor_2 in motor_1.dref))]" `isInfixOf` explicit
+                           eachFixed = "[all motor_1 : this | all motor_2 : motor_1.dref | X ((some motor_1.dref) => (motor_2 in motor_1.dref))]" `isInfixOf` explicit
                            targetsFixed = "[all motor_2 : this.dref | X (motor_2 in this.parent.motor.dref)]" `isInfixOf` explicit
                        in (eachFixed, targetsFixed, "final" `isInfixOf` explicit) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget", False)
                             @? (modifier ++ ": " ++ explicit)
@@ -749,14 +749,14 @@ case_RichAndCoreExplicit = do
             (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
     has False "enum Color = red | green"
     has False "0..* x -> int 1..1 := each 3 {}"
-    has False "[((#this.on) >= 1) --> ((#this.off) >= 1) --> ((#this.on) >= 1)]"
-    has False "[never ((#p) >= 1) between ((#q) >= 1) and ((#r) >= 1)]"
+    has False "[(some this.on) --> (some this.off) --> (some this.on)]"
+    has False "[never (some p) between (some q) and (some r)]"
     -- the enumeration is final in a temporal model: its literals do not change (#127)
     has True "abstract 0..* Color 0..* {}"
     has True "[all red_1 : this | X (red_1 in red)]"
-    has True "[(!(previous ((#this) >= 1))) => (this.dref = 3)]"
-    has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
-    has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
+    has True "[(!(previous (some this))) => (this.dref = 3)]"
+    has True "[(some this.on) => (X ((some this.off) && (X (some this.on))))]"
+    has True "[G ((((some q) && (no r)) && (F (some r))) => ((no p) U (some r)))]"
 
 -- | Both explicit models print the top-level declarations where they were written: the
 --   clafers, the enumerations and the constraints.
@@ -767,9 +767,9 @@ case_ExplicitDeclarationOrder = do
             Right r -> return $ drop 1 $ lines $ outputCode $ fromJust $ Map.lookup Clafer r
             Left errs' -> assertFailure (show errs') >> return []
     rich <- explicit False
-    rich == ["0..* a 0..1 {}", "[(#a) >= 1]", "enum E = x | y", "0..* b -> E 1..1 {}"] @? ("rich:\n" ++ unlines rich)
+    rich == ["0..* a 0..1 {}", "[some a]", "enum E = x | y", "0..* b -> E 1..1 {}"] @? ("rich:\n" ++ unlines rich)
     core'' <- explicit True
-    take 3 core'' == ["0..* a 0..1 {}", "[(#a) >= 1]", "abstract 0..* E 0..* {}"] && last core'' == "0..* b -> E 1..1 {}"
+    take 3 core'' == ["0..* a 0..1 {}", "[some a]", "abstract 0..* E 0..* {}"] && last core'' == "0..* b -> E 1..1 {}"
         @? ("core:\n" ++ unlines core'')
 
 -- | Real and double, which no backend solves, are printed in the rich and the core explicit
@@ -865,18 +865,18 @@ case_CoreInitializers = do
     has False "abstract 0..* Val -> int 0..* := each 1 {}"
     has False "abstract 0..* Vs -> int 0..* := together 3 {}"
     -- core: per instance, a fixed value, parent birth, time zero
-    has True "0..* x -> int 0..1 {\n    [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
-    has True "[((#this.y) >= 1) => (this.y.dref = 2)]"
-    has True "[(!(previous ((#this) >= 1))) => (((#this.xs) >= 1) => (this.xs.dref = (1 ++ 2)))]"
-    has True "abstract 0..* Val -> int 0..* {\n  [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
-    has True "[(!(previous ((#root) >= 1))) => (((#Vs) >= 1) => (Vs.dref = 3))]"
+    has True "0..* x -> int 0..1 {\n    [(!(previous (some this))) => (this.dref = 1)]"
+    has True "[(some this.y) => (this.y.dref = 2)]"
+    has True "[(!(previous (some this))) => ((some this.xs) => (this.xs.dref = (1 ++ 2)))]"
+    has True "abstract 0..* Val -> int 0..* {\n  [(!(previous (some this))) => (this.dref = 1)]"
+    has True "[(!(previous (some root))) => ((some Vs) => (Vs.dref = 3))]"
     -- a collection is initialized at the parent's birth, in the parent's context, so its
     -- temporal value needs no past-time operator
-    has True "[(!(previous ((#this) >= 1))) => (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
+    has True "[(!(previous (some this))) => ((some this.t) => (this.t.dref = (if (X (some this.b)) then 1 else 2)))]"
     -- per instance with a temporal value: in the context of the parent, each instance that
     -- appears, i.e., was not there in the previous state, has the value (#127)
-    has False "0..* z -> int 1..1 := each if (X ((#this.b) >= 1)) then 1 else 2 {}"
-    has True "[all z_1 : this.z | (!(previous (z_1 in this.z))) => (z_1.dref = (if (X ((#this.b) >= 1)) then 1 else 2))]"
+    has False "0..* z -> int 1..1 := each if (X (some this.b)) then 1 else 2 {}"
+    has True "[all z_1 : this.z | (!(previous (z_1 in this.z))) => (z_1.dref = (if (X (some this.b)) then 1 else 2))]"
     has True "0..* z -> int 1..1 {}"
     hasNot True ":="
     hasNot True "= 2 {}"
@@ -906,16 +906,16 @@ case_InitializerClocks = do
     -- static: each instance on its own, or all together; the abstract := each has a value with
     -- at most one element, so the equation of all its instances is the same
     mapM_ (has True model)
-      [ "[all xs_1 : this.xs | xs_1.dref = 1]", "[((#this.x) >= 1) => (this.x.dref = 2)]"
-      , "[all ys_1 : this.ys | ys_1.dref = (3 ++ 4)]", "[((#Val) >= 1) => (Val.dref = 5)]"
-      , "[((#Wal) >= 1) => (Wal.dref = 6)]" ]
+      [ "[all xs_1 : this.xs | xs_1.dref = 1]", "[(some this.x) => (this.x.dref = 2)]"
+      , "[all ys_1 : this.ys | ys_1.dref = (3 ++ 4)]", "[(some Val) => (Val.dref = 5)]"
+      , "[(some Wal) => (Wal.dref = 6)]" ]
     -- temporal: at each instance's birth, at the parent's birth, at time zero
     mapM_ (has True temporal)
-      [ "0..* xs -> int 0..* {\n    [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
-      , "[(!(previous ((#this) >= 1))) => (((#this.x) >= 1) => (this.x.dref = 2))]"
-      , "0..* ys -> int 2..2 {\n    [(!(previous ((#this) >= 1))) => (this.dref = (3 ++ 4))]"
-      , "abstract 0..* Val -> int 0..* {\n  [(!(previous ((#this) >= 1))) => (this.dref = 5)]"
-      , "[(!(previous ((#root) >= 1))) => (((#Wal) >= 1) => (Wal.dref = 6))]" ]
+      [ "0..* xs -> int 0..* {\n    [(!(previous (some this))) => (this.dref = 1)]"
+      , "[(!(previous (some this))) => ((some this.x) => (this.x.dref = 2))]"
+      , "0..* ys -> int 2..2 {\n    [(!(previous (some this))) => (this.dref = (3 ++ 4))]"
+      , "abstract 0..* Val -> int 0..* {\n  [(!(previous (some this))) => (this.dref = 5)]"
+      , "[(!(previous (some root))) => ((some Wal) => (Wal.dref = 6))]" ]
     -- both explicit models compile to themselves
     forM_ [model, temporal] $ \m -> forM_ [False, True] $ \core' -> do
       x <- explicit core' m
@@ -1018,9 +1018,9 @@ case_FinalityLowered = do
     not (any (`isInfixOf` x) ["final", "finalref", "finaltarget"]) @? ("a modifier in the core:\n" ++ x)
     all (`isInfixOf` x)
       [ "[all b_1 : this | X (b_1 in this.parent.b)]"
-      , "[all r_1 : this | all r_2 : r_1.dref | X (((#r_1.dref) >= 1) => (r_2 in r_1.dref))]"
-      , "[all ts_2 : this.dref | (previous ((#this.parent) >= 1)) => (previous (ts_2 in this.parent.ts.dref))]"
-      , "[all m_1 : this | all m_2 : m_1.dref | X (((#m_1.dref) >= 1) => (m_2 in m_1.dref))]"
+      , "[all r_1 : this | all r_2 : r_1.dref | X ((some r_1.dref) => (r_2 in r_1.dref))]"
+      , "[all ts_2 : this.dref | (previous (some this.parent)) => (previous (ts_2 in this.parent.ts.dref))]"
+      , "[all m_1 : this | all m_2 : m_1.dref | X ((some m_1.dref) => (m_2 in m_1.dref))]"
       , "[all top_1 : this | X (top_1 in top)]" ] @? ("constraints missing:\n" ++ x)
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
@@ -1040,9 +1040,9 @@ case_InitialLowered = do
     x <- explicit True model
     not ("initial " `isInfixOf` x) @? ("a modifier in the core:\n" ++ x)
     all (`isInfixOf` x)
-      [ "[(!(previous ((#root) >= 1))) => ((#top) >= 1)]", "[(!(previous ((#root) >= 1))) => ((#V) >= 1)]"
-      , "[(!(previous ((#this) >= 1))) => ((#this.b) >= 1)]"
-      , "[(!(previous ((#this) >= 1))) => ((#this.c) >= 1)]" ] @? ("constraints missing:\n" ++ x)
+      [ "[(!(previous (some root))) => (some top)]", "[(!(previous (some root))) => (some V)]"
+      , "[(!(previous (some this))) => (some this.b)]"
+      , "[(!(previous (some this))) => (some this.c)]" ] @? ("constraints missing:\n" ++ x)
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
@@ -1185,10 +1185,10 @@ case_PastOperators = do
             (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
     -- the explicit models, as written, and fixpoints
     forM_ [False, True] $ \core' -> do
-        hasIn [Clafer] core' "[G (((#a) >= 1) => (previous ((#b) >= 1)))]"
-        hasIn [Clafer] core' "[G ((historically ((#a) >= 1)) || (((#a) >= 1) since ((#b) >= 1)))]"
-        hasIn [Clafer] core' "[G (((#a) >= 1) triggered ((#b) >= 1))]"
-        hasIn [Clafer] core' "[G (!(once ((#this.c) >= 1)))]"
+        hasIn [Clafer] core' "[G ((some a) => (previous (some b)))]"
+        hasIn [Clafer] core' "[G ((historically (some a)) || ((some a) since (some b)))]"
+        hasIn [Clafer] core' "[G ((some a) triggered (some b))]"
+        hasIn [Clafer] core' "[G (!(once (some this.c)))]"
         x <- outputCode <$> output [Clafer] core' pastModel
         y <- outputCode <$> output [Clafer] core' (lines x)
         x == y @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y

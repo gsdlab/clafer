@@ -50,15 +50,15 @@ abstract 0..* MobilePhone 0..* {
     [this.cost.dref = 13]
   }
   0..* total_performance -> int 1..1 {}
-  [((#this.total_performance) >= 1) => (this.total_performance.dref = (sum Feature.performance.dref))] // =, multi_objective_five_objectives.cfr:47:5
+  [(some this.total_performance) => (this.total_performance.dref = (sum Feature.performance.dref))] // =, multi_objective_five_objectives.cfr:47:5
   0..* total_energy -> int 1..1 {}
-  [((#this.total_energy) >= 1) => (this.total_energy.dref = (sum Feature.energy.dref))] // =, multi_objective_five_objectives.cfr:48:5
+  [(some this.total_energy) => (this.total_energy.dref = (sum Feature.energy.dref))] // =, multi_objective_five_objectives.cfr:48:5
   0..* total_security -> int 1..1 {}
-  [((#this.total_security) >= 1) => (this.total_security.dref = (sum SecurityFeature.security.dref))] // =, multi_objective_five_objectives.cfr:49:5
+  [(some this.total_security) => (this.total_security.dref = (sum SecurityFeature.security.dref))] // =, multi_objective_five_objectives.cfr:49:5
   0..* total_mass -> int 1..1 {}
-  [((#this.total_mass) >= 1) => (this.total_mass.dref = (sum Feature.mass.dref))] // =, multi_objective_five_objectives.cfr:50:5
+  [(some this.total_mass) => (this.total_mass.dref = (sum Feature.mass.dref))] // =, multi_objective_five_objectives.cfr:50:5
   0..* total_cost -> int 1..1 {}
-  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, multi_objective_five_objectives.cfr:51:5
+  [(some this.total_cost) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, multi_objective_five_objectives.cfr:51:5
 }
 0..* MyPhone : MobilePhone 1..1 {}
 

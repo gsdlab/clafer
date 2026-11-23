@@ -3,11 +3,11 @@
 0..* b -> int 1..1 {}
 0..* c -> int 1..1 {}
 0..* spread -> int 1..1 {}
-[((#spread) >= 1) => (spread.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))] // =, maxMinArithmetic.cfr:9:1
+[(some spread) => (spread.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))] // =, maxMinArithmetic.cfr:9:1
 0..* range -> int 1..1 {}
-[((#range) >= 1) => (range.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))] // =, maxMinArithmetic.cfr:10:1
+[(some range) => (range.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))] // =, maxMinArithmetic.cfr:10:1
 0..* above -> int 1..1 {}
-[((#above) >= 1) => (above.dref = ((max (a.dref ++ 3)) + 1))] // =, maxMinArithmetic.cfr:11:1
+[(some above) => (above.dref = ((max (a.dref ++ 3)) + 1))] // =, maxMinArithmetic.cfr:11:1
 [a.dref = 5]
 [b.dref = 2]
 [c.dref = 9]

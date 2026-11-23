@@ -4,7 +4,7 @@ abstract final 0..* FeatureModel 0..* {}
 final 0..* TLSFeatures : FeatureModel 1..1 {
   final 0..* annonymousMode : Feature 0..1 {}
   final 0..* clientAuthentication : Feature 0..1 {}
-  [((#this.clientAuthentication) >= 1) => ((#this.annonymousMode) = 0)]
+  [(some this.clientAuthentication) => (no this.annonymousMode)]
 }
 abstract final 0..* Domain 0..* {}
 enum ProtocolVersion = SSL2_0 | SSL3_0 | TLS1_0 | TLS1_1 | TLS1_2
@@ -43,7 +43,7 @@ final 0..* OurServer : Server 1..1 {
   [this.protocolversion.dref = ((SSL2_0 ++ SSL3_0) ++ TLS1_2)]
 }
 final 0..* aClient : Client 1..1 {
-  [(#this.certificate) >= 1]
+  [some this.certificate]
   [this.protocolversion.dref = TLS1_2]
 }
 final 0..* Protocol : Domain 1..1 {
@@ -54,94 +54,94 @@ final 0..* Protocol : Domain 1..1 {
     initial 0..* clientHello 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
       [this.parent.parent.client.dref.send.dref = clientHelloMessage]
-      [((#this) >= 1) --> (((#this.parent.serverResponse) >= 1) || ((#this.parent.fatalError) >= 1))]
+      [(some this) --> ((some this.parent.serverResponse) || (some this.parent.fatalError))]
     }
     1..1 serverResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [initially (((#this.serverHello) >= 1) || ((#this.mismatch) >= 1))]
+      [initially ((some this.serverHello) || (some this.mismatch))]
       0..* mismatch 0..1 {
-        [(#(this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)) = 0]
+        [no (this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)]
         [this.parent.parent.parent.server.dref.send.dref = protocolMismatch]
       }
       0..* serverHello 0..1 {
-        [(#(this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)) >= 1]
+        [some (this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)]
         [this.parent.parent.parent.server.dref.send.dref = serverHelloMessage]
       }
-      [((#this.serverHello) >= 1) -[((#TLSFeatures.annonymousMode) = 0)]-> ((#this.serverCertificate) >= 1)]
-      [((#this.serverHello) >= 1) -[((#TLSFeatures.annonymousMode) >= 1)]-> ((#this.serverKeyExchange) >= 1)]
+      [(some this.serverHello) -[(no TLSFeatures.annonymousMode)]-> (some this.serverCertificate)]
+      [(some this.serverHello) -[(some TLSFeatures.annonymousMode)]-> (some this.serverKeyExchange)]
       0..* serverCertificate 0..1 {
-        [(#TLSFeatures.annonymousMode) = 0]
+        [no TLSFeatures.annonymousMode]
         [this.parent.parent.parent.server.dref.send.dref = serverCertificateMessage]
       }
-      [((#this.serverCertificate) >= 1) -[((#TLSFeatures.clientAuthentication) >= 1)]-> (((#this.serverKeyExchange) >= 1) || ((#this.certificateRequest) >= 1))]
-      [((#this.serverCertificate) >= 1) -[((#TLSFeatures.clientAuthentication) = 0)]-> (((#this.serverKeyExchange) >= 1) || ((#this.serverHelloDone) >= 1))]
+      [(some this.serverCertificate) -[(some TLSFeatures.clientAuthentication)]-> ((some this.serverKeyExchange) || (some this.certificateRequest))]
+      [(some this.serverCertificate) -[(no TLSFeatures.clientAuthentication)]-> ((some this.serverKeyExchange) || (some this.serverHelloDone))]
       0..* serverKeyExchange 0..1 {
         [this.parent.parent.parent.server.dref.send.dref = serverKeyExchangeMessage]
       }
-      [((#this.serverKeyExchange) >= 1) -[((#TLSFeatures.clientAuthentication) >= 1)]-> ((#this.certificateRequest) >= 1)]
-      [((#this.serverKeyExchange) >= 1) -[((#TLSFeatures.clientAuthentication) = 0)]-> ((#this.serverHelloDone) >= 1)]
+      [(some this.serverKeyExchange) -[(some TLSFeatures.clientAuthentication)]-> (some this.certificateRequest)]
+      [(some this.serverKeyExchange) -[(no TLSFeatures.clientAuthentication)]-> (some this.serverHelloDone)]
       0..* certificateRequest 0..1 {
-        [(#TLSFeatures.clientAuthentication) >= 1]
+        [some TLSFeatures.clientAuthentication]
         [this.parent.parent.parent.server.dref.send.dref = serverCertificateRequestMessage]
-        [((#this) >= 1) --> ((#this.parent.serverHelloDone) >= 1)]
+        [(some this) --> (some this.parent.serverHelloDone)]
       }
       0..* serverHelloDone 0..1 {
         [this.parent.parent.parent.server.dref.send.dref = serverHelloDoneMessage]
       }
     }
-    [((#this.serverResponse) >= 1) -[(!(((#this.serverResponse.mismatch) >= 1) || ((#this.serverResponse.serverHelloDone) >= 1)))]-> ((#this.serverResponse) >= 1)]
-    [((#this.serverResponse.mismatch) >= 1) --> ((#this.fatalError) >= 1)]
-    [((#this.serverResponse.serverHelloDone) >= 1) --> ((#this.clientResponse) >= 1)]
+    [(some this.serverResponse) -[(!((some this.serverResponse.mismatch) || (some this.serverResponse.serverHelloDone)))]-> (some this.serverResponse)]
+    [(some this.serverResponse.mismatch) --> (some this.fatalError)]
+    [(some this.serverResponse.serverHelloDone) --> (some this.clientResponse)]
     1..1 clientResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [initially (((#TLSFeatures.clientAuthentication) >= 1) => ((#this.clientCertificate) >= 1))]
-      [initially (((#TLSFeatures.clientAuthentication) = 0) => ((#this.clientKeyExchange) >= 1))]
+      [initially ((some TLSFeatures.clientAuthentication) => (some this.clientCertificate))]
+      [initially ((no TLSFeatures.clientAuthentication) => (some this.clientKeyExchange))]
       0..* clientCertificate 0..1 {
-        [(#TLSFeatures.clientAuthentication) >= 1]
+        [some TLSFeatures.clientAuthentication]
         [this.parent.parent.parent.client.dref.send.dref = clientCertificateMessage]
-        [((#this) >= 1) --> ((#this.parent.clientKeyExchange) >= 1)]
+        [(some this) --> (some this.parent.clientKeyExchange)]
       }
       0..* clientKeyExchange 0..1 {
         [this.parent.parent.parent.client.dref.send.dref = clientKeyExchangeMessage]
       }
-      [((#this.clientKeyExchange) >= 1) -[(((#TLSFeatures.clientAuthentication) >= 1) && ((#this.parent.parent.client.dref.certificate.signing) >= 1))]-> ((#this.certificateVerify) >= 1)]
-      [((#this.clientKeyExchange) >= 1) -[(!(((#TLSFeatures.clientAuthentication) >= 1) && ((#this.parent.parent.client.dref.certificate.signing) >= 1)))]-> ((#this.clientChangeCipherSpec) >= 1)]
+      [(some this.clientKeyExchange) -[((some TLSFeatures.clientAuthentication) && (some this.parent.parent.client.dref.certificate.signing))]-> (some this.certificateVerify)]
+      [(some this.clientKeyExchange) -[(!((some TLSFeatures.clientAuthentication) && (some this.parent.parent.client.dref.certificate.signing)))]-> (some this.clientChangeCipherSpec)]
       0..* certificateVerify 0..1 {
-        [(#this.parent.parent.parent.client.dref.certificate.signing) >= 1]
+        [some this.parent.parent.parent.client.dref.certificate.signing]
         [this.parent.parent.parent.client.dref.send.dref = certificateVerifyMessage]
-        [((#this) >= 1) --> ((#this.parent.clientChangeCipherSpec) >= 1)]
+        [(some this) --> (some this.parent.clientChangeCipherSpec)]
       }
       0..* clientChangeCipherSpec 0..1 {
         [this.parent.parent.parent.client.dref.send.dref = clientChangeCipherSpecMessage]
-        [((#this) >= 1) --> ((#this.parent.clientFinished) >= 1)]
+        [(some this) --> (some this.parent.clientFinished)]
       }
       0..* clientFinished 0..1 {
         [this.parent.parent.parent.client.dref.send.dref = clientFinishedMessage]
       }
     }
-    [((#this.clientResponse) >= 1) -[((#this.clientResponse.clientFinished) = 0)]-> ((#this.clientResponse) >= 1)]
-    [((#this.clientResponse.clientFinished) >= 1) --> ((#this.serverFinish) >= 1)]
+    [(some this.clientResponse) -[(no this.clientResponse.clientFinished)]-> (some this.clientResponse)]
+    [(some this.clientResponse.clientFinished) --> (some this.serverFinish)]
     1..1 serverFinish 0..1 {
       initial 0..* serverChangeCipherSpec 0..1 {
         [this.parent.parent.parent.handshakeStatus.dref = initiated]
         [this.parent.parent.parent.server.dref.send.dref = serverChangeCipherSpecMessage]
-        [((#this) >= 1) --> ((#this.parent.serverFinished) >= 1)]
+        [(some this) --> (some this.parent.serverFinished)]
       }
       0..* serverFinished 0..1 {
         [this.parent.parent.parent.server.dref.send.dref = serverFinishedMessage]
         [this.parent.parent.parent.handshakeStatus.dref = completed]
       }
     }
-    [((#this.serverFinish) >= 1) -[((#this.serverFinish.serverFinished) = 0)]-> ((#this.serverFinish) >= 1)]
-    [((#this.serverFinish.serverFinished) >= 1) --> ((#this.dataTransfer) >= 1)]
+    [(some this.serverFinish) -[(no this.serverFinish.serverFinished)]-> (some this.serverFinish)]
+    [(some this.serverFinish.serverFinished) --> (some this.dataTransfer)]
     0..* dataTransfer 0..1 {
       [this.parent.parent.handshakeStatus.dref = completed]
       [this.parent.parent.client.dref.send.dref = applicationDataMessage]
-      [((#this) >= 1) -->> ((#this.parent.clientHello) >= 1)]
+      [(some this) -->> (some this.parent.clientHello)]
     }
     0..* fatalError 0..1 {
       [this.parent.parent.handshakeStatus.dref = failed]
-      [((#this) >= 1) --> ((#this) >= 1)]
+      [(some this) --> (some this)]
     }
   }
 }

@@ -2,6 +2,6 @@
 0..* x -> int 0..1 {
   [initially (X (this.dref = 7))]
 }
-[initially ((#x) >= 1)]
+[initially (some x)]
 
-assert [initially (X ((#x) >= 1))]
+assert [initially (X (some x))]

@@ -7,7 +7,7 @@ abstract 0..* P 0..* {
 }
 0..* x : P 1..1 {}
 
-assert [((#a) >= 1) => ((#a) >= 1)]
-assert [((#b) >= 1) => ((#b) >= 1)]
+assert [(some a) => (some a)]
+assert [(some b) => (some b)]
 assert [all this_ : P | this_.age.dref >= 0]
 assert [all this_ : x | this_.age.dref >= 0]

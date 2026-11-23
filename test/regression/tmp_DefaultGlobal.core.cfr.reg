@@ -3,7 +3,7 @@
   0..* b 0..1 {
     0..* c 0..1 {}
   }
-  [(#this.b.c) >= 1]
+  [some this.b.c]
 }
 
-assert [G (!(((#a.b) >= 1) && ((#a.b.c) = 0)))] // never, tmp_DefaultGlobal.cfr:11:8
+assert [G (!((some a.b) && (no a.b.c)))] // never, tmp_DefaultGlobal.cfr:11:8

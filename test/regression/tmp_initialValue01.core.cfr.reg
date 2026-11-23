@@ -1,6 +1,6 @@
 //# OPTIONS --explicit --core --tl=10
 0..* level -> int 0..1 {
-  [(!(previous ((#this) >= 1))) => (this.dref = 3)] // :=, tmp_initialValue01.cfr:5:1
+  [(!(previous (some this))) => (this.dref = 3)] // :=, tmp_initialValue01.cfr:5:1
 }
-[(!(previous ((#root) >= 1))) => ((#level) = 0)]
-[F ((#level) >= 1)]
+[(!(previous (some root))) => (no level)]
+[F (some level)]

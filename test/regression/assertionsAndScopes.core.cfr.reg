@@ -5,7 +5,7 @@
   }
 }
 
-assert [(#a.b.c) = 0]
-assert [(#a.b) >= 1]
-assert [(#a.b.c) = 0]
+assert [no a.b.c]
+assert [some a.b]
+assert [no a.b.c]
 assert [(#a.b) = 6]

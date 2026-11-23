@@ -14,4 +14,4 @@ abstract 0..* TA 0..* {
 [CompilerGradStudent.first.dref = CompilerCourse]
 [AIGradStudent.first.dref = MachineLearningCourse]
 0..* numerOfAssistants -> int 1..1 {}
-[((#numerOfAssistants) >= 1) => (numerOfAssistants.dref = (#Course.assistants))] // =, top_level_constraints_with_relational_joins.cfr:25:1
+[(some numerOfAssistants) => (numerOfAssistants.dref = (#Course.assistants))] // =, top_level_constraints_with_relational_joins.cfr:25:1

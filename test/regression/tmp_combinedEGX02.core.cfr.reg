@@ -2,10 +2,10 @@
 1..1 a 1..1 {
   0..* b 0..1 {}
   0..* c 0..1 {}
-  [F ((#this.c) >= 1)]
+  [F (some this.c)]
   [all a_1 : this | X (a_1 in a)] // final, tmp_combinedEGX02.cfr:2:1
-  [all a_1 : this | (previous ((#root) >= 1)) => (previous (a_1 in a))] // final, tmp_combinedEGX02.cfr:2:1
-  [(!(previous ((#this) >= 1))) => ((#this.b) >= 1)] // initial, tmp_combinedEGX02.cfr:3:9
+  [all a_1 : this | (previous (some root)) => (previous (a_1 in a))] // final, tmp_combinedEGX02.cfr:2:1
+  [(!(previous (some this))) => (some this.b)] // initial, tmp_combinedEGX02.cfr:3:9
 }
 
-assert [(G ((#a.b) = 0)) || (F (((#a.b) >= 1) && (F ((#a.c) >= 1))))] // sometime after, tmp_combinedEGX02.cfr:7:8
+assert [(G (no a.b)) || (F ((some a.b) && (F (some a.c))))] // sometime after, tmp_combinedEGX02.cfr:7:8

@@ -12,7 +12,7 @@ abstract 0..* Machine 0..* {
   0..* services -> Service 0..* {}
   [all s : this.services | s.dref.machine.dref = this]
   0..* isFree 0..1 {}
-  [((#this.isFree) >= 1) <=> ((#this.services) = 0)]
+  [(some this.isFree) <=> (no this.services)]
   0..* limits : Resources 1..1 {}
   0..* utilization : Resources 1..1 {
     [this.cpu.dref = (sum this.parent.services.dref.requirements.cpu.dref)]
@@ -21,7 +21,7 @@ abstract 0..* Machine 0..* {
 }
 abstract 0..* Task 0..* {
   0..* total_free -> int 1..1 {}
-  [((#this.total_free) >= 1) => (this.total_free.dref = (#Machine.isFree))] // =, inverse_references.cfr:53:5
+  [(some this.total_free) => (this.total_free.dref = (#Machine.isFree))] // =, inverse_references.cfr:53:5
 }
 0..* MyTask : Task 1..1 {
   0..* GoogleCA : Machine 1..1 {

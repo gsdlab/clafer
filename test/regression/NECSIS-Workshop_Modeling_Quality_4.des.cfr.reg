@@ -60,7 +60,7 @@ abstract 0..* Car 0..* {
       [this.cost.dref = 3]
     }
   }
-  [((#this.CC.ACC) >= 1) => ((#this.FCA) >= 1)]
+  [(some this.CC.ACC) => (some this.FCA)]
   0..* total_cost -> int 1..1 = sum Feature.cost.dref {}
   0..* total_comfort -> int 1..1 = sum ComfortFeature.cost.dref {}
   0..* total_fuel -> int 1..1 = sum FuelFeature.cost.dref {}

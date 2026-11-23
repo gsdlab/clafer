@@ -1,12 +1,12 @@
 //# OPTIONS --explicit --core
 0..* A 2..2 {
   0..* x -> int 1..1 {}
-  [((#this.x) >= 1) => (this.x.dref = 10)] // :=, initialValueStatic.cfr:6:5
+  [(some this.x) => (this.x.dref = 10)] // :=, initialValueStatic.cfr:6:5
   0..* y -> int 0..1 {}
-  [((#this.y) >= 1) => (this.y.dref = (this.x.dref + 1))] // :=, initialValueStatic.cfr:7:5
+  [(some this.y) => (this.y.dref = (this.x.dref + 1))] // :=, initialValueStatic.cfr:7:5
   0..* zs -> int 0..2 {}
-  [((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2))] // :=, initialValueStatic.cfr:8:5
+  [(some this.zs) => (this.zs.dref = (1 ++ 2))] // :=, initialValueStatic.cfr:8:5
 }
 abstract 0..* Val -> int 0..* {}
-[((#Val) >= 1) => (Val.dref = 2)] // :=, initialValueStatic.cfr:9:1
+[(some Val) => (Val.dref = 2)] // :=, initialValueStatic.cfr:9:1
 0..* v1 : Val 1..1 {}

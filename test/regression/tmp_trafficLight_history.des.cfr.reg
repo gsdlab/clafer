@@ -5,7 +5,7 @@
     0..* flashing 0..1 {}
   }
   0..* off 0..1 {}
-  [initially ((#this.off) >= 1)]
-  [(((#this.on.normal) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.normal) >= 1)))]
-  [(((#this.on.flashing) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.flashing) >= 1)))]
+  [initially (some this.off)]
+  [((some this.on.normal) && (X (no this.on))) => (X ((no this.on) W (some this.on.normal)))]
+  [((some this.on.flashing) && (X (no this.on))) => (X ((no this.on) W (some this.on.flashing)))]
 }

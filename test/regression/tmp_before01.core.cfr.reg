@@ -3,8 +3,8 @@
   1..1 b 1..1 {
     0..* c 0..1 {}
     0..* d 0..1 {}
-    [((#this.d) = 0) W (((#this.c) >= 1) && ((#this.d) = 0))] // sometime before, tmp_before01.cfr:8:4
+    [(no this.d) W ((some this.c) && (no this.d))] // sometime before, tmp_before01.cfr:8:4
   }
 }
 
-assert [(F ((#a.b.c) >= 1)) => (((#a.b.d) = 0) U ((#a.b.c) >= 1))] // never before, tmp_before01.cfr:10:8
+assert [(F (some a.b.c)) => ((no a.b.d) U (some a.b.c))] // never before, tmp_before01.cfr:10:8

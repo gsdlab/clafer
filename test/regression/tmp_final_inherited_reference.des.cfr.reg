@@ -6,7 +6,7 @@ abstract 0..* Car 0..* {
   abstract 0..* engine -> Engine 0..* {}
   1..1 gear 1..1 {
     initial 0..* park 0..1 {
-      [((#this) >= 1) --> ((#this.parent.drive) >= 1)]
+      [(some this) --> (some this.parent.drive)]
     }
     0..* drive 0..1 {}
   }

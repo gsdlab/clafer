@@ -2,5 +2,5 @@
 0..* light 0..1 {
   0..* level -> int 1..1 := each 3 {}
 }
-[F (((#light) >= 1) && (light.level.dref = 5))]
-[F (((#light) = 0) && (F ((#light) >= 1)))]
+[F ((some light) && (light.level.dref = 5))]
+[F ((no light) && (F (some light)))]

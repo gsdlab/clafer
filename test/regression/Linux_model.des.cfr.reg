@@ -6,25 +6,25 @@ abstract 0..* tristate 0..* {
   0..* MISC_FILESYSTEMS__display -> string 1..1 = "Miscellaneous filesystems" {}
   0..* JFFS2_FS : tristate 0..1 {
     0..* JFFS2_FS__display -> string 1..1 = "Journalling Flash File System" {}
-    [(#MTD) >= 1]
-    [((#MTD) >= 1) => ((#CRC32) >= 1)]
+    [some MTD]
+    [(some MTD) => (some CRC32)]
     0..* FFS2_FS_DEBUG -> int 1..1 {
       [this.dref = 0]
       0..* FFS2_FS_DEBUG__display -> string 1..1 = "JFFS2 Debug level (0=quiet, 2=noisy)" {}
       [(0 <= this.dref) && (this.dref <= 2)]
     }
     0..* JFFS2_FS_WRITEBUFFER 0..1 {}
-    [((#this.JFFS2_FS_WRITEBUFFER) >= 1) <=> ((#HAS_IOMEM) >= 1)]
+    [(some this.JFFS2_FS_WRITEBUFFER) <=> (some HAS_IOMEM)]
     0..* JFFS2_COMPRESS 0..1 {
       0..* JFFS2_COMPRESS__display -> string 1..1 = "Advanced compression options for JFFS2" {}
-      [(#this.JFFS2_ZLIB) >= 1]
+      [some this.JFFS2_ZLIB]
       0..* JFFS2_ZLIB 0..1 {
         0..* JFFS2_ZLIB__display -> string 1..1 = "Compress w/zlib..." {}
-        [(#ZLIB_INFLATE) >= 1]
+        [some ZLIB_INFLATE]
       }
       0..* CompressionChoice 1..1 {
         0..* CompressionChoice__display -> string 1..1 = "Default compression" {}
-        [(#this.choice.JFFS2_CMODE_PRIORITY) >= 1]
+        [some this.choice.JFFS2_CMODE_PRIORITY]
         1..1 choice 1..1 {
           0..* JFFS2_CMODE_NONE 0..1 {
             0..* JFFS2_CMODE_NONE__display -> string 1..1 = "no compression" {}

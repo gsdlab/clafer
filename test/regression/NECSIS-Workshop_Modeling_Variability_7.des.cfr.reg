@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
 0..* BumbleBee : Camaro 1..1 {
-  [(#this.transformer) >= 1]
+  [some this.transformer]
 }
 abstract 0..* Camaro : Car 0..* {
-  [(#this.Car__CC.ACC) >= 1]
-  [(#this.Car__CC.switch.backlight) >= 1]
+  [some this.Car__CC.ACC]
+  [some this.Car__CC.switch.backlight]
   0..* transformer 0..1 {}
 }
 abstract 0..* Car 0..* {
@@ -15,7 +15,7 @@ abstract 0..* Car 0..* {
   }
   0..* Car__FCA : root__FCA 0..1 {}
   0..* Car__CC : root__CC 0..1 {}
-  [((#this.Car__CC.ACC) >= 1) => ((#this.Car__FCA) >= 1)]
+  [(some this.Car__CC.ACC) => (some this.Car__FCA)]
 }
 abstract 0..* root__FCA 0..* {
   1..1 Sensor 1..1 {

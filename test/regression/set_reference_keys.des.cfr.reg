@@ -7,6 +7,6 @@ abstract 0..* Ref -> Target 0..* {}
 [a.dref = c.dref]
 abstract 0..* BagRef ->> Target 0..* {}
 0..* b : BagRef 2..2 {}
-[(#b.dref) = 1]
+[one b.dref]
 
 assert [(#r.dref) = 2]

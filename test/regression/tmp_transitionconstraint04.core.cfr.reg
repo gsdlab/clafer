@@ -3,5 +3,5 @@
   0..* c 0..1 {}
   0..* d 0..1 {}
   0..* e 0..1 {}
-  [((#this.c) >= 1) => (X (((#this.d) >= 1) || ((#this.e) >= 1)))] // transition, tmp_transitionconstraint04.cfr:7:6
+  [(some this.c) => (X ((some this.d) || (some this.e)))] // transition, tmp_transitionconstraint04.cfr:7:6
 }

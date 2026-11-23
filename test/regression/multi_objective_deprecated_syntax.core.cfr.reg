@@ -41,7 +41,7 @@ abstract 0..* MobilePhone 0..* {
   [this.total_security.dref = (sum SecurityFeature.security.dref)]
 }
 0..* MyPhone : MobilePhone 1..1 {
-  [((#this.Connectivity.Bluetooth) >= 1) && ((#this.Connectivity.USB) = 0)]
+  [(some this.Connectivity.Bluetooth) && (no this.Connectivity.USB)]
 }
 
 << min MyPhone.total_energy.dref >>

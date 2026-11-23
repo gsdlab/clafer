@@ -5,8 +5,8 @@
     0..* d 0..1 {}
     0..* e 0..1 {
       [all e_1 : this | X (e_1 in this.parent.e)] // final, tmp_finally02.cfr:7:3
-      [all e_1 : this | (previous ((#this.parent) >= 1)) => (previous (e_1 in this.parent.e))] // final, tmp_finally02.cfr:7:3
+      [all e_1 : this | (previous (some this.parent)) => (previous (e_1 in this.parent.e))] // final, tmp_finally02.cfr:7:3
     }
   }
 }
-[(((#root) >= 1) && (X ((#root) = 0))) => ((#a.b.e) >= 1)]
+[((some root) && (X (no root))) => (some a.b.e)]

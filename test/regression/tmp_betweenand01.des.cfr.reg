@@ -4,11 +4,11 @@ final 0..* a 1..1 {
     0..* c 0..1 {}
     0..* d 0..1 {}
     0..* e 0..1 {}
-    [always ((#this.c) >= 1) between ((#this.d) >= 1) and ((#this.e) >= 1)]
-    [initially (sometime ((#this.d) >= 1))]
-    [initially (sometime ((#this.c) >= 1))]
-    [initially (sometime ((#this.e) >= 1))]
+    [always (some this.c) between (some this.d) and (some this.e)]
+    [initially (sometime (some this.d))]
+    [initially (sometime (some this.c))]
+    [initially (sometime (some this.e))]
   }
 }
 
-assert [always ((#a.b.c) >= 1) between ((#a.b.d) >= 1) and ((#a.b.e) >= 1)]
+assert [always (some a.b.c) between (some a.b.d) and (some a.b.e)]

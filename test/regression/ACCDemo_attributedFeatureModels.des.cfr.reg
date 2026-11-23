@@ -20,7 +20,7 @@ abstract 0..* Car 0..* {
       [this.fuel.dref = 2]
       [this.comfort.dref = 6]
       [this.cost.dref = 3]
-      [(#this.parent.parent.FCA) >= 1]
+      [some this.parent.parent.FCA]
     }
   }
   1..1 Transmission 1..1 {

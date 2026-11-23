@@ -67,6 +67,8 @@ generateAlloyJSHTMLDot:
 	@# and the explicit core model (--core), which also compiles to itself, with the origin of
 	@# each lowered construct (--record-provenance), for reviewing its regression
 	@bash compile-positive.sh $(SUITE_DIR) $(JOBS) $(CLAFER) -m=clafer --core --record-provenance
+	@# check 2: the core of each rich model is the core of the model
+	@bash check-rich-to-core.sh $(SUITE_DIR) $(JOBS) $(CLAFER)
 
 diffRegressions:
 	@echo "======================================================="

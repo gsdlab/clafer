@@ -20,7 +20,7 @@ abstract 0..* Car 0..* {
       [this.fuel.dref = 2]
       [this.comfort.dref = 6]
       [this.cost.dref = 3]
-      [(#this.parent.parent.FCA) >= 1]
+      [some this.parent.parent.FCA]
     }
   }
   1..1 Transmission 1..1 {
@@ -59,11 +59,11 @@ abstract 0..* Car 0..* {
     }
   }
   0..* total_cost -> int 1..1 {}
-  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ACCDemo_attributedFeatureModels.cfr:50:5
+  [(some this.total_cost) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ACCDemo_attributedFeatureModels.cfr:50:5
   0..* total_comfort -> int 1..1 {}
-  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.comfort.dref))] // =, ACCDemo_attributedFeatureModels.cfr:51:5
+  [(some this.total_comfort) => (this.total_comfort.dref = (sum ComfortFeature.comfort.dref))] // =, ACCDemo_attributedFeatureModels.cfr:51:5
   0..* total_fuel -> int 1..1 {}
-  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.fuel.dref))] // =, ACCDemo_attributedFeatureModels.cfr:52:5
+  [(some this.total_fuel) => (this.total_fuel.dref = (sum FuelFeature.fuel.dref))] // =, ACCDemo_attributedFeatureModels.cfr:52:5
 }
 0..* aCar : Car 1..1 {}
 

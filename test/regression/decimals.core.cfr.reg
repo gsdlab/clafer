@@ -21,13 +21,13 @@ abstract 0..* Bike 0..* {
     [this.weight.dref = 9.80]
   }
   0..* subtotal -> decimal 1..1 {}
-  [((#this.subtotal) >= 1) => (this.subtotal.dref = (sum Feature.cost.dref))] // =, decimals.cfr:23:5
+  [(some this.subtotal) => (this.subtotal.dref = (sum Feature.cost.dref))] // =, decimals.cfr:23:5
   0..* tax -> decimal 1..1 {}
-  [((#this.tax) >= 1) => (this.tax.dref = (this.subtotal.dref * 0.13))] // =, decimals.cfr:24:5
+  [(some this.tax) => (this.tax.dref = (this.subtotal.dref * 0.13))] // =, decimals.cfr:24:5
   0..* total -> decimal 1..1 {}
-  [((#this.total) >= 1) => (this.total.dref = (this.subtotal.dref + this.tax.dref))] // =, decimals.cfr:25:5
+  [(some this.total) => (this.total.dref = (this.subtotal.dref + this.tax.dref))] // =, decimals.cfr:25:5
   0..* weightPerFeature -> decimal 1..1 {}
-  [((#this.weightPerFeature) >= 1) => (this.weightPerFeature.dref = ((sum Feature.weight.dref) / (#Feature)))] // =, decimals.cfr:26:5
+  [(some this.weightPerFeature) => (this.weightPerFeature.dref = ((sum Feature.weight.dref) / (#Feature)))] // =, decimals.cfr:26:5
   [this.total.dref <= 340]
   [this.weightPerFeature.dref < 5]
 }
@@ -37,10 +37,10 @@ abstract 0..* Bike 0..* {
   [this.dref != 1]
 }
 0..* change -> decimal 1..1 {}
-[((#change) >= 1) => (change.dref = ((-aBike.total.dref) + 400))] // =, decimals.cfr:36:1
+[(some change) => (change.dref = ((-aBike.total.dref) + 400))] // =, decimals.cfr:36:1
 0..* share -> decimal 1..1 {}
-[((#share) >= 1) => (share.dref = (2 / 3))] // =, decimals.cfr:37:1
+[(some share) => (share.dref = (2 / 3))] // =, decimals.cfr:37:1
 0..* discount -> decimal 1..1 {}
-[((#discount) >= 1) => (discount.dref = (if (aBike.total.dref > 300) then 0.10 else 0))] // =, decimals.cfr:38:1
+[(some discount) => (discount.dref = (if (aBike.total.dref > 300) then 0.10 else 0))] // =, decimals.cfr:38:1
 
 << max aBike.total.dref >>

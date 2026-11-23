@@ -20,10 +20,10 @@ abstract 0..* Book 0..* {
     0..* other -> string 0..1 {}
   }
   0..* authors -> Author 1..* {}
-  [(this.year.dref >= 5) => ((#this.ISBN) >= 1)]
+  [(this.year.dref >= 5) => (some this.ISBN)]
   0..* ISBN -> string 0..1 {
     0..* GS1 -> string 0..1 {}
-    [(this.parent.year.dref >= 6) => ((#this.GS1) >= 1)]
+    [(this.parent.year.dref >= 6) => (some this.GS1)]
   }
 }
 abstract 0..* Person 0..* {
@@ -34,7 +34,7 @@ abstract 0..* Author : Person 0..* {
   0..* books -> Book 1..* {}
 }
 0..* GenerativeProgramming : Book 1..1 {
-  [((((((((this.title.dref = "name") && ((#this.title.subtitle) = 0)) && (this.year.dref = 5)) && ((#this.page) = 4)) && ((#this.format.paper) >= 1)) && ((#this.kind.nonfiction) >= 1)) && (this.authors.dref = (Czarnecki ++ Eisenecker))) && (this.ISBN.dref = "name")) && ((#this.ISBN.GS1) = 0)]
+  [((((((((this.title.dref = "name") && (no this.title.subtitle)) && (this.year.dref = 5)) && ((#this.page) = 4)) && (some this.format.paper)) && (some this.kind.nonfiction)) && (this.authors.dref = (Czarnecki ++ Eisenecker))) && (this.ISBN.dref = "name")) && (no this.ISBN.GS1)]
 }
 0..* Czarnecki : Author 1..1 {
   [(this.name.dref = "name") && (GenerativeProgramming in this.books.dref)]

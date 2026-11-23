@@ -3,30 +3,30 @@ abstract 1..1 TrafficLight_1 0..* {
   initial 1..1 on 0..1 {
     initial 1..1 normal 0..1 {
       initial 0..* green 0..1 {
-        [((#this) >= 1) --> ((#this.parent.yellow) >= 1)]
+        [(some this) --> (some this.parent.yellow)]
       }
       0..* yellow 0..1 {
-        [((#this) >= 1) --> ((#this.parent.red) >= 1)]
+        [(some this) --> (some this.parent.red)]
       }
       0..* red 0..1 {
-        [((#this) >= 1) --> ((#this.parent.green) >= 1)]
+        [(some this) --> (some this.parent.green)]
       }
     }
     1..1 flashing 0..1 {
       initial 0..* yellow_on 0..1 {
-        [((#this) >= 1) --> ((#this.parent.yellow_off) >= 1)]
+        [(some this) --> (some this.parent.yellow_off)]
       }
       0..* yellow_off 0..1 {
-        [((#this) >= 1) --> ((#this.parent.yellow_on) >= 1)]
+        [(some this) --> (some this.parent.yellow_on)]
       }
-      [((#this) >= 1) -->> ((#this.parent.normal) >= 1)]
+      [(some this) -->> (some this.parent.normal)]
     }
-    [((#this) >= 1) -->> ((#this.parent.off) >= 1)]
+    [(some this) -->> (some this.parent.off)]
   }
   0..* off 0..1 {
-    [((#this) >= 1) --> ((#this.parent.on) >= 1)]
+    [(some this) --> (some this.parent.on)]
   }
 }
 1..1 t3 : TrafficLight_1 1..1 {
-  [initially (((#this.on) >= 1) -->> ((#this.on.flashing.yellow_off) >= 1) --> ((#this.on.flashing.yellow_on) >= 1) --> ((#this.on.flashing.yellow_off) >= 1))]
+  [initially ((some this.on) -->> (some this.on.flashing.yellow_off) --> (some this.on.flashing.yellow_on) --> (some this.on.flashing.yellow_off))]
 }

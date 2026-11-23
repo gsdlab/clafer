@@ -1,26 +1,26 @@
 //# OPTIONS --explicit --core
 abstract 0..* intNumber -> int 0..* {}
 0..* numberOne : intNumber -> int 1..1 {}
-[((#numberOne) >= 1) => (numberOne.dref = 1)] // =, mergeExpAndSetExp.cfr:5:1
+[(some numberOne) => (numberOne.dref = 1)] // =, mergeExpAndSetExp.cfr:5:1
 abstract 0..* name -> string 0..* {}
 0..* alice : name -> string 1..1 {}
-[((#alice) >= 1) => (alice.dref = "Alice")] // =, mergeExpAndSetExp.cfr:10:1
+[(some alice) => (alice.dref = "Alice")] // =, mergeExpAndSetExp.cfr:10:1
 abstract 0..* realNumber -> real 0..* {}
 0..* pi : realNumber -> decimal 1..1 {}
-[((#pi) >= 1) => (pi.dref = 3.1415)] // =, mergeExpAndSetExp.cfr:15:1
+[(some pi) => (pi.dref = 3.1415)] // =, mergeExpAndSetExp.cfr:15:1
 0..* piDouble : realNumber -> double 1..1 {}
-[((#piDouble) >= 1) => (piDouble.dref = 3.14e0)] // =, mergeExpAndSetExp.cfr:16:1
+[(some piDouble) => (piDouble.dref = 3.14e0)] // =, mergeExpAndSetExp.cfr:16:1
 0..* piInt : realNumber -> int 1..1 {}
-[((#piInt) >= 1) => (piInt.dref = 3)] // =, mergeExpAndSetExp.cfr:17:1
+[(some piInt) => (piInt.dref = 3)] // =, mergeExpAndSetExp.cfr:17:1
 abstract 0..* doubleNumber : realNumber -> double 0..* {}
 0..* numberTwentyFive : doubleNumber -> double 1..1 {}
-[((#numberTwentyFive) >= 1) => (numberTwentyFive.dref = 2.5e1)] // =, mergeExpAndSetExp.cfr:20:1
+[(some numberTwentyFive) => (numberTwentyFive.dref = 2.5e1)] // =, mergeExpAndSetExp.cfr:20:1
 abstract 0..* intNumber2 : realNumber -> int 0..* {}
 0..* numberThree : intNumber2 -> int 1..1 {}
-[((#numberThree) >= 1) => (numberThree.dref = 3)] // =, mergeExpAndSetExp.cfr:23:1
+[(some numberThree) => (numberThree.dref = 3)] // =, mergeExpAndSetExp.cfr:23:1
 abstract 0..* intNumber3 : doubleNumber -> int 0..* {}
 0..* numberFour : intNumber2 -> int 1..1 {}
-[((#numberFour) >= 1) => (numberFour.dref = 4)] // =, mergeExpAndSetExp.cfr:27:1
+[(some numberFour) => (numberFour.dref = 4)] // =, mergeExpAndSetExp.cfr:27:1
 0..* likertScaleVal -> int 1..1 {
   [((((this.dref = 1) || (this.dref = 2)) || (this.dref = 3)) || (this.dref = 4)) || (this.dref = 5)]
 }
@@ -37,7 +37,7 @@ abstract 0..* Person 0..* {
 }
 0..* Ella : Person 1..1 {
   0..* h : Person__Head 1..1 {}
-  [(#this.likes) = 0]
+  [no this.likes]
 }
 0..* heads -> Person__Head 0..* {}
 0..* friend -> Person 0..* {

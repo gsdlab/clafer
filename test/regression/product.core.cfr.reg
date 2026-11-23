@@ -1,16 +1,16 @@
 //# OPTIONS --explicit --core
 abstract 0..* N ->> int 0..* {}
 0..* n1 : N 1..1 {}
-[((#n1) >= 1) => (n1.dref = 1)] // =, product.cfr:3:1
+[(some n1) => (n1.dref = 1)] // =, product.cfr:3:1
 0..* n2 : N 1..1 {}
-[((#n2) >= 1) => (n2.dref = 2)] // =, product.cfr:4:1
+[(some n2) => (n2.dref = 2)] // =, product.cfr:4:1
 0..* n3 : N 1..1 {}
-[((#n3) >= 1) => (n3.dref = 3)] // =, product.cfr:5:1
+[(some n3) => (n3.dref = 3)] // =, product.cfr:5:1
 0..* n4 : N 1..1 {}
-[((#n4) >= 1) => (n4.dref = 2)] // =, product.cfr:6:1
+[(some n4) => (n4.dref = 2)] // =, product.cfr:6:1
 0..* n5 : N 1..1 {}
-[((#n5) >= 1) => (n5.dref = 3)] // =, product.cfr:7:1
+[(some n5) => (n5.dref = 3)] // =, product.cfr:7:1
 0..* p -> int 1..1 {}
-[((#p) >= 1) => (p.dref = (product N.dref))] // =, product.cfr:9:1
+[(some p) => (p.dref = (product N.dref))] // =, product.cfr:9:1
 
 assert [p.dref = 36]

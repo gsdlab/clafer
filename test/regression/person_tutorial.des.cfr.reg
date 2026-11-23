@@ -24,7 +24,7 @@ abstract 0..* Person 0..* {
   }
 }
 0..* JohnDoe : Person 1..1 {
-  [((((((((this.Name.dref = "John") && (this.Surname.dref = "Doe")) && (this.DateOfBirth.dref = "01/02/1985")) && ((#this.Gender.Male) >= 1)) && ((#this.MaritalStatus.Married) >= 1)) && (this.Address.Street.dref = "123 Main St.")) && (this.Address.City.dref = "Great Town")) && (this.Address.Country.dref = Canada)) && (this.Address.PostalCode.dref = "A1B 2C3")]
+  [((((((((this.Name.dref = "John") && (this.Surname.dref = "Doe")) && (this.DateOfBirth.dref = "01/02/1985")) && (some this.Gender.Male)) && (some this.MaritalStatus.Married)) && (this.Address.Street.dref = "123 Main St.")) && (this.Address.City.dref = "Great Town")) && (this.Address.Country.dref = Canada)) && (this.Address.PostalCode.dref = "A1B 2C3")]
 }
 abstract 0..* Student : Person 0..* {
   0..* StudentId -> string 1..1 {}

@@ -2,13 +2,13 @@
 0..* go 0..1 {}
 1..1 sm 1..1 {
   0..* a 0..1 {
-    [((#go) >= 1) => (X ((#this.parent.b) >= 1))] // transition, tmp_transition_in_source_state.cfr:9:7
+    [(some go) => (X (some this.parent.b))] // transition, tmp_transition_in_source_state.cfr:9:7
   }
   0..* b 0..1 {}
   0..* c 0..1 {}
   [all sm_1 : this | X (sm_1 in sm)] // final, tmp_transition_in_source_state.cfr:7:1
-  [all sm_1 : this | (previous ((#root) >= 1)) => (previous (sm_1 in sm))] // final, tmp_transition_in_source_state.cfr:7:1
-  [(!(previous ((#this) >= 1))) => ((#this.a) >= 1)] // initial, tmp_transition_in_source_state.cfr:8:3
+  [all sm_1 : this | (previous (some root)) => (previous (sm_1 in sm))] // final, tmp_transition_in_source_state.cfr:7:1
+  [(!(previous (some this))) => (some this.a)] // initial, tmp_transition_in_source_state.cfr:8:3
 }
 
-assert [(((#sm.a) >= 1) && ((#go) >= 1)) => (X ((#sm.b) >= 1))]
+assert [((some sm.a) && (some go)) => (X (some sm.b))]

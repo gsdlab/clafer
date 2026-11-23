@@ -3,7 +3,7 @@
   0..* b 0..1 {
     0..* c 0..1 {}
   }
-  [G ((#this.b.c) >= 1)]
+  [G (some this.b.c)]
 }
 
-assert [never (((#a.b) >= 1) => (never ((#a.b.c) >= 1)))]
+assert [never ((some a.b) => (never (some a.b.c)))]

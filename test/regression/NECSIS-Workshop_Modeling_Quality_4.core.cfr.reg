@@ -60,15 +60,15 @@ abstract 0..* Car 0..* {
       [this.cost.dref = 3]
     }
   }
-  [((#this.CC.ACC) >= 1) => ((#this.FCA) >= 1)]
+  [(some this.CC.ACC) => (some this.FCA)]
   0..* total_cost -> int 1..1 {}
-  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:58:5
+  [(some this.total_cost) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:58:5
   0..* total_comfort -> int 1..1 {}
-  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:59:5
+  [(some this.total_comfort) => (this.total_comfort.dref = (sum ComfortFeature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:59:5
   0..* total_fuel -> int 1..1 {}
-  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:60:5
+  [(some this.total_fuel) => (this.total_fuel.dref = (sum FuelFeature.cost.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:60:5
   0..* total_mass -> int 1..1 {}
-  [((#this.total_mass) >= 1) => (this.total_mass.dref = (sum FuelFeature.mass.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:61:5
+  [(some this.total_mass) => (this.total_mass.dref = (sum FuelFeature.mass.dref))] // =, NECSIS-Workshop_Modeling_Quality_4.cfr:61:5
 }
 abstract 0..* Feature 0..* {
   0..* cost -> int 1..1 {}

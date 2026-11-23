@@ -3,8 +3,8 @@
   0..* MISC_FILESYSTEMS__display -> string 1..1 = "Miscellaneous filesystems" {}
   0..* CYGPKG_FS_JFFS2 0..1 {
     0..* CYGPKG_FS_JFFS2__display -> string 1..1 = "Journalling Flash File System" {}
-    [(#CYGPKG_CRC) >= 1]
-    [(#MTD) >= 1]
+    [some CYGPKG_CRC]
+    [some MTD]
     0..* CYGOPT_FS_JFFS2_DEBUG -> int 1..1 {
       [this.dref = 0]
       0..* CYGOPT_FS_JFFS2_DEBUG__display -> string 1..1 = "Debug level" {}
@@ -12,14 +12,14 @@
       0..* description -> string 1..1 = "Debug verbosity of...." {}
     }
     0..* CYGOPT_FS_JFFS2_NAND 0..1 {}
-    [((#this.CYGOPT_FS_JFFS2_NAND) >= 1) <=> ((#HAS_IOMEM) >= 1)]
-    [(#this.CYGOPT_FS_JFFS2_COMPRESS) >= 1]
+    [(some this.CYGOPT_FS_JFFS2_NAND) <=> (some HAS_IOMEM)]
+    [some this.CYGOPT_FS_JFFS2_COMPRESS]
     0..* CYGOPT_FS_JFFS2_COMPRESS 0..1 {
       0..* CYGOPT_FS_JFFS2_COMPRESS__display -> string 1..1 = "Compress data" {}
-      [(#this.CYGOPT_FS_JFFS2_COMPRESS_ZLIB) >= 1]
+      [some this.CYGOPT_FS_JFFS2_COMPRESS_ZLIB]
       0..* CYGOPT_FS_JFFS2_COMPRESS_ZLIB 0..1 {
         0..* CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display -> string 1..1 = "Compress data using zlib" {}
-        [(#CYGPKG_COMPRESS_ZLIB) >= 1]
+        [some CYGPKG_COMPRESS_ZLIB]
       }
       0..* CYGOPT_FS_JFFS2_COMPRESS_CMODE -> string 1..1 {
         [this.dref = "PRIORITY"]

@@ -3,8 +3,8 @@
   1..1 b 1..1 {
     0..* c 0..1 {}
     0..* d 0..1 {}
-    [sometime ((#this.c) >= 1) before ((#this.d) >= 1)]
+    [sometime (some this.c) before (some this.d)]
   }
 }
 
-assert [never ((#a.b.d) >= 1) before ((#a.b.c) >= 1)]
+assert [never (some a.b.d) before (some a.b.c)]

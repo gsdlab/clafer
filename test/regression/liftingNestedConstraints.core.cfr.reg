@@ -4,10 +4,10 @@
     0..* c 0..* {
       0..* d 0..1 {}
     }
-    [(#this.c.d) = 1]
+    [one this.c.d]
   }
-  [all x : this.b.c | (#x.d) = 1]
+  [all x : this.b.c | one x.d]
 }
-[all x : a.b.c | (#x.d) = 1]
+[all x : a.b.c | one x.d]
 
-assert [all x : a.b.c | (#x.d) >= 1]
+assert [all x : a.b.c | some x.d]

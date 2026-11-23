@@ -312,11 +312,11 @@ Verification, ICSE 1999), `never`, `sometime`, `lonce`, `always`, `s must preced
 The patterns and transitions in the rich and the core explicit model of a constraint:
 
 ```
-[never ((#p) >= 1) between ((#q) >= 1) and ((#r) >= 1)]
-[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]
+[never (some p) between (some q) and (some r)]
+[G ((((some q) && (no r)) && (F (some r))) => ((no p) U (some r)))]
 
-[((#this.on) >= 1) --> ((#this.off) >= 1) --> ((#this.on) >= 1)]
-[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]
+[(some this.on) --> (some this.off) --> (some this.on)]
+[(some this.on) => (X ((some this.off) && (X (some this.on))))]
 ```
 
 ### Transitions
@@ -335,7 +335,7 @@ the one in its file, also in a model with imports. The file is its name only, wi
 folders, which depend on where the compiler runs.
 
 ```
-[((#Tools) >= 1) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
+[(some Tools) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
 abstract 0..* Color 0..* {} // enum, model.cfr:1:1
 0..* a 0..1 {
   0..* b 0..1 {
@@ -343,7 +343,7 @@ abstract 0..* Color 0..* {} // enum, model.cfr:1:1
   }
 }
 0..* x -> int 1..1 {
-  [(!(previous ((#this) >= 1))) => (this.dref = 1)] // :=, model.cfr:6:1
+  [(!(previous (some this))) => (this.dref = 1)] // :=, model.cfr:6:1
 }
 ```
 
@@ -364,6 +364,15 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
   print them, although no backend solves them (test case `RealsPrinted`), a double literal
   with its exponent, e.g., `1.2e2`, as its token requires. The scope file has no ranges for
   them, since no backend uses one.
+- The core of each rich explicit model is the core of the model (check 2): for each test model
+  `P.cfr`, `clafer -m clafer --core P.des.cfr` gives `P.core.cfr` without the provenance
+  comments, which have positions of `P.des.cfr` there (`test/check-rich-to-core.sh`, in the
+  positive suite).
+- Both explicit models print the quantifiers over a set as written, `some x`, `no x`,
+  `lone x`, `one x`, never as the size of the set (`(#x) >= 1`, which 0.5.7 and 0.5.8
+  printed): `some x` needs one element of `x`, not its count, and a backend can answer it so.
+  Read back, it is the same quantifier, so the lowering of the rich model, e.g., `no x` for
+  the negation of `some x` in a pattern, is the lowering of the model.
 - Before 0.6.0 lowered the temporal modifiers and the multiplicities of abstract clafers, the
   core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
   printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),

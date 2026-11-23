@@ -6,4 +6,4 @@
     final 0..* e 0..1 {}
   }
 }
-[finally ((#a.b.e) >= 1)]
+[finally (some a.b.e)]

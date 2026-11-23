@@ -4,6 +4,6 @@
     0..* c 0..1 {}
     0..* d 0..1 {}
     0..* e 0..1 {}
-    [finally ((#this.e) >= 1)]
+    [finally (some this.e)]
   }
 }

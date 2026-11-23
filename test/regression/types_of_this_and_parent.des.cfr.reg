@@ -1,7 +1,7 @@
 //# OPTIONS --explicit
 0..* A 1..1 {
   0..* b ->> A 0..1 {
-    [(#this.parent) >= 1]
+    [some this.parent]
   }
-  [(#this) >= 1]
+  [some this]
 }

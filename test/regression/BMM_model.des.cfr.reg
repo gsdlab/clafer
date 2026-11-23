@@ -13,8 +13,8 @@ abstract 0..* End : Element 0..* {
 }
 abstract 0..* Mean : Element 0..* {}
 abstract 0..* Vision : End 0..* {
-  [(#this.focusedOn.enterprise) >= 1]
-  [(#this.End__term.End__term__long) >= 1]
+  [some this.focusedOn.enterprise]
+  [some this.End__term.End__term__long]
   0..* amplifiedBy -> Goal 1..* {}
   0..* madeOperativeBy -> Mission 1..1 {}
 }
@@ -29,24 +29,24 @@ abstract 0..* Goal : DesiredResult 0..* {
   0..* amplifies -> Vision 1..1 {}
   0..* general 1..1 {}
   0..* ongoing 1..1 {}
-  [(#this.focusedOn.businessArea) >= 1]
-  [(#this.attainable) >= 1]
-  [(#this.kind.qualitative) >= 1]
-  [(#this.End__term.End__term__long) >= 1]
+  [some this.focusedOn.businessArea]
+  [some this.attainable]
+  [some this.kind.qualitative]
+  [some this.End__term.End__term__long]
 }
 abstract 0..* Objective : DesiredResult 0..* {
   0..* SMART 1..1 {
     0..* specific 1..1 {}
-    [(#this.parent.attainable) >= 1]
+    [some this.parent.attainable]
     0..* relevant 1..1 {}
     0..* timeBound 1..1 {}
   }
   0..* limitedInTimeframe 1..1 {
     0..* cyclical 0..1 {}
   }
-  [(#this.focusedOn.businessArea) >= 1]
-  [(#this.kind.quantitative) >= 1]
-  [(#this.End__term.End__term__short) >= 1]
+  [some this.focusedOn.businessArea]
+  [some this.kind.quantitative]
+  [some this.End__term.End__term__short]
   0..* quantifies -> Goal 1..* {}
 }
 abstract 0..* CourseOfAction : Mean 0..* {
@@ -61,7 +61,7 @@ abstract 0..* CourseOfAction : Mean 0..* {
     0..* CourseOfAction__term__short 0..1 {}
     0..* CourseOfAction__term__long 0..1 {}
   }
-  [(((#this.scope.broad) >= 1) && ((#this.CourseOfAction__term.CourseOfAction__term__long) >= 1)) || (((#this.scope.narrow) >= 1) && ((#this.CourseOfAction__term.CourseOfAction__term__short) >= 1))]
+  [((some this.scope.broad) && (some this.CourseOfAction__term.CourseOfAction__term__long)) || ((some this.scope.narrow) && (some this.CourseOfAction__term.CourseOfAction__term__short))]
   0..* CourseOfAction__includes -> CourseOfAction 0..* {}
   0..* enables -> CourseOfAction 0..* {}
 }
@@ -109,10 +109,10 @@ abstract 0..* BusinessPolicy : Directive 0..* {
     0..* guide 1..1 {}
     0..* shape 1..1 {}
   }
-  [(#this.degreeOfStructure.lessStructured) >= 1]
-  [(#this.granularity.lessDiscreteAndComposite) >= 1]
-  [(#this.actionable) = 0]
-  [(#this.automatable) = 0]
+  [some this.degreeOfStructure.lessStructured]
+  [some this.granularity.lessDiscreteAndComposite]
+  [no this.actionable]
+  [no this.automatable]
   0..* BusinessPolicy__includes -> BusinessPolicy 0..* {}
 }
 abstract 0..* BusinessRule : Directive 0..* {
@@ -126,9 +126,9 @@ abstract 0..* BusinessRule : Directive 0..* {
     0..* guideline 0..1 {}
   }
   0..* hasEnforcementLevelEffectedBy -> Tactic 1..1 {}
-  [(#this.degreeOfStructure.highlyStructured) >= 1]
-  [(#this.granularity.discreteAndAtomic) >= 1]
-  [(#this.actionable) >= 1]
+  [some this.degreeOfStructure.highlyStructured]
+  [some this.granularity.discreteAndAtomic]
+  [some this.actionable]
   0..* expressedUsingStandardBusinessVocabulary 1..1 {}
 }
 abstract 0..* Regulation : Element 0..* {

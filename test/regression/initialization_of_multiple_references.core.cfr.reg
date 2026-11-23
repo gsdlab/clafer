@@ -1,9 +1,9 @@
 //# OPTIONS --explicit --core
 0..* x -> int 0..* {}
-[((#x) >= 1) => (x.dref = ((1 ++ 2) ++ 3))] // =, initialization_of_multiple_references.cfr:3:1
+[(some x) => (x.dref = ((1 ++ 2) ++ 3))] // =, initialization_of_multiple_references.cfr:3:1
 abstract 0..* Person 0..* {}
 0..* p1 : Person 1..1 {}
 0..* p2 : Person 1..1 {}
 0..* p3 : Person 1..1 {}
 0..* people -> Person 0..* {}
-[((#people) >= 1) => (people.dref = ((p1 ++ p1) ++ p3))] // =, initialization_of_multiple_references.cfr:11:1
+[(some people) => (people.dref = ((p1 ++ p1) ++ p3))] // =, initialization_of_multiple_references.cfr:11:1

@@ -3,11 +3,11 @@
   0..* Worker 0..1 {
     0..* alarm 0..1 {}
     0..* warned 0..1 {}
-    [((#this.warned) >= 1) <=> (previous (once ((#this.alarm) >= 1)))]
+    [(some this.warned) <=> (previous (once (some this.alarm)))]
   }
 }
-[(!(previous ((#root) >= 1))) => ((#Shift.Worker.alarm) >= 1)]
-[(!(previous ((#root) >= 1))) => (X ((#Shift) = 0))]
-[(!(previous ((#root) >= 1))) => (X (X (((#Shift.Worker) >= 1) && ((#Shift.Worker.alarm) = 0))))]
+[(!(previous (some root))) => (some Shift.Worker.alarm)]
+[(!(previous (some root))) => (X (no Shift))]
+[(!(previous (some root))) => (X (X ((some Shift.Worker) && (no Shift.Worker.alarm))))]
 
-assert [(!(previous ((#root) >= 1))) => (X (X ((#Shift.Worker.warned) = 0)))]
+assert [(!(previous (some root))) => (X (X (no Shift.Worker.warned)))]

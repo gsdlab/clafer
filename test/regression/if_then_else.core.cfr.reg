@@ -7,9 +7,9 @@
 0..* warning 0..1 {
   0..* warning__flashing 0..1 {}
 }
-[((#emergencyVehicle) >= 1) => (if ((#allWayYellow) >= 1) then ((#allYellow) >= 1) else ((#warning) >= 1))]
-[((#emergencyVehicle) >= 1) => (if ((#allWayYellow) >= 1) then ((#allYellow) >= 1) else ((#warning) >= 1))]
+[(some emergencyVehicle) => (if (some allWayYellow) then (some allYellow) else (some warning))]
+[(some emergencyVehicle) => (if (some allWayYellow) then (some allYellow) else (some warning))]
 0..* AliceAge -> int 1..1 {}
 0..* BobAge -> int 1..1 {}
 0..* BobsBirthday 0..1 {}
-[(if ((#BobsBirthday) >= 1) then BobAge.dref else AliceAge.dref) = 5]
+[(if (some BobsBirthday) then BobAge.dref else AliceAge.dref) = 5]

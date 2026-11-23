@@ -172,15 +172,8 @@ exExp (CEmpty _) = "noclafer"
 exExp (CJoin e c) = exOperand e ++ "." ++ c
 exExp (CJoinRef e) = exOperand e ++ ".dref"
 exExp (CJoinParent e) = exOperand e ++ ".parent"
--- chocosolver's quantifiers over a set compare its size, e.g., none(x) is #x = 0
-exExp (CQuant q [] set) = case q of
-    INo   -> sizeIs "=" 0
-    ISome -> sizeIs ">=" 1
-    ILone -> sizeIs "<=" 1
-    IOne  -> sizeIs "=" 1
-    IAll  -> "all " ++ exOperand set
-  where
-    sizeIs op' n = "(#" ++ exOperand set ++ ") " ++ op' ++ " " ++ show (n :: Integer)
+-- a quantifier over a set as written, e.g., some x
+exExp (CQuant q [] set) = exQuant q ++ " " ++ exOperand set
 exExp (CQuant q decls' body') = exQuant q ++ " " ++ intercalate ", " (map exDecl decls') ++ " | " ++ exExp body'
   where
     exDecl (CDecl isDisj' locals set) = (if isDisj' then "disj " else "") ++ intercalate "; " locals ++ " : " ++ exExp set

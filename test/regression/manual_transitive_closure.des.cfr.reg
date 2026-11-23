@@ -3,7 +3,7 @@ abstract 0..* TimeLevel 0..* {
   0..* aggregatesTo -> TimeLevel 0..1 {}
 }
 abstract 0..* YearLevel : TimeLevel 0..* {
-  [(#this.aggregatesTo) = 0]
+  [no this.aggregatesTo]
 }
 abstract 0..* MonthLevel : TimeLevel 0..* {
   [this.aggregatesTo.dref in YearLevel]

@@ -11,6 +11,6 @@
     0..* Clafer2__type__Type1 0..1 {}
     0..* Clafer2__type__Type2 0..1 {}
   }
-  [((#this.Clafer2__type.Clafer2__type__Type1) >= 1) => ((#this.clafer1.dref.Clafer1__type.Clafer1__type__Type2) >= 1)]
-  [((#this.Clafer2__type.Clafer2__type__Type1) >= 1) => ((#this.clafer1.dref.Clafer1__type.Clafer1__type__Type2) >= 1)]
+  [(some this.Clafer2__type.Clafer2__type__Type1) => (some this.clafer1.dref.Clafer1__type.Clafer1__type__Type2)]
+  [(some this.Clafer2__type.Clafer2__type__Type1) => (some this.clafer1.dref.Clafer1__type.Clafer1__type__Type2)]
 }

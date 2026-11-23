@@ -12,7 +12,7 @@ abstract 0..* Person 0..* {
       [this.spouse.dref != this.parent.parent]
     }
     0..* divorced 0..1 {}
-    [(((#this.married) >= 1) || ((#this.divorced) >= 1)) => (this.parent.age.dref >= 5)]
+    [((some this.married) || (some this.divorced)) => (this.parent.age.dref >= 5)]
   }
   0..* childs -> Person 0..* {
     [this.parent in this.dref.parents.dref]

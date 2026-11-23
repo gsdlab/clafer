@@ -3,7 +3,7 @@
   0..* month -> Month 1..1 = June {}
   0..* midYearReview__chair -> Member 1..1 = Steven {}
   0..* midYearReview__room -> Room 1..1 = C {}
-  [(#this.onlineParticipant) >= 1]
+  [some this.onlineParticipant]
 }
 0..* Steven : Member 1..1 {}
 0..* C : Room 1..1 {
@@ -12,7 +12,7 @@
 }
 0..* ondemandMeeting : Meeting 1..1 {
   0..* ondemandMeeting__chair -> Member 1..1 = Joanna {}
-  [(#this.onlineParticipant) = 0]
+  [no this.onlineParticipant]
   0..* ondemandMeeting__room -> Room 1..1 = D {}
 }
 0..* Joanna : Member 1..1 {}
@@ -28,7 +28,7 @@ abstract 0..* Meeting 0..* {
   0..* Meeting__room -> Room 1..1 {
     [this.dref.capacity.dref >= ((#this.parent.participant) + 1)]
   }
-  [((#this.onlineParticipant) >= 1) => ((#this.Meeting__room.dref.Room__audioConferencing) >= 1)]
+  [(some this.onlineParticipant) => (some this.Meeting__room.dref.Room__audioConferencing)]
 }
 enum Month = June | July
 abstract 0..* Member 0..* {}

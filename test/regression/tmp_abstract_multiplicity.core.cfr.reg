@@ -3,8 +3,8 @@ abstract 0..* Tools 0..* {}
 [((#Tools) >= 3) && ((#Tools) <= 6)] // abstract multiplicity, tmp_abstract_multiplicity.cfr:5:1
 0..* hammer : Tools 0..* {}
 0..* saw : Tools 0..4 {}
-[(!(previous ((#root) >= 1))) => (((#hammer) = 3) && ((#saw) = 0))]
-[(!(previous ((#root) >= 1))) => (X ((#saw) = 4))]
+[(!(previous (some root))) => (((#hammer) = 3) && (no saw))]
+[(!(previous (some root))) => (X ((#saw) = 4))]
 
 assert [G (((#Tools) >= 3) && ((#Tools) <= 6))]
-assert [(!(previous ((#root) >= 1))) => (X ((#hammer) <= 2))]
+assert [(!(previous (some root))) => (X ((#hammer) <= 2))]

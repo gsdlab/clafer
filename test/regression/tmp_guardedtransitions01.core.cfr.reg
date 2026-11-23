@@ -2,22 +2,22 @@
 0..* signal 0..1 {}
 1..1 light 1..1 {
   0..* red 0..1 {
-    [(((#this) >= 1) && ((#signal) >= 1)) => (X ((#this.parent.green) >= 1))] // transition, tmp_guardedtransitions01.cfr:7:13
+    [((some this) && (some signal)) => (X (some this.parent.green))] // transition, tmp_guardedtransitions01.cfr:7:13
   }
   0..* green 0..1 {
-    [(((#this) >= 1) && ((#signal) = 0)) => (((#this) >= 1) U ((#this.parent.red) >= 1))] // transition, tmp_guardedtransitions01.cfr:8:5
+    [((some this) && (no signal)) => ((some this) U (some this.parent.red))] // transition, tmp_guardedtransitions01.cfr:8:5
   }
-  [(!(previous ((#this) >= 1))) => ((#this.red) >= 1)] // initial, tmp_guardedtransitions01.cfr:7:5
+  [(!(previous (some this))) => (some this.red)] // initial, tmp_guardedtransitions01.cfr:7:5
 }
 1..1 door 1..1 {
   0..* closed 0..1 {}
   0..* opened 0..1 {}
-  [(((#this.closed) >= 1) && ((#signal) >= 1)) => (X ((#this.opened) >= 1))] // transition, tmp_guardedtransitions01.cfr:17:7
-  [(((#this.opened) >= 1) && ((#signal) = 0)) => ((((#this) >= 1) && ((#this.opened) >= 1)) U ((#this.closed) >= 1))] // transition, tmp_guardedtransitions01.cfr:18:7
-  [(!(previous ((#this) >= 1))) => ((#this.closed) >= 1)] // initial, tmp_guardedtransitions01.cfr:15:5
+  [((some this.closed) && (some signal)) => (X (some this.opened))] // transition, tmp_guardedtransitions01.cfr:17:7
+  [((some this.opened) && (no signal)) => (((some this) && (some this.opened)) U (some this.closed))] // transition, tmp_guardedtransitions01.cfr:18:7
+  [(!(previous (some this))) => (some this.closed)] // initial, tmp_guardedtransitions01.cfr:15:5
 }
 
-assert [(((#light.red) >= 1) && ((#signal) >= 1)) => (X ((#light.green) >= 1))]
-assert [(((#light.green) >= 1) && ((#signal) = 0)) => (F ((#light.red) >= 1))]
-assert [(((#door.closed) >= 1) && ((#signal) >= 1)) => (X ((#door.opened) >= 1))]
-assert [(((#door.opened) >= 1) && ((#signal) = 0)) => (F ((#door.closed) >= 1))]
+assert [((some light.red) && (some signal)) => (X (some light.green))]
+assert [((some light.green) && (no signal)) => (F (some light.red))]
+assert [((some door.closed) && (some signal)) => (X (some door.opened))]
+assert [((some door.opened) && (no signal)) => (F (some door.closed))]
