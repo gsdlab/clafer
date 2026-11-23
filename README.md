@@ -226,7 +226,7 @@ Common flags:
                                           'clafer -m clafer' prints it, with
                                           every name a UID and every card
                                           written out, and its scopes in its
-                                          scope file. Shorthand for -f -k -l
+                                          scope file. Shorthand for -f -l
                                           --ss=none.
      --core                               In 'clafer' and 'json' modes, print
                                           the explicit core model and its IR,
@@ -249,8 +249,11 @@ Common flags:
                                           model.cfr:12:1' in the explicit core
                                           model, which compiles to the same
                                           core without them.
-  -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' mode only).
+  -k --keep-unused                        Keep the abstract clafers that
+                                          nothing needs in the Alloy and Choco
+                                          outputs, which leave them out to
+                                          solve less; the explicit models and
+                                          the JSON output always keep them.
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes, and
                                           exit with 1 if a tool rejects one.
@@ -396,7 +399,7 @@ The outputs write the UIDs in the form their language allows: the Alloy output r
 
 ### Explicit models
 
-`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -k -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
 
 `-m clafer --core` writes the explicit core model, what the backends solve, to `model.core.cfr` (and `model.core.cfr-scope`); its first line, `//# OPTIONS --explicit --core`, makes it compile to itself, also without `--core` on the command line. With `--record-provenance`, it has the origin of each lowered clafer and constraint as a comment, e.g., `// final, model.cfr:56:5` ([doc/rich-and-core-explicit.md](doc/rich-and-core-explicit.md)).
 

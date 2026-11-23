@@ -772,6 +772,30 @@ case_RealsPrinted = do
       y <- explicit core' (lines x)
       x == y @? ("Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y)
 
+-- | An abstract clafer that nothing needs stays in both explicit models and the JSON IR, which
+--   print the model as written; the Alloy and Choco outputs leave it out to solve less, unless
+--   it is kept (-k).
+case_UnusedAbstractsKept :: Assertion
+case_UnusedAbstractsKept = do
+    let model = unlines [ "abstract Unused", "    x ?", "abstract Base", "b : Base" ]
+        output keep core' mode' = case compileOneFragment defaultClaferArgs{mode = [mode'], core = core', keep_unused = keep} model of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup mode' r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has keep core' mode' expected = do
+            x <- output keep core' mode'
+            (expected `isInfixOf` x) == True @? (show (mode', core', keep) ++ ": " ++ expected ++ " not in\n" ++ x)
+        lacks keep mode' unexpected = do
+            x <- output keep False mode'
+            not (unexpected `isInfixOf` x) @? (show (mode', keep) ++ ": " ++ unexpected ++ " in\n" ++ x)
+    has False False Clafer "abstract 0..* Unused 0..* {\n  0..* x 0..1 {}\n}"
+    has False True Clafer "abstract 0..* Unused 0..* {\n  0..* x 0..1 {}\n}"
+    has False False JSON "Unused"
+    has False True JSON "Unused"
+    lacks False Alloy "Unused"
+    lacks False Choco "Unused"
+    has True False Alloy "abstract sig Unused"
+    has True False Choco "Unused"
+
 -- | The JSON IR is the rich IR, or with --core the core IR that the backends get.
 case_JsonRichAndCore :: Assertion
 case_JsonRichAndCore = do

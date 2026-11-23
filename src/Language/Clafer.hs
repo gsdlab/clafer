@@ -621,8 +621,11 @@ generate =
       -- the core of the model, with the bounds of all the abstract clafers as constraints (#129),
       -- since the backends read the multiplicity of a clafer as the number of its own instances
       semantics' = if staticClaferSubset then Static else Temporal
-      coreModule = lowerAbstractBounds AllBounds $ lowerToCore semantics' iModule
-      chocoModule = lowerAbstractBounds AllBounds $ lowerToCore Static iModule
+      -- the model that the solvers get: without the abstract clafers that nothing needs, unless
+      -- they are kept (-k), an optimization for solving, which the explicit models do not make
+      solvedModule = if keep_unused cargs then iModule else removeUnusedAbstracts iModule
+      coreModule = lowerAbstractBounds AllBounds $ lowerToCore semantics' solvedModule
+      chocoModule = lowerAbstractBounds AllBounds $ lowerToCore Static solvedModule
       -- the explicit core keeps the multiplicities of the nested abstract clafers
       explicitCore = lowerAbstractBounds TopLevelBounds $ lowerToCore semantics' iModule
       -- the explicit model and the JSON IR keep the modeling intent; with --core, the explicit
@@ -633,7 +636,9 @@ generate =
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
-      scopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts iModule
+      -- the scopes of the solvers, and of all the clafers for the scope file of the explicit model
+      scopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts solvedModule
+      explicitScopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts iModule
       -- the scopes are used by the Alloy and Choco outputs only
       scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
                       then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
@@ -661,8 +666,8 @@ generate =
                     -- the static clafers come from the rich IR, whose finality modifiers the core
                     -- has as constraints
                     -- the literals of the enumerations, which the core has as clafers
-                    literalsA = map (\u -> Map.findWithDefault u u names) $ enumLiterals iModule
-                    staticsA = let (cs, rs) = staticClafers iModule; rename u = Map.findWithDefault u u names in (map rename cs, map rename rs)
+                    literalsA = map (\u -> Map.findWithDefault u u names) $ enumLiterals solvedModule
+                    staticsA = let (cs, rs) = staticClafers solvedModule; rename u = Map.findWithDefault u u names in (map rename cs, map rename rs)
                     alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats
                  in
@@ -718,13 +723,13 @@ generate =
                   CompilerResult {
                    -- the explicit core model has an extension of its own
                    extension = if core cargs then "core.cfr" else "des.cfr",
-                   outputCode = fst $ genExplicitModule (core cargs) (originPosition $ inputFiles env) (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                   outputCode = fst $ genExplicitModule (core cargs) (originPosition $ inputFiles env) (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) explicitScopes (minint cargs, maxint cargs) (decimal_digits cargs)
                                   (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
                    stringMap = Map.empty,
-                   scopesList = scopes
+                   scopesList = explicitScopes
                   }) ]
           else []
         )
@@ -826,8 +831,7 @@ analyze args' iModule = do
     _ -> return ()
   (rTree, genv) <- liftError $ resolveModule args' iModule
   let tTree = transModule rTree
-  -- the per-instance := of the abstract clafers, before the optimizer removes the ones that
-  -- nothing extends (#126)
+  -- the per-instance := of the abstract clafers, also of the ones that nothing extends (#126)
   let unsupportedValues = unsupportedInitialValues tTree
   unless (null unsupportedValues) $ throwErrs unsupportedValues
   return (optimizeModule args' (tTree, genv), genv, au)

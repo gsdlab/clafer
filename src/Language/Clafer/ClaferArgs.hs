@@ -92,10 +92,10 @@ clafer = ClaferArgs {
   new_layout          = def &= help "Use new fast layout resolver (experimental)." &= name "nl",
   check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
   skip_resolver       = def &= help "The names of the clafers are their UIDs, as in an explicit model: skip renaming them. Names must be unique; they are still resolved and checked." &= name "f",
-  explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -k -l --ss=none." &= explicit &= name "explicit",
+  explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -l --ss=none." &= explicit &= name "explicit",
   core                = def &= help "In 'clafer' and 'json' modes, print the explicit core model and its IR, which the backends solve: the enumerations, initializers, behavioral patterns and transitions, which the explicit model keeps, lowered to clafers, constraints and LTL operators. The explicit core model is written to '.core.cfr'; its first line, '//# OPTIONS --explicit --core', makes it compile to itself." &= explicit &= name "core",
   record_provenance   = def &= help "With --core, in 'clafer' and 'json' modes, record the origin of each clafer and constraint that a lowering makes: the rich construct, and its position as in the messages but with the file name only, e.g., '// final, model.cfr:56:5' or '// enum, model.cfr:12:1' in the explicit core model, which compiles to the same core without them." &= explicit &= name "record-provenance",
-  keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
+  keep_unused         = def &= help "Keep the abstract clafers that nothing needs in the Alloy and Choco outputs, which leave them out to solve less; the explicit models and the JSON output always keep them." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
   validate            = def &= help "Validate outputs of all modes, and exit with 1 if a tool rejects one. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, dot for graphs, and clafer itself for explicit models, which must compile to themselves. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
   tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
@@ -178,7 +178,7 @@ mergeArgs a1 a2  = withExplicit ClaferArgs
 --   and its scope file already have everything written out.
 withExplicit :: ClaferArgs -> ClaferArgs
 withExplicit args'
-  | explicit_model args' = args' { skip_resolver = True, keep_unused = True, no_layout = True, scope_strategy = None }
+  | explicit_model args' = args' { skip_resolver = True, no_layout = True, scope_strategy = None }
   | otherwise            = args'
 
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs

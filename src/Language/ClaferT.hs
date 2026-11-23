@@ -145,7 +145,7 @@ getIr = do
 makeEnv :: ClaferArgs -> ClaferEnv
 makeEnv args' =
   ClaferEnv
-    { args = args''
+    { args = args'
     , modelFrags = []
     , cAst = Nothing
     , cIr = Nothing
@@ -154,12 +154,6 @@ makeEnv args' =
     , otherTokens = []
     , inputFiles = []
     }
-  where
-    args'' = if (CVLGraph `elem` (mode args') ||
-                 Html `elem` (mode args') ||
-                 Graph `elem` (mode args'))
-              then args'{keep_unused=True}
-              else args'
 
 -- | Monad for using Clafer.
 type ClaferM = ClaferT Identity

@@ -38,16 +38,15 @@ import Language.Clafer.Front.AbsClafer (Span(..))
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (ClaferErr, CErr(..))
 
--- | Apply optimizations for unused abstract clafers and inheritance flattening. The abstract
--- clafers that nothing needs are removed, unless they are kept (@-k@); the others keep their
--- multiplicities as written. Whether an abstract clafer that nothing extends has instances is the
--- choice of a backend ('zeroUnusedAbstracts').
+-- | Compute the global cardinalities, and flatten the inheritance with @--flatten-inheritance@.
+-- The module keeps every clafer, with its multiplicity as written: removing the abstract clafers
+-- that nothing needs ('removeUnusedAbstracts') and giving those that nothing extends no instances
+-- ('zeroUnusedAbstracts') are optimizations for solving, which the backends choose.
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
-  imodule{_mDecls = em $ rm $ map (optimizeElement (1, 1)) $
+  imodule{_mDecls = em $ map (optimizeElement (1, 1)) $
                    markTopModule $ _mDecls imodule}
   where
-  rm = if keep_unused args then id else remUnusedAbs
   em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
@@ -73,6 +72,12 @@ multExInt _  0 = 0
 multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
+
+-- | The module without the abstract clafers that nothing needs ('remUnusedAbs'), for a backend:
+-- they have no instances, so the meaning is the same, and the solver has less to encode. The
+-- explicit models keep them, since they print the model as written.
+removeUnusedAbstracts :: IModule -> IModule
+removeUnusedAbstracts imodule = imodule{_mDecls = remUnusedAbs $ _mDecls imodule}
 
 -- | The module in which the top-level abstract clafers that no concrete clafer extends have no
 -- instances (@0..0@), for a backend that needs it: in Alloy, an abstract signature that nothing

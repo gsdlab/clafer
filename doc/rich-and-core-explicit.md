@@ -174,12 +174,16 @@ an obligation, so only that one is lowered, to the global `#` constraint. The ba
 compiler read the multiplicity of each clafer as the number of its own instances, so they get
 the nested bound as a constraint too, `#this.Rack` in the parent.
 
-**The optimizer does not set `0..0`.** The written multiplicity is the only one of an abstract
-clafer in the IR, as the semantics' `authoredMultiplicity` is, and the explicit models and the
-JSON output keep it. Whether an abstract clafer that nothing extends has instances is the
-backend's choice: an Alloy abstract signature without extensions has atoms of its own, so the
-Alloy backend gives such a clafer none (`Optimizer.zeroUnusedAbstracts`), while chocosolver's
-abstract clafers have only the instances of their subclafers.
+**The unused abstract clafers stay.** Both explicit models represent the model as written, so
+the optimizer neither removes an abstract clafer that nothing needs nor changes its
+multiplicity: the written multiplicity is the only one of an abstract clafer in the IR, as the
+semantics' `authoredMultiplicity` is, and the explicit models and the JSON output keep it.
+Removing such a clafer and giving it no instances are optimizations for solving, the backends'
+choice. The Alloy and Choco outputs leave out the abstract clafers that nothing needs, unless
+`-k` keeps them (`Optimizer.removeUnusedAbstracts`). An Alloy abstract signature without
+extensions has atoms of its own, so the Alloy backend gives an abstract clafer that nothing
+extends no instances (`Optimizer.zeroUnusedAbstracts`), while chocosolver's abstract clafers
+have only the instances of their subclafers.
 
 ## The pipeline
 

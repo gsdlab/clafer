@@ -1,5 +1,7 @@
 SUITE_DIR = positive
 REG_DIR = regression
+# -k: the Alloy and Choco outputs keep the abstract clafers that nothing needs, so that their
+# encoding is tested too; the default, which leaves them out, is test case UnusedAbstractsKept
 CLAFER = ../clafer -s -v -k --tooldir=..
 # the number of models compiled and validated at a time, e.g., make test JOBS=4
 JOBS ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
