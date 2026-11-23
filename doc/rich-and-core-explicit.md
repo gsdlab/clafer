@@ -362,7 +362,8 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
   `test/regression/*.des.cfr.reg` and `*.core.cfr.reg`, so a change of a lowering shows in the
   core directly. The models with `real` and `double` are among them: both explicit models
   print them, although no backend solves them (test case `RealsPrinted`), a double literal
-  with its exponent, e.g., `1.2e2`, as its token requires.
+  with its exponent, e.g., `1.2e2`, as its token requires. The scope file has no ranges for
+  them, since no backend uses one.
 - Before 0.6.0 lowered the temporal modifiers and the multiplicities of abstract clafers, the
   core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
   printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),
