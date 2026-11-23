@@ -70,7 +70,8 @@ Clafer papers and the formalization build, whose meaning a reader is assumed to 
   - navigation and the set operators
   - membership and the comparisons
   - all the connectives: `!`, `&&`, `||`, `=>`, `<=>`, `xor`, `if then else`
-  - the quantifiers and `let`
+  - the quantifiers, over variables (`all x : X | p`) and over a set (`some x`, `no x`,
+    `lone x`, `one x`), and `let`
   - `#`, `sum`, `product`, `min`, `max`
 - **Linear temporal logic with past, as in Alloy 6 and nuXmv:** `F`, `G`, `X`, `U`, `W`,
   `previous`, `once`, `historically`, `since`, `triggered`.
@@ -228,8 +229,8 @@ Consumers outside the compiler read either level:
 - The JSON output of the rich IR (`-m json`) has the operators of the rich constructs, the
   initializers and the `_enum` modifier. A consumer that does not read them uses
   `-m json --core`.
-- chocosolver's explicit parser does not yet read the rich constructs (`=`, `:=`, the
-  patterns, the transitions), so it reads the static core.
+- chocosolver reads both explicit models of a static model and lowers the rich one with its own
+  port of this lowering (`ToCore`), which prints the same core; it refuses temporal models.
 
 ## The rich constructs and their lowering
 
@@ -335,7 +336,7 @@ the one in its file, also in a model with imports. The file is its name only, wi
 folders, which depend on where the compiler runs.
 
 ```
-[(some Tools) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
+[((#Tools) >= 1) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
 abstract 0..* Color 0..* {} // enum, model.cfr:1:1
 0..* a 0..1 {
   0..* b 0..1 {
@@ -370,8 +371,9 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
   positive suite).
 - Both explicit models print the quantifiers over a set as written, `some x`, `no x`,
   `lone x`, `one x`, never as the size of the set (`(#x) >= 1`, which 0.5.7 and 0.5.8
-  printed): `some x` needs one element of `x`, not its count, and a backend can answer it so.
-  Read back, it is the same quantifier, so the lowering of the rich model, e.g., `no x` for
+  printed). They are quantifiers of the vocabulary, so the core keeps them, and nothing inside
+  the vocabulary is rewritten; a backend can also answer `some x` from one element of `x`,
+  without counting. Read back, it is the same quantifier, so the lowering of the rich model, e.g., `no x` for
   the negation of `some x` in a pattern, is the lowering of the model.
 - Before 0.6.0 lowered the temporal modifiers and the multiplicities of abstract clafers, the
   core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
@@ -390,15 +392,110 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
 - `RichAndCoreExplicit` and `CoreInitializers` (test-suite) check the rich constructs in both
   models.
 
-## Open points
+## The print of the core
 
-**The print of the core is a contract.** The planned Java lowering must print the same core as
-`Core.hs`, so these are to be written down:
+The explicit core is compared as text. A second lowering, chocosolver's `ToCore` today and the
+Java frontend's later, must print the core that `Core.hs` prints, character for character, with
+the provenance comments. These rules fix that text. The rest of the line, i.e., the clafers
+with their group cardinalities, super clafers, references and multiplicities, is the explicit
+form's (`Language.Clafer.Generator.Explicit`), the same in the rich model. The core starts with
+`//# OPTIONS --explicit --core`, and ` --tl=N` for a temporal model.
 
-- the names of the generated clafers and quantifier variables
-- the place and order of the lowered elements; settled: both models print the declarations
-  where they were written (at the top level the clafers, enumerations and constraints, in a
-  clafer its constraints and subclafers), and a constraint that a lowering makes after its
-  clafer
-- the parentheses
-- the provenance comments
+### What a lowering writes
+
+- **The vocabulary as written.** Nothing inside the vocabulary is rewritten, by a lowering or
+  by the printer: a connective, a quantifier or a temporal operator is printed as the rich
+  model has it. In particular `some x`, `no x`, `lone x` and `one x` are quantifiers of the
+  core, and are printed as such, never as the size of the set (`(#x) >= 1`, as 0.5.7 and 0.5.8
+  printed them).
+- **The definition, and nothing else.** A lowering writes the formula of its definition (the
+  tables of [the rich constructs](#the-rich-constructs-and-their-lowering)), with the operators
+  of the definition, nested as the definition nests them, e.g., `(a && b) && c` for the
+  `q ∧ ¬r ∧ ◇r` of a pattern, which is left-associative.
+- **One simplification.** Where a pattern negates an argument `some p`, it writes `no p`, as the
+  desugarer writes `!(some p)`; any other negated argument is `!p`. The anchors write their
+  guards in full: `!(previous (some this))`, `(some this) && (X (no this))`.
+
+### Names
+
+- **No generated clafers.** A lowering makes only constraints. The clafers of an enumeration
+  keep the names of the enumeration and its literals.
+- **Local variables** are named after the clafer they range over: its name (not its UID),
+  `_`, and the smallest `k ≥ 1` such that no clafer of the model has that name or UID and no
+  quantifier of the model declares it, e.g., `xs_1`. The names taken are those of the whole
+  model before the lowering, so two lowerings may give the same name in different
+  constraints.
+  - `final`, `finalref`: the variable over the instances is the first free name, e.g., `a_1`.
+  - `finalref`, `finaltarget`: the variable over the targets is the first free name other than
+    that one, e.g., `motor3_2`, also when the constraint has no variable over the instances.
+  - `:= each` in a static model, `:=` with temporal operators: the first free name.
+- **The context** is `this`, `this.parent` its parent, and `root` the context of a top-level
+  anchor. The instances of a top-level clafer are written by its UID, `x`, not `root.x`.
+
+### Place and order
+
+- **The declarations where they were written:** at the top level the clafers, enumerations
+  and constraints, in a clafer the constraints of its reference first, then its constraints
+  and subclafers. A constraint that contains a pattern, a transition or an anchor stays where
+  it is, lowered in place, as do the assertions and objectives.
+- **An enumeration** is its abstract clafer followed by a clafer `1..1` for each literal, in the
+  order of the literals, at the place of the enumeration.
+- **Right after a clafer `x`, in its parent** (at the top level for a top-level `x`): the
+  bound of `x`, if `x` is a top-level abstract clafer with a multiplicity, then the constraints
+  of the initializers of `x` that the parent's context needs: `=`, `:=` in a static model,
+  `:= together`, and a per-instance `:=` with temporal operators in a temporal model.
+- **At the end of the block of `x`**, after its written constraints and subclafers and the
+  constraint of its own transition (`on --> off`), in this order:
+  1. a per-instance `:=` of a temporal model whose value has no temporal operators;
+  2. the finality constraints: of `final` the two constraints of the instances (`X`, then
+     `previous`), then the one of the references (`final` with a reference, or `finalref`),
+     then the two of `finaltarget` (`X`, then `previous`);
+  3. one `initial` constraint for each `initial` subclafer of `x`, in the order of the
+     subclafers.
+- **The top level** takes the `initial` constraints of the top-level clafers at its end, before
+  the objectives and the assertions.
+
+### Parentheses
+
+- A constraint, an assertion or an objective is `[e]`, `assert [e]` or `<< max e >>`, with `e`
+  not in parentheses.
+- An operand is in parentheses unless it is an atom: a name, `this`, a literal, `noclafer`,
+  a navigation (`a.b`, `a.dref`, `a.parent`) or `concat(a, b)`. So `(some x) && (no y)`,
+  `!(previous (some this))`, `#this.x`, `#(a ++ b)` and `(#Tools) >= 3`.
+- Every operator is printed with its operands, never as a chain: `a && b && c` of the IR is
+  `(a && b) && c` or `a && (b && c)`, as it is nested.
+- The body of a quantifier with declarations is not in parentheses: `all x_1 : xs | x_1.dref = 1`,
+  `all a_1 : this | X (a_1 in a)`; nested quantifiers follow each other,
+  `all c : this | all t : c.dref | …`.
+- The word operators (`F`, `G`, `X`, `previous`, `once`, `historically`, the quantifiers) have
+  a space before their operand, `!` and `#` none. The negation of a constant number is `-(1)`.
+
+### Provenance comments
+
+With `--record-provenance`, each clafer and constraint that a lowering made ends with
+` // construct, file:line:column`, or ` // construct` when the construct has no position (see
+[Provenance](#provenance)). Nothing else has a comment.
+
+- **The constructs** are `enum`, `=`, `:=`, `:= each`, `:= together`, `initial`, `final`,
+  `finalref`, `finaltarget`, `abstract multiplicity`, `transition` (for each of the four
+  transitions) and the patterns with their scopes (`never`, `never before`, `always between`,
+  `s must precede p` is `precede`, …). `:= each` and `:= together` are the clocks as written:
+  from a model, `:=` when the clock was not written; from a rich explicit model, which writes
+  every clock, always the clock.
+- **The position** is the one of the rich construct:
+  - of the clafer for `enum` (of each literal for the literal's clafer), the initializers,
+    the finality modifiers and the abstract multiplicity;
+  - of the `initial` clafer, although the constraint is in its parent;
+  - of the first pattern or transition of the constraint, in preorder, for a constraint with
+    patterns or transitions. The position of an infix pattern or transition (`s must precede p`,
+    `a --> b`) is the one of its first operand, recursively, without the parentheses.
+- **The anchors are not marked:** a constraint that only an `initially` or a `finally` changed
+  has no comment.
+- `file` is the name of the file without its folders, `line` the line in that file, `column`
+  from 1. So the comments of the core of `P.des.cfr` have the positions in `P.des.cfr`, and
+  check 2 compares without them.
+
+[The checks](#checks) hold the print to these rules: each core of the suite compiles to itself,
+and the core of each rich model is the core of the model. chocosolver's `ToCoreTest` holds its
+lowering to the same text: the core of each rich model is the `*.core.cfr.reg` without the
+comments, and each core lowered again prints itself, with them.
