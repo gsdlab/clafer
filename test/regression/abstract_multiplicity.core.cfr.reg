@@ -4,8 +4,7 @@ abstract 0..* Tools 0..* {}
 0..* hammer : Tools 1..2 {}
 0..* saw : Tools 0..5 {}
 abstract 0..* Bench 0..* {
-  [(#this.Rack) <= 1] // abstract multiplicity, abstract_multiplicity.cfr:12:5
-  abstract 0..* Rack 0..* {}
+  abstract 0..* Rack 0..1 {}
 }
 0..* Workbench : Bench 2..2 {
   0..* big : Rack 0..1 {}

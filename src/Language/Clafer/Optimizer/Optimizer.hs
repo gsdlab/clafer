@@ -38,13 +38,16 @@ import Language.Clafer.Front.AbsClafer (Span(..))
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (ClaferErr, CErr(..))
 
--- | Apply optimizations for unused abstract clafers and inheritance flattening
+-- | Apply optimizations for unused abstract clafers and inheritance flattening. The abstract
+-- clafers that nothing needs are removed, unless they are kept (@-k@); the others keep their
+-- multiplicities as written. Whether an abstract clafer that nothing extends has instances is the
+-- choice of a backend ('zeroUnusedAbstracts').
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
   imodule{_mDecls = em $ rm $ map (optimizeElement (1, 1)) $
                    markTopModule $ _mDecls imodule}
   where
-  rm = if keep_unused args then makeZeroUnusedAbs else remUnusedAbs
+  rm = if keep_unused args then id else remUnusedAbs
   em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
@@ -71,6 +74,12 @@ multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
 
+-- | The module in which the top-level abstract clafers that no concrete clafer extends have no
+-- instances (@0..0@), for a backend that needs it: in Alloy, an abstract signature that nothing
+-- extends has atoms of its own.
+zeroUnusedAbstracts :: IModule -> IModule
+zeroUnusedAbstracts imodule = imodule{_mDecls = makeZeroUnusedAbs $ _mDecls imodule}
+
 -- | Abstract clafers which no concrete clafer extends get no instances.
 makeZeroUnusedAbs :: [IElement] -> [IElement]
 makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (getIClafer x){_card = Just (0, 0)} else x) decls'
@@ -82,9 +91,9 @@ makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (get
   getIClafer _ = error "Function makeZeroUnusedAbs from Optimizer expected paramter of type IClafer got a differnt IElement" --This should never happen
 
 -- | Removes the abstract clafers which no concrete clafer extends, unless a
--- reference or a constraint names them: those are kept, without instances.
+-- reference or a constraint names them, or they have a lower bound: those are kept.
 remUnusedAbs :: [IElement] -> [IElement]
-remUnusedAbs decls' = makeZeroUnusedAbs $ decls' \\ unneededAbs
+remUnusedAbs decls' = decls' \\ unneededAbs
   where
   unneededAbs = map IEClafer $ findUnneededAbs clafers $ neededRoots decls'
   clafers     = toClafers decls'

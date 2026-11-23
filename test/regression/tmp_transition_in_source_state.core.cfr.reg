@@ -3,7 +3,7 @@
 1..1 sm 1..1 {
   [all sm_1 : this | X (sm_1 in sm)] // final, tmp_transition_in_source_state.cfr:7:1
   [all sm_1 : this | (previous ((#root) >= 1)) => (previous (sm_1 in sm))] // final, tmp_transition_in_source_state.cfr:7:1
-  [initially ((#this.a) >= 1)] // initial, tmp_transition_in_source_state.cfr:8:3
+  [(!(previous ((#this) >= 1))) => ((#this.a) >= 1)] // initial, tmp_transition_in_source_state.cfr:8:3
   0..* a 0..1 {
     [((#go) >= 1) => (X ((#this.parent.b) >= 1))] // transition, tmp_transition_in_source_state.cfr:9:7
   }

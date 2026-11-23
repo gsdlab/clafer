@@ -1,9 +1,9 @@
 //# OPTIONS --explicit --core --tl=10
-[initially (((#Box) >= 1) && (X ((#Box) = 0)))]
+[(!(previous ((#root) >= 1))) => (((#Box) >= 1) && (X ((#Box) = 0)))]
 0..* Box 0..1 {
   [all x_1 : this.x | (!(previous (x_1 in this.x))) => (x_1.dref = (if (X ((#this.flag) >= 1)) then 1 else 2))] // :=, tmp_initialValue07.cfr:9:5
   0..* flag 0..1 {}
   0..* x -> int 1..1 {}
 }
 
-assert [initially (Box.x.dref = 2)]
+assert [(!(previous ((#root) >= 1))) => (Box.x.dref = 2)]

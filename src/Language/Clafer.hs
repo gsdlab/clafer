@@ -135,7 +135,7 @@ import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
-import           Language.Clafer.Intermediate.AbstractMultiplicity (authoredBounds, lowerAbstractBounds, withAuthoredBounds)
+import           Language.Clafer.Intermediate.AbstractMultiplicity (Bounds (..), lowerAbstractBounds)
 import           Language.Clafer.Intermediate.Core (Semantics (..), enumLiterals, forgetOrigins, lowerToCore)
 import           Language.Clafer.Intermediate.Finality (staticClafers)
 import           Language.Clafer.Intermediate.InitializerChecks
@@ -618,24 +618,22 @@ generate =
       (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
-      -- the core of the model, which the backends get; Choco solves static models only, where := is =
-      -- the bounds of the abstract clafers, as written (#129): the optimizer changes the IR's
-      bounds = authoredBounds ast'
-      coreModule = lowerAbstractBounds bounds $ lowerToCore (if staticClaferSubset then Static else Temporal) iModule
-      chocoModule = lowerAbstractBounds bounds $ lowerToCore Static iModule
-      -- the explicit model and the JSON IR keep the modeling intent; their core (--core) is
-      -- what the backends get
+      -- the core of the model, with the bounds of all the abstract clafers as constraints (#129),
+      -- since the backends read the multiplicity of a clafer as the number of its own instances
+      semantics' = if staticClaferSubset then Static else Temporal
+      coreModule = lowerAbstractBounds AllBounds $ lowerToCore semantics' iModule
+      chocoModule = lowerAbstractBounds AllBounds $ lowerToCore Static iModule
+      -- the explicit core keeps the multiplicities of the nested abstract clafers
+      explicitCore = lowerAbstractBounds TopLevelBounds $ lowerToCore semantics' iModule
+      -- the explicit model and the JSON IR keep the modeling intent; with --core, the explicit
+      -- core
       explicitModule
-        | core cargs = unrestrictAbstracts $ if record_provenance cargs then coreModule else forgetOrigins coreModule
-        | otherwise = withAuthoredBounds bounds iModule
-      -- the core has the bounds of the abstract clafers as constraints, so an abstract clafer is
-      -- unrestricted, also one that the optimizer gave no instances (0..0), which would be read
-      -- as a bound when the core is compiled again
-      unrestrictAbstracts = transformOn biplate $ \c -> if _isAbstract c then c{_card = Just (0, -1)} else c
+        | core cargs = if record_provenance cargs then explicitCore else forgetOrigins explicitCore
+        | otherwise = iModule
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
-      scopes = getScopeStrategy (scope_strategy cargs) iModule
+      scopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts iModule
       -- the scopes are used by the Alloy and Choco outputs only
       scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
                       then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
@@ -653,7 +651,7 @@ generate =
               then
                  let
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
-                    (imod,strMap) = astrModule coreModule
+                    (imod,strMap) = astrModule $ zeroUnusedAbstracts coreModule
                     (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule staticsA literalsA, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
                     -- the clafers whose UIDs cannot be Alloy names get names of their own
                     names = alloyNames imod
@@ -714,10 +712,9 @@ generate =
           else []
         )
         -- result for Clafer: the explicit form of the model, static or temporal; chocosolver
-        -- solves the static ones
+        -- solves the static ones. Real and double, which no backend solves, are printed as written.
         ++ (if Mode.Clafer `elem` modes
-          then if hasNoRealLiterals && hasNoReferenceToReal
-               then [ (Mode.Clafer,
+          then [ (Mode.Clafer,
                   CompilerResult {
                    -- the explicit core model has an extension of its own
                    extension = if core cargs then "core.cfr" else "des.cfr",
@@ -728,12 +725,6 @@ generate =
                    mappingToAlloy = [],
                    stringMap = Map.empty,
                    scopesList = scopes
-                  }) ]
-               else [ (Mode.Clafer,
-                  NoCompilerResult {
-                    reason = "Clafer output unavailable because the model contains: "
-                           ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
-                           ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
                   }) ]
           else []
         )

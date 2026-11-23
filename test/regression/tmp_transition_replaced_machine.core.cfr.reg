@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --core --tl=10
 0..* go 0..1 {}
 1..1 sm 1..1 {
-  [initially ((#this.a) >= 1)] // initial, tmp_transition_replaced_machine.cfr:7:3
+  [(!(previous ((#this) >= 1))) => ((#this.a) >= 1)] // initial, tmp_transition_replaced_machine.cfr:7:3
   0..* a 0..1 {
     [((#go) >= 1) => (X ((#this.parent.b) >= 1))] // transition, tmp_transition_replaced_machine.cfr:8:7
   }

@@ -5,7 +5,7 @@ pred show {}
 one sig root
 { var r_level : set level }
 fact { always (lone root.@r_level) }
-fact { always ((not before some root) implies (no alive_level)) }
+fact { always ((before (some root)) || (no alive_level)) }
 fact { always (eventually (some alive_level)) }
 
 
@@ -17,6 +17,6 @@ sig level
 fun alive_level : set level { root.@r_level }
 fact { always ~@r_level in @p_level }
 
-fact { all self_ : level | always (self_ in alive_level implies ((not before self_ in alive_level) implies ((self_.@level_ref) = 3))) }
+fact { all self_ : level | always (self_ in alive_level implies ((before (some (self_ & alive_level))) || ((self_.@level_ref) = 3))) }
 
 

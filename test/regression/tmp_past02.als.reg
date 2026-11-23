@@ -5,11 +5,11 @@ pred show {}
 one sig root
 { var r_Shift : set Shift }
 fact { always (lone root.@r_Shift) }
-fact { always ((not before some root) implies (some (alive_Shift.@r_Worker).@r_alarm)) }
-fact { always ((not before some root) implies (after (no alive_Shift))) }
-fact { always ((not before some root) implies (after (after ((some alive_Shift.@r_Worker) && (no (alive_Shift.@r_Worker).@r_alarm))))) }
+fact { always ((before (some root)) || (some (alive_Shift.@r_Worker).@r_alarm)) }
+fact { always ((before (some root)) || (after (no alive_Shift))) }
+fact { always ((before (some root)) || (after (after ((some alive_Shift.@r_Worker) && (no (alive_Shift.@r_Worker).@r_alarm))))) }
 
-assert assertAt_18_10 { always ((not before some root) implies (after (after (no (alive_Shift.@r_Worker).@r_warned)))) }
+assert assertAt_18_10 { always ((before (some root)) || (after (after (no (alive_Shift.@r_Worker).@r_warned)))) }
 check assertAt_18_10 for 1 but 10 steps
 
 

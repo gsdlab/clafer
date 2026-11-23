@@ -36,7 +36,7 @@ fun alive_Elevator : set Elevator { root.@r_Elevator }
 fact { always ~@r_Elevator in @p_Elevator }
 
 fact { all self_ : Elevator | always (self_ in alive_Elevator implies (one self_.@r_request)) }
-fact { all self_ : Elevator | always (self_ in alive_Elevator implies ((not before self_ in alive_Elevator) implies (((self_.@r_request).@request_ref) = alive_stop))) }
+fact { all self_ : Elevator | always (self_ in alive_Elevator implies ((before (some (self_ & alive_Elevator))) || (((self_.@r_request).@request_ref) = alive_stop))) }
 fact { all self_ : Elevator | always (self_ in alive_Elevator implies (always ((((self_.@r_request).@request_ref) = alive_up) => (after (((self_.@r_request).@request_ref) = alive_stop))))) }
 
 

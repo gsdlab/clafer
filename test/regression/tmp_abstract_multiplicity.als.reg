@@ -7,13 +7,13 @@ one sig root
 , var r_saw : set saw }
 fact { always (#(root.@r_saw) <= 4) }
 fact { always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6)) }
-fact { always ((not before some root) implies (((#alive_hammer) = 3) && (no alive_saw))) }
-fact { always ((not before some root) implies (after ((#alive_saw) = 4))) }
+fact { always ((before (some root)) || (((#alive_hammer) = 3) && (no alive_saw))) }
+fact { always ((before (some root)) || (after ((#alive_saw) = 4))) }
 
 assert assertAt_12_10 { always (always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6))) }
 check assertAt_12_10 for 1 but 6 Tools, 6 hammer, 4 saw, 10 steps
 
-assert assertAt_13_10 { always ((not before some root) implies (after ((#alive_hammer) <= 2))) }
+assert assertAt_13_10 { always ((before (some root)) || (after ((#alive_hammer) <= 2))) }
 check assertAt_13_10 for 1 but 6 Tools, 6 hammer, 4 saw, 10 steps
 
 

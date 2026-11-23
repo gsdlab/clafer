@@ -5,8 +5,8 @@ pred show {}
 one sig root
 { var r_machine : set machine }
 fact { always (lone root.@r_machine) }
-fact { always ((not before some root) implies (some alive_machine)) }
-fact { always ((not before some root) implies (after (no alive_machine))) }
+fact { always ((before (some root)) || (some alive_machine)) }
+fact { always ((before (some root)) || (after (no alive_machine))) }
 
 
 sig machine

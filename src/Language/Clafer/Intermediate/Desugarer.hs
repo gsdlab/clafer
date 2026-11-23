@@ -28,6 +28,7 @@ module Language.Clafer.Intermediate.Desugarer where
 import Data.Data (Data, cast, gmapQ, gmapT)
 import Data.List (nub)
 import Data.Maybe (fromMaybe, mapMaybe)
+import Numeric (showEFloat, showFFloat)
 import Prelude hiding ((||))
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
@@ -609,9 +610,10 @@ sugarExp' x = case x of
   IClaferId "" id' _ _ -> ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
   IClaferId modName' id' _ _ -> ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
-  IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
+  -- in the forms of the tokens: a double with an exponent, e.g., 1.2e2, and a real without
+  IDouble n -> EDouble noSpan $ PosDouble ((0, 0), showEFloat Nothing n "")
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
-  IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
+  IReal n -> EReal noSpan $ PosReal ((0, 0), showFFloat Nothing n "")
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
   IFunExp op' exps' | op' `elem` richTemporalOps -> sugarRich op' (map sugarExp exps')
   IFunExp op' exps' ->

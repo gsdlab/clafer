@@ -160,7 +160,7 @@ abstract 0..* Client : Node 0..* {}
     [((#this.clientResponse.clientFinished) >= 1) => (X ((#this.serverFinish) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:176:11
     [(((#this.serverFinish) >= 1) && ((#this.serverFinish.serverFinished) = 0)) => (X ((#this.serverFinish) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:188:11
     [((#this.serverFinish.serverFinished) >= 1) => (X ((#this.dataTransfer) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:189:11
-    [initially ((#this.clientHello) >= 1)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:105:9
+    [(!(previous ((#this) >= 1))) => ((#this.clientHello) >= 1)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:105:9
     0..* clientHello 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
       [this.parent.parent.client.dref.send.dref = clientHelloMessage]
@@ -168,7 +168,7 @@ abstract 0..* Client : Node 0..* {}
     }
     1..1 serverResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [initially (((#this.serverHello) >= 1) || ((#this.mismatch) >= 1))]
+      [(!(previous ((#this) >= 1))) => (((#this.serverHello) >= 1) || ((#this.mismatch) >= 1))]
       [(((#this.serverHello) >= 1) && ((#TLSFeatures.annonymousMode) = 0)) => (X ((#this.serverCertificate) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:123:15
       [(((#this.serverHello) >= 1) && ((#TLSFeatures.annonymousMode) >= 1)) => (X ((#this.serverKeyExchange) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:124:15
       [(((#this.serverCertificate) >= 1) && ((#TLSFeatures.clientAuthentication) >= 1)) => (X (((#this.serverKeyExchange) >= 1) || ((#this.certificateRequest) >= 1)))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:129:15
@@ -201,8 +201,8 @@ abstract 0..* Client : Node 0..* {}
     }
     1..1 clientResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [initially (((#TLSFeatures.clientAuthentication) >= 1) => ((#this.clientCertificate) >= 1))]
-      [initially (((#TLSFeatures.clientAuthentication) = 0) => ((#this.clientKeyExchange) >= 1))]
+      [(!(previous ((#this) >= 1))) => (((#TLSFeatures.clientAuthentication) >= 1) => ((#this.clientCertificate) >= 1))]
+      [(!(previous ((#this) >= 1))) => (((#TLSFeatures.clientAuthentication) = 0) => ((#this.clientKeyExchange) >= 1))]
       [(((#this.clientKeyExchange) >= 1) && (((#TLSFeatures.clientAuthentication) >= 1) && ((#this.parent.parent.client.dref.certificate.signing) >= 1))) => (X ((#this.certificateVerify) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:162:15
       [(((#this.clientKeyExchange) >= 1) && (!(((#TLSFeatures.clientAuthentication) >= 1) && ((#this.parent.parent.client.dref.certificate.signing) >= 1)))) => (X ((#this.clientChangeCipherSpec) >= 1))] // transition, tmp_TLSHandshakeProtocol_distributed.cfr:163:15
       0..* clientCertificate 0..1 {
@@ -227,7 +227,7 @@ abstract 0..* Client : Node 0..* {}
       }
     }
     1..1 serverFinish 0..1 {
-      [initially ((#this.serverChangeCipherSpec) >= 1)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:179:13
+      [(!(previous ((#this) >= 1))) => ((#this.serverChangeCipherSpec) >= 1)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:179:13
       0..* serverChangeCipherSpec 0..1 {
         [this.parent.parent.parent.handshakeStatus.dref = initiated]
         [this.parent.parent.parent.server.dref.send.dref = serverChangeCipherSpecMessage]

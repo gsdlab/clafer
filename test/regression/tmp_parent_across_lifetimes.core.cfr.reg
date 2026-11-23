@@ -1,6 +1,6 @@
 //# OPTIONS --explicit --core --tl=10
-[initially ((#box.item) >= 1)]
-[initially (all i : box.item | X (((#(i ** box.item)) = 0) && (X ((#(i ** box.item)) >= 1))))]
+[(!(previous ((#root) >= 1))) => ((#box.item) >= 1)]
+[(!(previous ((#root) >= 1))) => (all i : box.item | X (((#(i ** box.item)) = 0) && (X ((#(i ** box.item)) >= 1))))]
 0..* box 2..2 {
   0..* item 0..1 {}
 }

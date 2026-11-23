@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --core --tl=10
 0..* signal 0..1 {}
 1..1 light 1..1 {
-  [initially ((#this.red) >= 1)] // initial, tmp_guardedtransitions01.cfr:7:5
+  [(!(previous ((#this) >= 1))) => ((#this.red) >= 1)] // initial, tmp_guardedtransitions01.cfr:7:5
   0..* red 0..1 {
     [(((#this) >= 1) && ((#signal) >= 1)) => (X ((#this.parent.green) >= 1))] // transition, tmp_guardedtransitions01.cfr:7:13
   }
@@ -12,7 +12,7 @@
 1..1 door 1..1 {
   [(((#this.closed) >= 1) && ((#signal) >= 1)) => (X ((#this.opened) >= 1))] // transition, tmp_guardedtransitions01.cfr:17:7
   [(((#this.opened) >= 1) && ((#signal) = 0)) => ((((#this) >= 1) && ((#this.opened) >= 1)) U ((#this.closed) >= 1))] // transition, tmp_guardedtransitions01.cfr:18:7
-  [initially ((#this.closed) >= 1)] // initial, tmp_guardedtransitions01.cfr:15:5
+  [(!(previous ((#this) >= 1))) => ((#this.closed) >= 1)] // initial, tmp_guardedtransitions01.cfr:15:5
   0..* closed 0..1 {}
   0..* opened 0..1 {}
 }

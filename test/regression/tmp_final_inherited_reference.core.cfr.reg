@@ -5,7 +5,7 @@ abstract 0..* Engine 0..* {}
 abstract 0..* Car 0..* {
   abstract 0..* engine -> Engine 0..* {}
   1..1 gear 1..1 {
-    [initially ((#this.park) >= 1)] // initial, tmp_final_inherited_reference.cfr:13:9
+    [(!(previous ((#this) >= 1))) => ((#this.park) >= 1)] // initial, tmp_final_inherited_reference.cfr:13:9
     0..* park 0..1 {
       [((#this) >= 1) => (X ((#this.parent.drive) >= 1))] // transition, tmp_final_inherited_reference.cfr:13:17
     }

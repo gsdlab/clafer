@@ -16,6 +16,6 @@ sig x
 fun alive_x : set x { root.@r_x }
 fact { always ~@r_x in @p_x }
 
-fact { all self_ : x | always (self_ in alive_x implies ((not before self_ in alive_x) implies ((self_.@x_ref) = 1))) }
+fact { all self_ : x | always (self_ in alive_x implies ((before (some (self_ & alive_x))) || ((self_.@x_ref) = 1))) }
 
 

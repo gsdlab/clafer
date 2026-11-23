@@ -754,9 +754,23 @@ case_RichAndCoreExplicit = do
     -- the enumeration is final in a temporal model: its literals do not change (#127)
     has True "abstract 0..* Color 0..* {}"
     has True "[all red_1 : this | X (red_1 in red)]"
-    has True "[initially (this.dref = 3)]"
+    has True "[(!(previous ((#this) >= 1))) => (this.dref = 3)]"
     has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
     has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
+
+-- | Real and double, which no backend solves, are printed in the rich and the core explicit
+--   model, which compile to themselves.
+case_RealsPrinted :: Assertion
+case_RealsPrinted = do
+    let model = [ "a -> real", "b -> double ?", "c -> real := 2.5", "[ a.dref = 1.5 ]", "[ some b => b.dref > a.dref * 2 ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    forM_ [False, True] $ \core' -> do
+      x <- explicit core' model
+      all (`isInfixOf` x) ["0..* a -> real 1..1", "0..* b -> double 0..1", "[a.dref = 1.5]"] @? ("reals missing (core: " ++ show core' ++ "):\n" ++ x)
+      y <- explicit core' (lines x)
+      x == y @? ("Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y)
 
 -- | The JSON IR is the rich IR, or with --core the core IR that the backends get.
 case_JsonRichAndCore :: Assertion
@@ -782,7 +796,8 @@ case_JsonRichAndCore = do
     hasNot True "\"_enum\":true"
     hasNot True "IEInitializer"
     has True "\"_op\":\"U\""
-    has True "\"_op\":\"initially\""
+    has True "\"_op\":\"previous\""
+    hasNot True "\"_op\":\"initially\""
 
 -- | The initializers stay as written in the rich explicit model and are lowered to LTL in the
 --   core; a per-instance := whose value has temporal operators is evaluated in the parent's
@@ -812,14 +827,14 @@ case_CoreInitializers = do
     has False "abstract 0..* Val -> int 0..* := each 1 {}"
     has False "abstract 0..* Vs -> int 0..* := together 3 {}"
     -- core: per instance, a fixed value, parent birth, time zero
-    has True "0..* x -> int 0..1 {\n    [initially (this.dref = 1)]"
+    has True "0..* x -> int 0..1 {\n    [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
     has True "[((#this.y) >= 1) => (this.y.dref = 2)]"
-    has True "[initially (((#this.xs) >= 1) => (this.xs.dref = (1 ++ 2)))]"
-    has True "abstract 0..* Val -> int 0..* {\n  [initially (this.dref = 1)]"
-    has True "[initially (((#Vs) >= 1) => (Vs.dref = 3))]"
+    has True "[(!(previous ((#this) >= 1))) => (((#this.xs) >= 1) => (this.xs.dref = (1 ++ 2)))]"
+    has True "abstract 0..* Val -> int 0..* {\n  [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
+    has True "[(!(previous ((#root) >= 1))) => (((#Vs) >= 1) => (Vs.dref = 3))]"
     -- a collection is initialized at the parent's birth, in the parent's context, so its
     -- temporal value needs no past-time operator
-    has True "[initially (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
+    has True "[(!(previous ((#this) >= 1))) => (((#this.t) >= 1) => (this.t.dref = (if (X ((#this.b) >= 1)) then 1 else 2)))]"
     -- per instance with a temporal value: in the context of the parent, each instance that
     -- appears, i.e., was not there in the previous state, has the value (#127)
     has False "0..* z -> int 1..1 := each if (X ((#this.b) >= 1)) then 1 else 2 {}"
@@ -858,11 +873,11 @@ case_InitializerClocks = do
       , "[((#Wal) >= 1) => (Wal.dref = 6)]" ]
     -- temporal: at each instance's birth, at the parent's birth, at time zero
     mapM_ (has True temporal)
-      [ "0..* xs -> int 0..* {\n    [initially (this.dref = 1)]"
-      , "[initially (((#this.x) >= 1) => (this.x.dref = 2))]"
-      , "0..* ys -> int 2..2 {\n    [initially (this.dref = (3 ++ 4))]"
-      , "abstract 0..* Val -> int 0..* {\n  [initially (this.dref = 5)]"
-      , "[initially (((#Wal) >= 1) => (Wal.dref = 6))]" ]
+      [ "0..* xs -> int 0..* {\n    [(!(previous ((#this) >= 1))) => (this.dref = 1)]"
+      , "[(!(previous ((#this) >= 1))) => (((#this.x) >= 1) => (this.x.dref = 2))]"
+      , "0..* ys -> int 2..2 {\n    [(!(previous ((#this) >= 1))) => (this.dref = (3 ++ 4))]"
+      , "abstract 0..* Val -> int 0..* {\n  [(!(previous ((#this) >= 1))) => (this.dref = 5)]"
+      , "[(!(previous ((#root) >= 1))) => (((#Wal) >= 1) => (Wal.dref = 6))]" ]
     -- both explicit models compile to themselves
     forM_ [model, temporal] $ \m -> forM_ [False, True] $ \core' -> do
       x <- explicit core' m
@@ -987,8 +1002,9 @@ case_InitialLowered = do
     x <- explicit True model
     not ("initial " `isInfixOf` x) @? ("a modifier in the core:\n" ++ x)
     all (`isInfixOf` x)
-      [ "[initially ((#top) >= 1)]", "[initially ((#V) >= 1)]"
-      , "[initially ((#this.b) >= 1)]", "[initially ((#this.c) >= 1)]" ] @? ("constraints missing:\n" ++ x)
+      [ "[(!(previous ((#root) >= 1))) => ((#top) >= 1)]", "[(!(previous ((#root) >= 1))) => ((#V) >= 1)]"
+      , "[(!(previous ((#this) >= 1))) => ((#this.b) >= 1)]"
+      , "[(!(previous ((#this) >= 1))) => ((#this.c) >= 1)]" ] @? ("constraints missing:\n" ++ x)
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
@@ -1048,8 +1064,10 @@ case_AbstractMultiplicity = do
     hasOut [Choco] False tools "Constraint(and(greaterThanEqual(card(global($Tools)), constant(3)), lessThanEqual(card(global($Tools)), constant(6))));"
     -- in every state of a temporal model
     hasOut [Alloy] False (tools ++ ["[ G some hammer ]"]) "fact { always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6)) }"
-    -- per parent instance
-    hasOut [Clafer] True nested "[(#this.Val) <= 1]"
+    -- per parent instance: the explicit core keeps the multiplicity of a nested abstract
+    -- clafer (AbstractMultiplicity.nested in the semantics), the backends get a constraint
+    hasOut [Clafer] True nested "abstract 0..* Val 0..1 {}"
+    lacksOut [Clafer] True nested "#this.Val"
     hasOut [Alloy] False nested "(#(this.@r_Val)) <= 1"
     -- both explicit models compile to themselves
     forM_ [tools, nested] $ \m -> forM_ [False, True] $ \core' -> do
@@ -1164,5 +1182,5 @@ case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
     hasAlloy (model "X (some flag)") "fact { all self_ : Box | always (self_ in alive_Box implies (all  x_1 : self_.@r_x | (before (some self_.(@p_Box :> alive_P) and (x_1 in (self_.@r_x)))) || ((x_1.@x_ref) = ((after (not some self_.(@p_Box :> alive_P) or (some self_.@r_flag))) => 1 else 2)))) }"
-    hasAlloy (model "initially (some flag)") "(((not before self_ in alive_Box) implies (some self_.@r_flag)) => 1 else 2)"
+    hasAlloy (model "initially (some flag)") "(((!(before (some self_.(@p_Box :> alive_P) and (some (self_ & alive_Box))))) => (some self_.@r_flag)) => 1 else 2)"
     hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

@@ -27,6 +27,7 @@ module Language.Clafer.Generator.Explicit (genExplicitModule, withoutOrigins) wh
 
 import Data.List
 import qualified Data.Map as Map
+import Numeric (showEFloat)
 import Data.Maybe
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer (Pos (..), Span (..), noPos)
@@ -152,7 +153,8 @@ exExp (CGlobal u) = u
 exExp (CName n) = n
 exExp (CInt val) = show val
 exExp (CStr val) = val
-exExp (CDouble val) = show val
+-- with an exponent, e.g., 1.2e2, which the token of a double literal has
+exExp (CDouble val) = showEFloat Nothing val ""
 exExp (CDecimal val) = val
 exExp (CEmpty _) = "noclafer"
 exExp (CJoin e c) = exOperand e ++ "." ++ c

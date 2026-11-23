@@ -10,8 +10,7 @@ abstract 0..* MotorCommand : Command 0..* {}
 abstract 0..* Request : Signal 0..* {}
 0..* stop : Request 1..1 {}
 abstract 0..* Controller : Component 0..* {
-  [(#this.Controller__req) <= 1] // abstract multiplicity, redefinition.cfr:11:5
-  abstract 0..* Controller__req : InPort -> Request 0..* {}
+  abstract 0..* Controller__req : InPort -> Request 0..1 {}
   0..* down : Request 1..1 {}
 }
 0..* WinController : Controller 1..1 {

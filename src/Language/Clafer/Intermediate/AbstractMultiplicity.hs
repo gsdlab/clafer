@@ -25,67 +25,49 @@
      actual parents; for a nested one, it is per instance of its declared parent. In a temporal
      model, the bound holds in every state. Without a multiplicity, the number is unrestricted.
 
-     The rich IR keeps the multiplicity as written. The core has the bound as a constraint, next
-     to the abstract clafer, e.g., @[ (#Tools >= 3) && (#Tools <= 6) ]@ for @abstract Tools 3..6@,
-     and the abstract clafer is unrestricted (@0..*@).
+     The IR keeps the multiplicity as written: no pass changes the multiplicity of an abstract
+     clafer (the optimizer does not give one that nothing extends @0..0@; that is a backend's
+     choice, "Language.Clafer.Optimizer.Optimizer.zeroUnusedAbstracts").
 
-     Only the authored multiplicity is a bound, not one that the optimizer gives an abstract clafer
-     that nothing extends (@0..0@), nor a scope. The authored multiplicities come from the AST,
-     since the optimizer changes the ones of the IR.
+     The explicit core keeps the multiplicity of a nested abstract clafer, which is an ordinary
+     per-parent multiplicity over the instances of its subclafers
+     (@AbstractMultiplicity.nested@, @valid_iff_global@ in the semantics), and lowers the one of a
+     top-level abstract clafer, a global count, to a constraint next to it, e.g.,
+     @[ (#Tools >= 3) && (#Tools <= 6) ]@ for @abstract Tools 3..6@, which is then @0..*@. The
+     backends of this compiler read the multiplicity of each clafer as the number of its own
+     instances, so they get every bound as a constraint, @#this.Rack@ in the parent of a nested
+     one.
 -}
 module Language.Clafer.Intermediate.AbstractMultiplicity
-  ( AuthoredBounds
-  , authoredBounds
-  , withAuthoredBounds
+  ( Bounds (..)
   , lowerAbstractBounds
   ) where
 
-import Control.Lens.Plated (transformOn, universeOnOf)
-import Data.Data.Lens (biplate, uniplate)
-import qualified Data.Map as Map
 import Language.Clafer.Common
-import Language.Clafer.Front.AbsClafer
-import Language.Clafer.Intermediate.Desugarer (desugarCard)
 import Language.Clafer.Intermediate.Intclafer
 
--- | The multiplicities written on the abstract clafers, by the positions of the clafers.
-type AuthoredBounds = Map.Map Span Interval
-
-authoredBounds :: Module -> AuthoredBounds
-authoredBounds ast' = Map.fromList
-  [ (s, i)
-  | Clafer s (Abstract _) _ _ _ _ _ crd _ _ _ <- universeOnOf biplate uniplate ast' :: [Clafer]
-  , Just i <- [desugarCard crd] ]
-
--- | The module with the multiplicities of the abstract clafers as written, unrestricted without
---   one: the rich IR.
-withAuthoredBounds :: AuthoredBounds -> IModule -> IModule
-withAuthoredBounds bounds = transformOn biplate authored
-  where
-  authored c
-    | _isAbstract c = c{_card = Just $ Map.findWithDefault unrestricted (_cinPos c) bounds}
-    | otherwise = c
+-- | Which multiplicities of abstract clafers become constraints.
+data Bounds
+  = TopLevelBounds  -- ^ of the top-level abstract clafers: the explicit core
+  | AllBounds       -- ^ of all the abstract clafers: the core for the backends
+  deriving (Eq, Show)
 
 unrestricted :: Interval
 unrestricted = (0, -1)
 
--- | The module with the bound of each abstract clafer as a constraint next to it: of the module
---   for a top-level abstract clafer, of its parent for a nested one. The abstract clafer is then
---   unrestricted, unless the optimizer gave it no instances (@0..0@), which a backend may need:
---   in Alloy, an abstract signature that nothing extends has atoms of its own.
-lowerAbstractBounds :: AuthoredBounds -> IModule -> IModule
-lowerAbstractBounds bounds imodule = imodule{_mDecls = lowerElements $ _mDecls imodule}
+-- | The module with the bound of each abstract clafer that the choice lowers as a constraint
+--   next to it: of the module for a top-level abstract clafer, of its parent for a nested one.
+--   The abstract clafer is then unrestricted.
+lowerAbstractBounds :: Bounds -> IModule -> IModule
+lowerAbstractBounds which imodule = imodule{_mDecls = lowerElements $ _mDecls imodule}
   where
   lowerElements = concatMap lowerElement
   lowerElement (IEClafer c) = IEClafer c'{_elements = lowerElements $ _elements c'} : constraints
     where
-    (c', constraints) = case Map.lookup (_cinPos c) bounds of
-      Just b | _isAbstract c, b /= unrestricted ->
-        -- the optimizer changed the multiplicity of a clafer that nothing extends: it has no
-        -- instances, which meets a bound without a lower bound
-        let optimized = _card c /= Just b
-        in ( if optimized then c else c{_card = Just unrestricted}
-           , [ IEConstraint' True p (Just $ Origin "abstract multiplicity" $ _cinPos c) | not optimized || fst b > 0, Just p <- [boundOf c b] ] )
+    (c', constraints) = case _card c of
+      Just b | _isAbstract c, b /= unrestricted, which == AllBounds || isTopLevel c ->
+        ( c{_card = Just unrestricted}
+        , [ IEConstraint' True p (Just $ Origin "abstract multiplicity" $ _cinPos c) | Just p <- [boundOf c b] ] )
       _ -> (c, [])
   lowerElement e = [e]
 

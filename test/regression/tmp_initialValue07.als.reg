@@ -5,9 +5,9 @@ pred show {}
 one sig root
 { var r_Box : set Box }
 fact { always (lone root.@r_Box) }
-fact { always ((not before some root) implies ((some alive_Box) && (after (no alive_Box)))) }
+fact { always ((before (some root)) || ((some alive_Box) && (after (no alive_Box)))) }
 
-assert assertAt_12_10 { always ((not before some root) implies (((alive_Box.@r_x).@x_ref) = 2)) }
+assert assertAt_12_10 { always ((before (some root)) || (((alive_Box.@r_x).@x_ref) = 2)) }
 check assertAt_12_10 for 1 but 10 steps
 
 

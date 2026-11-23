@@ -37,6 +37,13 @@
        precondition. A chain of transitions is a sequence, e.g., a scenario
        @[ initially (green --> yellow --> red) ]@; only its first precondition is a condition,
        so @a --> b --> c@ is @a => X (b && X c)@, not @a => X (b => X c)@.
+     * The anchors @initially@ and @finally@ are guards on the birth and the death of the context
+       instance (@birth@ and @death@ of @expandAnchors@ in the semantics,
+       kbak/clafer-semantics#200): @initially p@ is @(!(previous (some this))) => p@ and
+       @finally p@ is @((some this) && (X (no this))) => p@, where @previous@ and @X@ look within
+       the lifetime of the parent. At the top level of the model, the context is the root, which
+       lives in every state of the trace: it is born in the first one,
+       @(!(previous (some root))) => p@, and never dies, so @finally p@ holds vacuously.
 -}
 module Language.Clafer.Intermediate.Core
   ( Semantics (..)
@@ -47,7 +54,7 @@ module Language.Clafer.Intermediate.Core
   ) where
 
 import Control.Lens (over)
-import Control.Lens.Plated (plate, transformOn, transformOnOf, universe, universeOn)
+import Control.Lens.Plated (plate, transform, transformOn, transformOnOf, universe, universeOn)
 import Data.Data.Lens (biplate, uniplate)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Finality (lowerFinality, lowerInitial)
@@ -56,7 +63,7 @@ import Language.Clafer.Intermediate.Intclafer
 
 -- | The core of the module, for a backend that reads it with the given semantics.
 lowerToCore :: Semantics -> IModule -> IModule
-lowerToCore sem = lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . markRich . lowerInitializers sem
+lowerToCore sem = lowerAnchors . lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . markRich . lowerInitializers sem
 
 -- | The module without the origins of its clafers and constraints, without @--record-provenance@.
 forgetOrigins :: IModule -> IModule
@@ -189,3 +196,24 @@ pattern pe kind scope args = case (kind, scope, args) of
 -- | A formula at the place of the expression @p@.
 mk :: PExp -> String -> [PExp] -> PExp
 mk p op' args = PExp (Just TBoolean) (_pid p) (_inPos p) (IFunExp op' args)
+
+-- | The module with the anchors @initially@ and @finally@ as guards on the birth and the death
+--   of the context instance of their constraints, @this@, or the root at the top level.
+lowerAnchors :: IModule -> IModule
+lowerAnchors imodule = imodule{_mDecls = map (lowerElement rootIdent) $ _mDecls imodule}
+  where
+  lowerElement _ (IEClafer c) = IEClafer c{_elements = map (lowerElement $ _uid c) $ _elements c}
+  lowerElement ctx (IEConstraint' h p o) = IEConstraint' h (transform (anchor ctx) p) o
+  lowerElement ctx (IEGoal m p) = IEGoal m (transform (anchor ctx) p)
+  lowerElement _ e = e
+
+-- | The anchor as a guard on the birth or the death of the context instance: it exists now, and
+--   not in the previous state of its lifetime, or not in the next state.
+anchor :: UID -> PExp -> PExp
+anchor ctx q@PExp{_exp = IFunExp op' [a]}
+  | op' == iInitially = mk q iImpl [mk q iNot [mk q iPrevious [present ISome]], a]
+  | op' == iFinally   = mk q iImpl [mk q iAnd [present ISome, mk q iX [present INo]], a]
+  where
+  self' = PExp (Just $ TClafer [ctx]) "" (_inPos q) $ IClaferId "" (if ctx == rootIdent then rootIdent else thisIdent) True (GlobalBind ctx)
+  present quantifier = PExp (Just TBoolean) (_pid q) (_inPos q) (IDeclPExp quantifier [] self')
+anchor _ q = q

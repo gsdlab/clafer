@@ -1,5 +1,5 @@
 //# OPTIONS --explicit --core --tl=10
 [F (x.dref = 2)]
 0..* x -> int 1..1 {
-  [initially (this.dref = 1)] // :=, tmp_initialValue02.cfr:4:1
+  [(!(previous ((#this) >= 1))) => (this.dref = 1)] // :=, tmp_initialValue02.cfr:4:1
 }

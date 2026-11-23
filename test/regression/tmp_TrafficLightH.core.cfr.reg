@@ -5,7 +5,7 @@ abstract 1..1 TrafficLight_H 0..* {
   1..1 on 0..1 {
     [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.off) >= 1))] // transition, tmp_TrafficLightH.cfr:8:9
     1..1 normal 0..1 {
-      [initially ((#this.green) >= 1)] // initial, tmp_TrafficLightH.cfr:10:13
+      [(!(previous ((#this) >= 1))) => ((#this.green) >= 1)] // initial, tmp_TrafficLightH.cfr:10:13
       0..* green 0..1 {
         [((#this) >= 1) => (X ((#this.parent.yellow) >= 1))] // transition, tmp_TrafficLightH.cfr:10:21
       }
@@ -18,7 +18,7 @@ abstract 1..1 TrafficLight_H 0..* {
     }
     1..1 flashing 0..1 {
       [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.normal) >= 1))] // transition, tmp_TrafficLightH.cfr:13:13
-      [initially ((#this.yellow_on) >= 1)] // initial, tmp_TrafficLightH.cfr:14:13
+      [(!(previous ((#this) >= 1))) => ((#this.yellow_on) >= 1)] // initial, tmp_TrafficLightH.cfr:14:13
       0..* yellow_on 0..1 {
         [((#this) >= 1) => (X ((#this.parent.yellow_off) >= 1))] // transition, tmp_TrafficLightH.cfr:14:21
       }

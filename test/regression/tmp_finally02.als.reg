@@ -5,7 +5,7 @@ pred show {}
 one sig root
 { var r_a : set a }
 fact { always (one root.@r_a) }
-fact { always ((some root and after no root) implies (some (alive_a.@r_b).@r_e)) }
+fact { always (((!(some root)) || (after (!(no root)))) || (some (alive_a.@r_b).@r_e)) }
 
 
 sig a

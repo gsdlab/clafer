@@ -1,6 +1,6 @@
 //# OPTIONS --explicit --core --tl=10
-[initially ((#machine) >= 1)]
-[initially (X ((#machine) = 0))]
+[(!(previous ((#root) >= 1))) => ((#machine) >= 1)]
+[(!(previous ((#root) >= 1))) => (X ((#machine) = 0))]
 0..* machine 0..1 {
   0..* ctx 1..1 {
     [!(F ((#this.error) >= 1))]

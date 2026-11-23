@@ -12,20 +12,20 @@ fact { always (lone root.@r_done) }
 fact { always (always ((some alive_done) => (once (some alive_go)))) }
 fact { always (always ((some alive_done) => ((some alive_ready) since (some alive_go)))) }
 fact { always (always ((some alive_go) => (not before not (!(some alive_go))))) }
-fact { always ((not before some root) implies (((some alive_go) && (no alive_ready)) && (no alive_done))) }
-fact { always ((not before some root) implies (after ((some alive_ready) && (no alive_go)))) }
-fact { always ((not before some root) implies (after (after ((some alive_ready) && (some alive_done))))) }
+fact { always ((before (some root)) || (((some alive_go) && (no alive_ready)) && (no alive_done))) }
+fact { always ((before (some root)) || (after ((some alive_ready) && (no alive_go)))) }
+fact { always ((before (some root)) || (after (after ((some alive_ready) && (some alive_done))))) }
 
-assert assertAt_19_10 { always ((not before some root) implies (not before not (!(some alive_go)))) }
+assert assertAt_19_10 { always ((before (some root)) || (not before not (!(some alive_go)))) }
 check assertAt_19_10 for 1 but 10 steps
 
-assert assertAt_21_10 { always ((not before some root) implies (after (after (once (some alive_go))))) }
+assert assertAt_21_10 { always ((before (some root)) || (after (after (once (some alive_go))))) }
 check assertAt_21_10 for 1 but 10 steps
 
-assert assertAt_22_10 { always ((not before some root) implies (after (after ((some alive_ready) since (some alive_go))))) }
+assert assertAt_22_10 { always ((before (some root)) || (after (after ((some alive_ready) since (some alive_go))))) }
 check assertAt_22_10 for 1 but 10 steps
 
-assert assertAt_23_10 { always ((not before some root) implies (after (after (once (!(some alive_ready)))))) }
+assert assertAt_23_10 { always ((before (some root)) || (after (after (once (!(some alive_ready)))))) }
 check assertAt_23_10 for 1 but 10 steps
 
 assert assertAt_25_10 { always (always ((once (some alive_go)) || ((no alive_done) triggered (no alive_go)))) }

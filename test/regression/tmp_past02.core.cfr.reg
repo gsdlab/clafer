@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --core --tl=10
-[initially ((#Shift.Worker.alarm) >= 1)]
-[initially (X ((#Shift) = 0))]
-[initially (X (X (((#Shift.Worker) >= 1) && ((#Shift.Worker.alarm) = 0))))]
+[(!(previous ((#root) >= 1))) => ((#Shift.Worker.alarm) >= 1)]
+[(!(previous ((#root) >= 1))) => (X ((#Shift) = 0))]
+[(!(previous ((#root) >= 1))) => (X (X (((#Shift.Worker) >= 1) && ((#Shift.Worker.alarm) = 0))))]
 0..* Shift 0..1 {
   0..* Worker 0..1 {
     [((#this.warned) >= 1) <=> (previous (once ((#this.alarm) >= 1)))]
@@ -10,4 +10,4 @@
   }
 }
 
-assert [initially (X (X ((#Shift.Worker.warned) = 0)))]
+assert [(!(previous ((#root) >= 1))) => (X (X ((#Shift.Worker.warned) = 0)))]

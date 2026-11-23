@@ -94,10 +94,10 @@ The criterion decides each construct:
 |---|---|---|
 | `enum Color = red \| green` | no: an abstract clafer and a clafer for each literal | an abbreviation for clafers |
 | `final x`, `finalref x`, `finaltarget x` | no: constraints in `x` with `X` and `previous`, e.g., `[ all c : this \| X (c in parent.x) ]` and `[ all c : this \| previous (some parent) => previous (c in parent.x) ]` for the instances of a final `x` | stability over a lifetime, defined with the temporal operators |
-| `initial x` | no: `[ initially (some this.x) ]` in the parent, `[ initially (some x) ]` at the top level | defined with `initially` |
+| `initial x` | no: `[ (!(previous (some this))) => (some this.x) ]` in the parent, `[ (!(previous (some root))) => (some x) ]` at the top level | defined with `initially` |
 | the multiplicity of a top-level abstract clafer, e.g., `abstract Tools 3..6` | no: `[ (#Tools >= 3) && (#Tools <= 6) ]` next to it, and `abstract Tools 0..*` | a global count over all the instances of its subclafers, defined with a constraint |
-| the multiplicity of a nested abstract clafer | yes (0.6.0 still lowers it to `#this.Tools` in the parent, see [below](#where-the-core-of-060-differs-from-the-criterion)) | an ordinary multiplicity, counted over the instances of its subclafers |
-| `initially p`, `finally p` | no (0.6.0 still keeps them, see [below](#where-the-core-of-060-differs-from-the-criterion)) | anchored to the lifetime of an instance |
+| the multiplicity of a nested abstract clafer | yes, see [below](#the-anchors-and-the-abstract-multiplicities) | an ordinary multiplicity, counted over the instances of its subclafers |
+| `initially p`, `finally p` | no: guards on the birth and the death of the instance, see [below](#the-anchors-and-the-abstract-multiplicities) | anchored to the lifetime of an instance |
 | behavioral patterns, e.g., `never p between q and r` | no: their LTL formula | LTL templates |
 | transitions, e.g., `on --> off` | no: their LTL formula | as the patterns |
 | `x -> T = e` | no: `[ some x => x.dref = e ]` in the parent | defined with a constraint |
@@ -137,37 +137,49 @@ The criterion makes it checkable:
 A new construct is then either inside the vocabulary, a primitive with its own meaning in
 the semantics, or outside it, with its lowering and the theorem.
 
-### Where the core of 0.6.0 differs from the criterion
+### The anchors and the abstract multiplicities
 
-- **The anchors `initially p` and `finally p` are kept, but they are outside the
-  vocabulary:** they anchor `p` to the lifetime of the instance, not to the start of the
-  trace. They are to be lowered, as the semantics does (`expandAnchors`: the instance is
-  present now and was not present in the previous state), with the quantifier that captures
-  the instance, as for the finality modifiers:
-  - `initially p` in `x` is `[ all c : this | (not previous (c in this.parent.x)) => p' ]`;
-  - `finally p` is `[ all c : this | ((c in this.parent.x) && not X (c in this.parent.x)) => p' ]`;
+**The anchors `initially p` and `finally p` are lowered,** since they are outside the
+vocabulary: they anchor `p` to the lifetime of the context instance, not to the start of the
+trace. The core writes them with the birth and the death of the instance, as the semantics
+does (`expandAnchors`, with `birth` and `death`: the instance is present now and was not in
+the previous state, or will not be in the next one):
 
-  where `p'` is `p` with `c` for `this`.
+- `initially p` is `(!(previous (some this))) => p`;
+- `finally p` is `((some this) && (X (no this))) => p`.
 
-  At the top level, the context is the root, which lives in every state, so its only birth is
-  the first state of the trace, as in the semantics (`Trace.Starts`, `root_live`). Its "not
-  present in the previous state" is "not `previous` of a formula that always holds":
-  - `initially p` at the top level is `[ (!(previous (some root))) => p ]`;
-  - `finally p` at the top level has no birth or death to anchor to, since the root never
-    dies: it holds vacuously, as `Trace.Ends` has no end for a permanent life.
+`previous` and `X` look within the lifetime of the parent, so the birth of an instance whose
+parent is born with it is its first state, and its death with the parent's is its last. `this`
+is the context instance while it exists and empty otherwise, so `some this` is its presence,
+and no quantifier has to capture it.
 
-  The temporal Alloy generator already writes the top-level `initially p` this way
-  (`(not before some root) implies p`). Alloy checks that the two are equivalent: each
-  implies the other on every trace. `initial x` is then lowered through the anchors.
-- **The multiplicity of a nested abstract clafer is lowered, but it is inside the
-  vocabulary,** so it is to stay in the core as a multiplicity. It is an ordinary per-parent
-  multiplicity, counted over the instances of all its subclafers, as a UML property typed by
-  an abstract class counts the instances of all its subclasses. The semantics shows it
-  (`AbstractMultiplicity.nested`, `valid_iff_global`): structural validity already enforces
-  a nested abstract bound, and only the top-level one adds an obligation. The written
-  bound is then the only multiplicity of an abstract clafer in the IR, as the semantics'
-  `authoredMultiplicity` is: the optimizer no longer gives an abstract clafer that nothing
-  extends `0..0` (see [the pipeline](#the-pipeline)).
+At the top level, the context is the root, which lives in every state, so its only birth is
+the first state of the trace, as in the semantics (`Trace.Starts`, `root_live`):
+
+- `initially p` at the top level is `(!(previous (some root))) => p`;
+- `finally p` at the top level is `((some root) && (X (no root))) => p`, which holds
+  vacuously, since the root never dies (`Trace.Ends` has no end for a permanent life).
+
+The temporal Alloy generator wrote the anchors in the same way before (`(not before this in
+alive_x) implies p`), and Alloy checks the top-level forms equivalent: each implies the other
+on every trace. `initial x` and the initializers are lowered through the anchors, so the
+explicit core has no `initially` or `finally`.
+
+**The multiplicity of a nested abstract clafer stays in the core,** since it is inside the
+vocabulary. It is an ordinary per-parent multiplicity, counted over the instances of all its
+subclafers, as a UML property typed by an abstract class counts the instances of all its
+subclasses. The semantics shows it (`AbstractMultiplicity.nested`, `valid_iff_global`):
+structural validity already enforces a nested abstract bound, and only the top-level one adds
+an obligation, so only that one is lowered, to the global `#` constraint. The backends of this
+compiler read the multiplicity of each clafer as the number of its own instances, so they get
+the nested bound as a constraint too, `#this.Rack` in the parent.
+
+**The optimizer does not set `0..0`.** The written multiplicity is the only one of an abstract
+clafer in the IR, as the semantics' `authoredMultiplicity` is, and the explicit models and the
+JSON output keep it. Whether an abstract clafer that nothing extends has instances is the
+backend's choice: an Alloy abstract signature without extensions has atoms of its own, so the
+Alloy backend gives such a clafer none (`Optimizer.zeroUnusedAbstracts`), while chocosolver's
+abstract clafers have only the instances of their subclafers.
 
 ## The pipeline
 
@@ -184,8 +196,9 @@ model.cfr ── parse, desugar the defaults, resolve ──▶ IR (rich) ──
                                static Alloy      temporal Alloy        Choco
 ```
 
-In this compiler every backend gets the core, so the explicit core model is exactly what they
-solve (the Java toolchain will read the rich model instead, see
+In this compiler every backend gets the core, so the explicit core model is what they solve,
+with the bounds of the nested abstract clafers as constraints and, for Alloy, no instances of
+an abstract clafer that nothing extends (the Java toolchain will read the rich model instead, see
 [the roles](#the-roles-of-the-two-models)), and the meaning of each rich construct has a single
 definition: its lowering, in
 `Language.Clafer.Intermediate.Core` (and `Initializers` for the initializers). The backends
@@ -246,7 +259,10 @@ multiplicity, `0..*` when none was written. The core:
   which `xs.dref = e` is not (`:= each 1, 2` has no instance, while two instances satisfy
   `xs.dref = 1, 2` together).
 - `:=` of each instance, in a temporal model: `[ initially (this.dref = e') ]` in `x`, where
-  `e'` is `e` with `this.parent` for `this`.
+  `e'` is `e` with `this.parent` for `this`, which the core writes with the birth of the
+  instance, `[ (!(previous (some this))) => (this.dref = e') ]` (see
+  [the anchors](#the-anchors-and-the-abstract-multiplicities)), and so the `initially` of the
+  next one.
 - `:=` of a set of instances (`xs -> T * := e`, kbak/clafer-semantics#170):
   `[ initially (some xs => xs.dref = e) ]` in the parent, also when `e` has temporal
   operators, since the parent is the context of `e`; for a top-level abstract clafer with `*`,
@@ -277,8 +293,9 @@ equivalent to the one of 0.5.8 (Alloy, up to 10 states).
 
 `initial x` is `[ initially (some this.x) ]` in the parent (kbak/clafer-semantics#195): the
 parent has an `x` in the first state of each of its lifetimes. At the top level, the model has
-an `x` at the start of the trace. The temporal Alloy output is the same formula as in 0.5.8, as
-a fact of its own.
+an `x` at the start of the trace. The core writes it with the birth of the parent,
+`[ (!(previous (some this))) => (some this.x) ]`, and `[ (!(previous (some root))) => (some x) ]`
+at the top level. The temporal Alloy output is equivalent to the one of 0.5.8.
 
 ### Behavioral patterns
 
@@ -322,7 +339,7 @@ abstract 0..* Color 0..* {} // enum, model.cfr:1:1
   }
 }
 0..* x -> int 1..1 {
-  [initially (this.dref = 1)] // :=, model.cfr:6:1
+  [(!(previous ((#this) >= 1))) => (this.dref = 1)] // :=, model.cfr:6:1
 }
 ```
 
@@ -339,10 +356,9 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
 - Each rich and each core explicit model of the test models compiles to itself (the positive
   suite validates both, `-m clafer` and `-m clafer --core`), and both are regressions,
   `test/regression/*.des.cfr.reg` and `*.core.cfr.reg`, so a change of a lowering shows in the
-  core directly. An abstract clafer is `0..*` in the core, whose bound is a constraint: one
-  that the optimizer gives no instances (`0..0`, nothing extends it) was printed with `0..0`,
-  which the next compilation read as a bound, so the core of 18 test models was not a
-  fixpoint.
+  core directly. The models with `real` and `double` are among them: both explicit models
+  print them, although no backend solves them (test case `RealsPrinted`), a double literal
+  with its exponent, e.g., `1.2e2`, as its token requires.
 - Before 0.6.0 lowered the temporal modifiers and the multiplicities of abstract clafers, the
   core of each test model was the explicit model that Clafer 0.5.8, which desugared everything,
   printed for it, except for a `:=` whose value has temporal operators (`tmp_initialValue07`),
@@ -362,27 +378,10 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
 
 ## Open points
 
-These are decided, and to be done for 0.6.0:
+**The print of the core is a contract.** The planned Java lowering must print the same core as
+`Core.hs`, so these are to be written down:
 
-1. **Lower the anchors** in `Core.hs`, nested and at the top level, and `initial x` through
-   them (see
-   [Where the core of 0.6.0 differs from the criterion](#where-the-core-of-060-differs-from-the-criterion)).
-   The explicit core then has no `initially` or `finally`, and its fixpoint check covers
-   `some root` in a core model.
-2. **Keep a nested abstract multiplicity in the core**, as a multiplicity. Only a top-level
-   abstract multiplicity is lowered to a `#` constraint.
-3. **The optimizer does not set `0..0`.** Whether an abstract clafer that nothing extends has
-   instances is the backend's choice: Alloy gives an abstract signature without extensions
-   atoms of its own, so the Alloy backend gives such a clafer no instances; chocosolver's
-   abstract clafers have only the instances of their subclafers. The IR, the explicit models
-   and the JSON output keep the multiplicity as written.
-4. **The print of the core is a contract.** The planned Java lowering must print the same core
-   as `Core.hs`, so these are to be written down:
-   - the names of the generated clafers and quantifier variables
-   - the place and order of the lowered elements
-   - the parentheses
-   - the provenance comments
-5. **Print `real` and `double` in both explicit models.** `-m clafer` prints none for a model
-   with a reference to a real or a double, because the walk it shares with the Choco output
-   refuses them. The explicit models write everything out, whether a backend solves it or
-   not: the references, the literals, and their ranges in the scope file.
+- the names of the generated clafers and quantifier variables
+- the place and order of the lowered elements
+- the parentheses
+- the provenance comments
