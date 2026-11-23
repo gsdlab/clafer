@@ -1,7 +1,6 @@
 //# OPTIONS --explicit --tl=10
 abstract 1..1 TrafficLight_1 0..* {
   initial 1..1 on 0..1 {
-    [((#this) >= 1) -->> ((#this.parent.off) >= 1)]
     initial 1..1 normal 0..1 {
       initial 0..* green 0..1 {
         [((#this) >= 1) --> ((#this.parent.yellow) >= 1)]
@@ -14,14 +13,15 @@ abstract 1..1 TrafficLight_1 0..* {
       }
     }
     1..1 flashing 0..1 {
-      [((#this) >= 1) -->> ((#this.parent.normal) >= 1)]
       initial 0..* yellow_on 0..1 {
         [((#this) >= 1) --> ((#this.parent.yellow_off) >= 1)]
       }
       0..* yellow_off 0..1 {
         [((#this) >= 1) --> ((#this.parent.yellow_on) >= 1)]
       }
+      [((#this) >= 1) -->> ((#this.parent.normal) >= 1)]
     }
+    [((#this) >= 1) -->> ((#this.parent.off) >= 1)]
   }
   0..* off 0..1 {
     [((#this) >= 1) --> ((#this.parent.on) >= 1)]

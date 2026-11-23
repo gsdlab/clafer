@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --core --tl=10
-[(!(previous ((#root) >= 1))) => ((#x) >= 1)]
 0..* x -> int 0..1 {
   [(!(previous ((#this) >= 1))) => (X (this.dref = 7))]
 }
+[(!(previous ((#root) >= 1))) => ((#x) >= 1)]
 
 assert [(!(previous ((#root) >= 1))) => (X ((#x) >= 1))]

@@ -1,6 +1,4 @@
 //# OPTIONS --explicit
-enum Effect = Permit | Deny | NotApplicable | Indeterminate
-enum CombiningAlgo = PermitOverrides | DenyOverrides | OnlyOneApplicable
 abstract 0..* Value 0..* {}
 abstract 0..* Attribute 0..* {
   0..* value -> Value 1..1 {}
@@ -11,3 +9,5 @@ abstract 0..* ResourceName : Attribute 0..* {}
 abstract 0..* Element 0..* {
   abstract 0..* attributes : Attribute 0..* {}
 }
+enum Effect = Permit | Deny | NotApplicable | Indeterminate
+enum CombiningAlgo = PermitOverrides | DenyOverrides | OnlyOneApplicable

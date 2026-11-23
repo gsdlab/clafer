@@ -2,8 +2,8 @@
 0..* a 0..1 {}
 0..* b 0..1 {}
 abstract 0..* P 0..* {
-  [this.age.dref >= 0]
   0..* age -> int 1..1 {}
+  [this.age.dref >= 0]
 }
 0..* x : P 1..1 {}
 

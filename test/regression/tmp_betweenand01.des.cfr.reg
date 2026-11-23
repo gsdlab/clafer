@@ -1,13 +1,13 @@
 //# OPTIONS --explicit --tl=10
 final 0..* a 1..1 {
   final 1..1 b 1..1 {
+    0..* c 0..1 {}
+    0..* d 0..1 {}
+    0..* e 0..1 {}
     [always ((#this.c) >= 1) between ((#this.d) >= 1) and ((#this.e) >= 1)]
     [initially (sometime ((#this.d) >= 1))]
     [initially (sometime ((#this.c) >= 1))]
     [initially (sometime ((#this.e) >= 1))]
-    0..* c 0..1 {}
-    0..* d 0..1 {}
-    0..* e 0..1 {}
   }
 }
 

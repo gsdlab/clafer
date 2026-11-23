@@ -1,5 +1,4 @@
 //# OPTIONS --explicit
-[(#E1TEntities) = 3]
 abstract 0..* Entity 0..* {
   0..* type -> string 1..1 {}
 }
@@ -15,3 +14,4 @@ abstract 0..* Entity 0..* {
 0..* E1TEntities -> Entity 0..* {
   [this.dref.type.dref = "E1T"]
 }
+[(#E1TEntities) = 3]

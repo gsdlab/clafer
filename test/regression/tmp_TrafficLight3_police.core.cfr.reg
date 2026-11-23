@@ -8,13 +8,8 @@ abstract 0..* event 0..* {}
   0..* e_after_0_5 : event 0..1 {}
 }
 abstract 1..1 TrafficLight_3 0..* {
-  [(!(previous ((#this) >= 1))) => ((#this.on) >= 1)] // initial, tmp_TrafficLight3.cfr:20:5
   1..1 on 0..1 {
-    [(((#this) >= 1) && ((#events.e_on_off) >= 1)) => (((#this) >= 1) U ((#this.parent.off) >= 1))] // transition, tmp_TrafficLight3.cfr:20:17
-    [(!(previous ((#this) >= 1))) => ((#this.normal) >= 1)] // initial, tmp_TrafficLight3.cfr:23:9
     1..1 normal 0..1 {
-      [(((#this) >= 1) && ((#events.e_police) >= 1)) => (((#this) >= 1) U ((#this.parent.flashing) >= 1))] // transition, tmp_TrafficLight3.cfr:23:21
-      [(!(previous ((#this) >= 1))) => ((#this.green) >= 1)] // initial, tmp_TrafficLight3.cfr:24:13
       0..* green 0..1 {
         [((#this) >= 1) => (X ((#this.parent.yellow) >= 1))] // transition, tmp_TrafficLight3.cfr:24:21
       }
@@ -24,21 +19,26 @@ abstract 1..1 TrafficLight_3 0..* {
       0..* red 0..1 {
         [((#this) >= 1) => (X ((#this.parent.green) >= 1))] // transition, tmp_TrafficLight3.cfr:26:13
       }
+      [(((#this) >= 1) && ((#events.e_police) >= 1)) => (((#this) >= 1) U ((#this.parent.flashing) >= 1))] // transition, tmp_TrafficLight3.cfr:23:21
+      [(!(previous ((#this) >= 1))) => ((#this.green) >= 1)] // initial, tmp_TrafficLight3.cfr:24:13
     }
     1..1 flashing 0..1 {
-      [(((#this) >= 1) && ((#events.e_police) >= 1)) => (((#this) >= 1) U ((#this.parent.normal) >= 1))] // transition, tmp_TrafficLight3.cfr:27:13
-      [(!(previous ((#this) >= 1))) => ((#this.yellow_on) >= 1)] // initial, tmp_TrafficLight3.cfr:28:13
       0..* yellow_on 0..1 {
         [(((#this) >= 1) && ((#events.e_after_0_5) >= 1)) => (((#this) >= 1) U ((#this.parent.yellow_off) >= 1))] // transition, tmp_TrafficLight3.cfr:28:21
       }
       0..* yellow_off 0..1 {
         [(((#this) >= 1) && ((#events.e_after_0_5) >= 1)) => (((#this) >= 1) U ((#this.parent.yellow_on) >= 1))] // transition, tmp_TrafficLight3.cfr:31:13
       }
+      [(((#this) >= 1) && ((#events.e_police) >= 1)) => (((#this) >= 1) U ((#this.parent.normal) >= 1))] // transition, tmp_TrafficLight3.cfr:27:13
+      [(!(previous ((#this) >= 1))) => ((#this.yellow_on) >= 1)] // initial, tmp_TrafficLight3.cfr:28:13
     }
+    [(((#this) >= 1) && ((#events.e_on_off) >= 1)) => (((#this) >= 1) U ((#this.parent.off) >= 1))] // transition, tmp_TrafficLight3.cfr:20:17
+    [(!(previous ((#this) >= 1))) => ((#this.normal) >= 1)] // initial, tmp_TrafficLight3.cfr:23:9
   }
   0..* off 0..1 {
     [((#this) >= 1) => (X ((#this.parent.on) >= 1))] // transition, tmp_TrafficLight3.cfr:32:5
   }
+  [(!(previous ((#this) >= 1))) => ((#this.on) >= 1)] // initial, tmp_TrafficLight3.cfr:20:5
 }
 1..1 tl : TrafficLight_3 1..1 {
   [(!(previous ((#this) >= 1))) => (((#this.on.normal.green) >= 1) && ((#events.e_police) >= 1))]

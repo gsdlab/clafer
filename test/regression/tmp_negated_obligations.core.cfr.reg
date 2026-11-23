@@ -1,12 +1,12 @@
 //# OPTIONS --explicit --core --tl=10
-[(!(previous ((#root) >= 1))) => ((#machine) >= 1)]
-[(!(previous ((#root) >= 1))) => (X ((#machine) = 0))]
 0..* machine 0..1 {
   0..* ctx 1..1 {
-    [!(F ((#this.error) >= 1))]
     0..* error 0..1 {}
+    [!(F ((#this.error) >= 1))]
   }
 }
+[(!(previous ((#root) >= 1))) => ((#machine) >= 1)]
+[(!(previous ((#root) >= 1))) => (X ((#machine) = 0))]
 
 assert [all this_ : machine.ctx | (G ((#this_.error) = 0)) <=> (!(F ((#this_.error) >= 1)))]
 assert [all this_ : machine.ctx | (!(X ((#this_.error) >= 1))) <=> (X ((#this_.error) = 0))]

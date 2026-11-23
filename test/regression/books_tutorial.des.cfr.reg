@@ -1,6 +1,5 @@
 //# OPTIONS --explicit
 abstract 0..* Book 0..* {
-  [(this.year.dref >= 5) => ((#this.ISBN) >= 1)]
   0..* title -> string 1..1 {
     0..* subtitle -> string 0..1 {}
   }
@@ -21,9 +20,10 @@ abstract 0..* Book 0..* {
     0..* other -> string 0..1 {}
   }
   0..* authors -> Author 1..* {}
+  [(this.year.dref >= 5) => ((#this.ISBN) >= 1)]
   0..* ISBN -> string 0..1 {
-    [(this.parent.year.dref >= 6) => ((#this.GS1) >= 1)]
     0..* GS1 -> string 0..1 {}
+    [(this.parent.year.dref >= 6) => ((#this.GS1) >= 1)]
   }
 }
 abstract 0..* Person 0..* {

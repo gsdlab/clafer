@@ -1,15 +1,14 @@
 //# OPTIONS --explicit --core --tl=10
-[F (v1.dref = 4)]
 0..* A 1..1 {
-  [F ((this.x.dref = 5) && (this.x.x__y.dref = 7))]
   0..* A__y -> int 1..1 {}
   0..* x -> int 0..1 {
-    [(!(previous ((#this) >= 1))) => (this.dref = (this.parent.A__y.dref + 1))] // :=, tmp_initialValue06.cfr:8:5
     0..* x__y -> int 1..1 {}
+    [(!(previous ((#this) >= 1))) => (this.dref = (this.parent.A__y.dref + 1))] // :=, tmp_initialValue06.cfr:8:5
   }
   0..* z -> int 1..1 {
     [(!(previous ((#this) >= 1))) => (this.dref = this.parent.A__y.dref)] // :=, tmp_initialValue06.cfr:10:5
   }
+  [F ((this.x.dref = 5) && (this.x.x__y.dref = 7))]
 }
 abstract 0..* Val -> int 0..* {
   [(!(previous ((#this) >= 1))) => (this.dref = 2)] // :=, tmp_initialValue06.cfr:13:1
@@ -18,3 +17,4 @@ abstract 0..* Val -> int 0..* {
 0..* B 1..1 {
   0..* v2 : Val 1..1 {}
 }
+[F (v1.dref = 4)]

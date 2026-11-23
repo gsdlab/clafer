@@ -1,5 +1,4 @@
 //# OPTIONS --explicit
-enum NorthAmericanCountry = Canada | USA | Mexico
 abstract 0..* Person 0..* {
   0..* Name -> string 1..1 {}
   0..* Surname -> string 1..1 {}
@@ -58,6 +57,7 @@ abstract 0..* OneToTenPersonLine : WaitingLine 0..* {
   [(#this.participants) >= 1]
   [(#this.participants) <= 10]
 }
+enum NorthAmericanCountry = Canada | USA | Mexico
 abstract 0..* Person2 0..* {
   0..* Person2__Country -> NorthAmericanCountry 1..1 {}
 }

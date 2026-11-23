@@ -1,7 +1,4 @@
 //# OPTIONS --explicit --core --tl=10
-[(!(previous ((#root) >= 1))) => ((#level) = 0)]
-[F ((#level) >= 1)]
-[F (((#level) >= 1) && (level.dref != y.dref))]
 0..* y -> int 1..1 {
   [(!(previous ((#this) >= 1))) => (this.dref = 2)] // :=, tmp_initialValue04.cfr:6:1
 }
@@ -15,3 +12,6 @@
   [all mode_1 : this | (previous ((#root) >= 1)) => (previous (mode_1 in mode))] // final, tmp_initialValue04.cfr:8:1
   [all mode_1 : this | all mode_2 : mode_1.dref | X (((#mode_1.dref) >= 1) => (mode_2 in mode_1.dref))] // final, tmp_initialValue04.cfr:8:1
 }
+[(!(previous ((#root) >= 1))) => ((#level) = 0)]
+[F ((#level) >= 1)]
+[F (((#level) >= 1) && (level.dref != y.dref))]

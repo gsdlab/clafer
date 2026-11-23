@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
 abstract 0..* car 0..* {
-  [((#this.car__cc.acc) >= 1) => ((#this.car__fca) >= 1)]
   1..1 transmission 1..1 {
     0..* automatic 0..1 {}
     0..* manual 0..1 {}
   }
   0..* car__fca : root__fca 0..1 {}
   0..* car__cc : root__cc 1..1 {}
+  [((#this.car__cc.acc) >= 1) => ((#this.car__fca) >= 1)]
 }
 abstract 0..* root__fca 0..* {
   1..1 sensor 1..1 {

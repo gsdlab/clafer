@@ -7,8 +7,8 @@ abstract 1..1 RelayPort : Port 0..* {
   0..* relay 0..1 {}
 }
 1..1 req : RelayPort 1..1 {
-  [(#this.flow) >= 1]
   0..* flow 0..1 {}
+  [(#this.flow) >= 1]
 }
 
 assert [(#req.input) = 0]

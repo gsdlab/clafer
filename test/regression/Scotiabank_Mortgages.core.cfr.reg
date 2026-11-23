@@ -4,9 +4,6 @@ abstract 0..* Percentage ->> int 0..* {
   [(this.dref >= 0) && (this.dref <= 100)]
 }
 abstract 0..* Mortgage 0..* {
-  [(5000 <= this.principalMortgageAmount.dref.dref) && (this.principalMortgageAmount.dref.dref <= 9999999)]
-  [this.balance.dref.dref <= this.principalMortgageAmount.dref.dref]
-  [(1 <= this.amortization.dref) && (this.amortization.dref <= 30)]
   0..* valueProposition -> string 1..1 {}
   0..* term -> MortgageTerm 1..1 {}
   1..1 kind 1..1 {
@@ -14,10 +11,13 @@ abstract 0..* Mortgage 0..* {
     0..* closed 0..1 {}
   }
   0..* principalMortgageAmount -> Currency 1..1 {}
+  [(5000 <= this.principalMortgageAmount.dref.dref) && (this.principalMortgageAmount.dref.dref <= 9999999)]
   0..* balance -> Currency 1..1 {}
+  [this.balance.dref.dref <= this.principalMortgageAmount.dref.dref]
   0..* propertyValue -> Currency 1..1 {}
   0..* loanToValue -> Percentage 1..1 {}
   0..* amortization -> int 1..1 {}
+  [(1 <= this.amortization.dref) && (this.amortization.dref <= 30)]
   1..1 interestRate 1..1 {
     0..* fixedForTheFullTerm 0..1 {}
     0..* resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges 0..1 {}

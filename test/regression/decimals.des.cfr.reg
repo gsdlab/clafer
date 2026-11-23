@@ -4,8 +4,6 @@ abstract 0..* Feature 0..* {
   0..* weight -> decimal 1..1 {}
 }
 abstract 0..* Bike 0..* {
-  [this.total.dref <= 340]
-  [this.weightPerFeature.dref < 5]
   0..* Light : Feature 0..1 {
     [this.cost.dref = 19.99]
     [this.weight.dref = 0.25]
@@ -26,6 +24,8 @@ abstract 0..* Bike 0..* {
   0..* tax -> decimal 1..1 = this.subtotal.dref * 0.13 {}
   0..* total -> decimal 1..1 = this.subtotal.dref + this.tax.dref {}
   0..* weightPerFeature -> decimal 1..1 = (sum Feature.weight.dref) / (#Feature) {}
+  [this.total.dref <= 340]
+  [this.weightPerFeature.dref < 5]
 }
 0..* aBike : Bike 1..1 {}
 0..* size -> decimal 1..1 {

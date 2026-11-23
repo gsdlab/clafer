@@ -9,9 +9,6 @@ abstract 0..* FuelFeature : ComfortFeature 0..* {
   0..* fuel -> int 1..1 {}
 }
 abstract 0..* Car 0..* {
-  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ACCDemo_attributedFeatureModels.cfr:50:5
-  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.comfort.dref))] // =, ACCDemo_attributedFeatureModels.cfr:51:5
-  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.fuel.dref))] // =, ACCDemo_attributedFeatureModels.cfr:52:5
   0..* ABS : Feature 0..1 {
     [this.cost.dref = 2]
   }
@@ -62,8 +59,11 @@ abstract 0..* Car 0..* {
     }
   }
   0..* total_cost -> int 1..1 {}
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ACCDemo_attributedFeatureModels.cfr:50:5
   0..* total_comfort -> int 1..1 {}
+  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.comfort.dref))] // =, ACCDemo_attributedFeatureModels.cfr:51:5
   0..* total_fuel -> int 1..1 {}
+  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.fuel.dref))] // =, ACCDemo_attributedFeatureModels.cfr:52:5
 }
 0..* aCar : Car 1..1 {}
 

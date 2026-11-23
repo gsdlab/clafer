@@ -1,10 +1,10 @@
 //# OPTIONS --explicit --core
-[((#total_x) >= 1) => (total_x.dref = (sum x.dref))] // =, objectivesMinMax.cfr:2:1
 0..* x -> int 3..3 {}
 0..* total_x -> int 1..1 {}
+[((#total_x) >= 1) => (total_x.dref = (sum x.dref))] // =, objectivesMinMax.cfr:2:1
 0..* y 1..1 {
-  [((#this.total_y) >= 1) => (this.total_y.dref = (sum x.dref))] // =, objectivesMinMax.cfr:4:3
   0..* total_y -> int 1..1 {}
+  [((#this.total_y) >= 1) => (this.total_y.dref = (sum x.dref))] // =, objectivesMinMax.cfr:4:3
 }
 
 << min max x.dref >>

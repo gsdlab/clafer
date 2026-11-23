@@ -7,9 +7,6 @@ abstract 0..* SecurityFeature : Feature 0..* {
   0..* security -> int 1..1 {}
 }
 abstract 0..* MobilePhone 0..* {
-  [this.total_performance.dref = (sum Feature.performance.dref)]
-  [this.total_energy.dref = (sum Feature.energy.dref)]
-  [this.total_security.dref = (sum SecurityFeature.security.dref)]
   1..* Connectivity : Feature 1..1 {
     [this.performance.dref = 0]
     [this.energy.dref = 0]
@@ -37,8 +34,11 @@ abstract 0..* MobilePhone 0..* {
     [this.energy.dref = 4]
   }
   0..* total_performance -> int 1..1 {}
+  [this.total_performance.dref = (sum Feature.performance.dref)]
   0..* total_energy -> int 1..1 {}
+  [this.total_energy.dref = (sum Feature.energy.dref)]
   0..* total_security -> int 1..1 {}
+  [this.total_security.dref = (sum SecurityFeature.security.dref)]
 }
 0..* MyPhone : MobilePhone 1..1 {
   [((#this.Connectivity.Bluetooth) >= 1) && ((#this.Connectivity.USB) = 0)]

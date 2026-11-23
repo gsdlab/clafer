@@ -9,10 +9,10 @@
   }
 }
 1..1 door 1..1 {
-  [((#this.closed) >= 1) -[((#signal) >= 1)]-> ((#this.opened) >= 1)]
-  [((#this.opened) >= 1) -[((#signal) = 0)]->> ((#this.closed) >= 1)]
   initial 0..* closed 0..1 {}
   0..* opened 0..1 {}
+  [((#this.closed) >= 1) -[((#signal) >= 1)]-> ((#this.opened) >= 1)]
+  [((#this.opened) >= 1) -[((#signal) = 0)]->> ((#this.closed) >= 1)]
 }
 
 assert [(((#light.red) >= 1) && ((#signal) >= 1)) => (X ((#light.green) >= 1))]

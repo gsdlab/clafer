@@ -1,12 +1,12 @@
 //# OPTIONS --explicit --core --tl=10
 1..1 s 1..1 {
-  [(!(previous ((#this) >= 1))) => ((#this.a) >= 1)] // initial, tmp_nested_assertions.cfr:4:5
   0..* a 0..1 {
     [((#this) >= 1) => (X ((#this.parent.b) >= 1))] // transition, tmp_nested_assertions.cfr:4:13
   }
   0..* b 0..1 {
     [((#this) >= 1) => (X ((#this.parent.a) >= 1))] // transition, tmp_nested_assertions.cfr:5:5
   }
+  [(!(previous ((#this) >= 1))) => ((#this.a) >= 1)] // initial, tmp_nested_assertions.cfr:4:5
 }
 
 assert [all this_ : s | ((#this_.a) >= 1) => (X ((#this_.b) >= 1))]

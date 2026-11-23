@@ -758,6 +758,20 @@ case_RichAndCoreExplicit = do
     has True "[((#this.on) >= 1) => (X (((#this.off) >= 1) && (X ((#this.on) >= 1))))]"
     has True "[G (((((#q) >= 1) && ((#r) = 0)) && (F ((#r) >= 1))) => (((#p) = 0) U ((#r) >= 1)))]"
 
+-- | Both explicit models print the top-level declarations where they were written: the
+--   clafers, the enumerations and the constraints.
+case_ExplicitDeclarationOrder :: Assertion
+case_ExplicitDeclarationOrder = do
+    let model = unlines [ "a ?", "[ some a ]", "enum E = x | y", "b -> E" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} model of
+            Right r -> return $ drop 1 $ lines $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return []
+    rich <- explicit False
+    rich == ["0..* a 0..1 {}", "[(#a) >= 1]", "enum E = x | y", "0..* b -> E 1..1 {}"] @? ("rich:\n" ++ unlines rich)
+    core'' <- explicit True
+    take 3 core'' == ["0..* a 0..1 {}", "[(#a) >= 1]", "abstract 0..* E 0..* {}"] && last core'' == "0..* b -> E 1..1 {}"
+        @? ("core:\n" ++ unlines core'')
+
 -- | Real and double, which no backend solves, are printed in the rich and the core explicit
 --   model, which compile to themselves.
 case_RealsPrinted :: Assertion

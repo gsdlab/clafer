@@ -1,5 +1,4 @@
 //# OPTIONS --explicit
-[all p : Phone | (#p.networking.mobile) >= 1]
 abstract 0..* Phone 0..* {
   0..* networking 1..1 {
     0..* wifi 0..1 {
@@ -29,3 +28,4 @@ abstract 0..* Phone 0..* {
 0..* PhoneWithGpu : Phone 1..1 {
   [(#this.gpu) >= 1]
 }
+[all p : Phone | (#p.networking.mobile) >= 1]

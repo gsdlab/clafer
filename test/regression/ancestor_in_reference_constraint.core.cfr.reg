@@ -1,5 +1,4 @@
 //# OPTIONS --explicit --core
-[(s1 in m1.services.dref) && (s2 in m2.services.dref)]
 abstract 0..* Service 0..* {
   0..* machine -> Machine 1..1 {}
 }
@@ -13,3 +12,4 @@ abstract 0..* Machine 0..* {
 0..* m2 : Machine 1..1 {}
 0..* s1 : Service 1..1 {}
 0..* s2 : Service 1..1 {}
+[(s1 in m1.services.dref) && (s2 in m2.services.dref)]

@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --core
-[((#express) >= 1) <=> ((#downX) >= 1)]
 abstract 0..* Feature 0..* {}
 0..* express : Feature 0..1 {}
+[((#express) >= 1) <=> ((#downX) >= 1)]
 abstract 0..* Component 0..* {
   abstract 1..1 Port 0..* {
     0..* input 0..1 {}

@@ -7,13 +7,13 @@ abstract 0..* Component 0..* {
   abstract 1..* TemperaturePort : Port -> int 0..* {}
 }
 abstract 0..* TemperatureConnector 0..* {
-  [this.to.dref.dref = this.from.dref.dref]
   0..* from -> TemperaturePort 1..1 {
     [(#this.dref.output) >= 1]
   }
   0..* to -> TemperaturePort 1..1 {
     [(#this.dref.input) >= 1]
   }
+  [this.to.dref.dref = this.from.dref.dref]
 }
 0..* sensor : Component 1..1 {
   1..* sensor__temperature : TemperaturePort 1..1 {

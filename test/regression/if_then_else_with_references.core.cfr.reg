@@ -1,5 +1,4 @@
 //# OPTIONS --explicit --core
-[uses.dref = (if ((#Software) > 0) then (s1.target.dref ++ s2.target.dref) else noHardware.dref)]
 abstract 0..* Hardware 0..* {}
 0..* h1 : Hardware 1..1 {}
 0..* h2 : Hardware 1..1 {}
@@ -14,3 +13,4 @@ abstract 0..* Software 0..* {
 }
 0..* noHardware -> Hardware 0..0 {}
 0..* uses -> Hardware 0..* {}
+[uses.dref = (if ((#Software) > 0) then (s1.target.dref ++ s2.target.dref) else noHardware.dref)]

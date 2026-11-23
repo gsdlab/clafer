@@ -1,13 +1,13 @@
 //# OPTIONS --explicit --core --tl=10
+0..* go 0..1 {}
+0..* ready 0..1 {}
+0..* done 0..1 {}
 [G (((#done) >= 1) => (once ((#go) >= 1)))]
 [G (((#done) >= 1) => (((#ready) >= 1) since ((#go) >= 1)))]
 [G (((#go) >= 1) => (!(previous ((#go) >= 1))))]
 [(!(previous ((#root) >= 1))) => ((((#go) >= 1) && ((#ready) = 0)) && ((#done) = 0))]
 [(!(previous ((#root) >= 1))) => (X (((#ready) >= 1) && ((#go) = 0)))]
 [(!(previous ((#root) >= 1))) => (X (X (((#ready) >= 1) && ((#done) >= 1))))]
-0..* go 0..1 {}
-0..* ready 0..1 {}
-0..* done 0..1 {}
 
 assert [(!(previous ((#root) >= 1))) => (!(previous ((#go) >= 1)))]
 assert [(!(previous ((#root) >= 1))) => (X (X (once ((#go) >= 1))))]

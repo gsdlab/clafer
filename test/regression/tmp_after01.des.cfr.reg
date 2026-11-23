@@ -1,16 +1,16 @@
 //# OPTIONS --explicit --tl=10
 0..* a 0..1 {
   1..1 b 1..1 {
-    [never ((#this.d) >= 1) after ((#this.c) >= 1)]
     0..* c 0..1 {}
     0..* d 0..1 {}
+    [never ((#this.d) >= 1) after ((#this.c) >= 1)]
   }
 }
 final 0..* e 1..1 {
   final 1..1 f 1..1 {
-    [never ((#this.h) >= 1) after ((#this.g) >= 1)]
     0..* g 0..1 {}
     0..* h 0..1 {}
+    [never ((#this.h) >= 1) after ((#this.g) >= 1)]
   }
 }
 

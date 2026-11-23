@@ -387,6 +387,9 @@ the comments, and keeps the cores with them as regressions (`*.core.cfr.reg`), f
 `Core.hs`, so these are to be written down:
 
 - the names of the generated clafers and quantifier variables
-- the place and order of the lowered elements
+- the place and order of the lowered elements; settled: both models print the declarations
+  where they were written (at the top level the clafers, enumerations and constraints, in a
+  clafer its constraints and subclafers), and a constraint that a lowering makes after its
+  clafer
 - the parentheses
 - the provenance comments

@@ -1,5 +1,4 @@
 //# OPTIONS --explicit --core
-[all x : sys.b1.a | x = sys.b1.a]
 abstract 0..* Port 0..* {}
 abstract 0..* B 0..* {
   0..* a -> Port 1..1 {}
@@ -20,3 +19,4 @@ abstract 0..* B 0..* {
   [this.dref in sys.b1.a]
   [this.dref = sys.b1.a]
 }
+[all x : sys.b1.a | x = sys.b1.a]

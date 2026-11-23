@@ -58,9 +58,8 @@ explicitModel :: Bool -> (Pos -> String) -> Maybe Integer -> CModel -> Result
 explicitModel core' position traceLength CModel{cmElements} =
     -- the model declares itself explicit, for clafer and chocosolver, and the core
     "//# OPTIONS --explicit" ++ (if core' then " --core" else "") ++ maybe "" (\tl -> " --tl=" ++ show tl) traceLength ++ "\n"
-    ++ concat [ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | CEConstraint o e <- cmElements ]
-    ++ concat [ exEnum c | CEClafer c <- cmElements, isEnum c, ccAbstract c ]
-    ++ concat [ exClafer exOrigin superMap "" c | CEClafer c <- cmElements, not (isEnum c) ]
+    -- the top-level declarations where they were written; an enumeration with its literals
+    ++ concatMap exTop cmElements
     ++ (if null objectives && null assertions then "" else "\n")
     ++ concat [ "<< " ++ (if isMax then "max " else "min ") ++ exExp e ++ " >>\n" | (isMax, e) <- objectives ]
     ++ concat [ "assert [" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | (o, e) <- assertions ]
@@ -72,6 +71,11 @@ explicitModel core' position traceLength CModel{cmElements} =
     assertions = [ (o, e) | CEAssert o e <- allElements ]
     superMap = Map.fromList [ (ccUid c, c) | CEClafer c <- allElements ]
     exOrigin = originComment position
+    exTop (CEConstraint o e) = "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n"
+    exTop (CEClafer c)
+      | isEnum c = if ccAbstract c then exEnum c else ""
+      | otherwise = exClafer exOrigin superMap "" c
+    exTop _ = ""
     -- an enumeration, with its literals in their order
     exEnum c = "enum " ++ ccUid c ++ " = "
         ++ intercalate " | " [ ccUid l | CEClafer l <- cmElements, isEnum l, ccSuper l == Just (ccUid c) ] ++ "\n"
@@ -98,15 +102,23 @@ exClafer exOrigin superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard
         else " " ++ exCard ccCard)
     -- the initializer as written, with its clock, and its value in the context of the parent
     ++ concat [ (if k then " = " else if s then " := together " else " := each ") ++ exExp e | CEInitializer k s e <- ccElements ]
-    ++ (if null constraints && null subClafers then " {}" ++ exOrigin ccOrigin ++ "\n"
+    ++ (if isEmptyBody then " {}" ++ exOrigin ccOrigin ++ "\n"
         else " {" ++ exOrigin ccOrigin ++ "\n"
-             ++ concat [ indent' ++ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n" | (o, e) <- constraints ]
-             ++ concatMap (exClafer exOrigin superMap indent') subClafers
+             -- the constraints of the reference, then the constraints and subclafers where
+             -- they were written
+             ++ concat [ exConstraint Nothing e | e <- ccRefConstraints ]
+             ++ concatMap exBody ccElements
              ++ indent ++ "}\n")
   where
     indent' = indent ++ "  "
-    constraints = map ((,) Nothing) ccRefConstraints ++ [ (o, e) | CEConstraint o e <- ccElements ]
-    subClafers = [ c | CEClafer c <- ccElements ]
+    exConstraint o e = indent' ++ "[" ++ exExp e ++ "]" ++ exOrigin o ++ "\n"
+    exBody (CEConstraint o e) = exConstraint o e
+    exBody (CEClafer c) = exClafer exOrigin superMap indent' c
+    exBody _ = ""
+    isEmptyBody = null ccRefConstraints && null [ () | e <- ccElements, isBody e ]
+    isBody CEConstraint{} = True
+    isBody CEClafer{} = True
+    isBody _ = False
     inheritedGCard g@(Just _) _ = g
     inheritedGCard Nothing (Just s) | Just CClafer{ccGCard = g, ccSuper = s'} <- Map.lookup s superMap = inheritedGCard g s'
     inheritedGCard _ _ = Nothing

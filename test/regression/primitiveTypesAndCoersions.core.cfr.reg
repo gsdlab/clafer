@@ -1,21 +1,21 @@
 //# OPTIONS --explicit --core
-[((#I) >= 1) => (I.dref = 5)] // =, primitiveTypesAndCoersions.cfr:3:1
-[((#S) >= 1) => (S.dref = "some string")] // =, primitiveTypesAndCoersions.cfr:4:1
-[((#R) >= 1) => (R.dref = 3.1415)] // =, primitiveTypesAndCoersions.cfr:5:1
-[((#D) >= 1) => (D.dref = 1.2e2)] // =, primitiveTypesAndCoersions.cfr:6:1
-[((#R2) >= 1) => (R2.dref = (3.1415 + 6))] // =, primitiveTypesAndCoersions.cfr:11:1
-[((#D2) >= 1) => (D2.dref = (3.1415e2 + 7))] // =, primitiveTypesAndCoersions.cfr:14:1
-[((#R3) >= 1) => (R3.dref = (3.1415 + 6.0e0))] // =, primitiveTypesAndCoersions.cfr:17:1
-[((#R4) >= 1) => (R4.dref = 8)] // =, primitiveTypesAndCoersions.cfr:20:1
-[((#D3) >= 1) => (D3.dref = 9)] // =, primitiveTypesAndCoersions.cfr:23:1
-[((#R5) >= 1) => (R5.dref = 3.0e0)] // =, primitiveTypesAndCoersions.cfr:26:1
 0..* I -> int 1..1 {}
+[((#I) >= 1) => (I.dref = 5)] // =, primitiveTypesAndCoersions.cfr:3:1
 0..* S -> string 1..1 {}
+[((#S) >= 1) => (S.dref = "some string")] // =, primitiveTypesAndCoersions.cfr:4:1
 0..* R -> real 1..1 {}
+[((#R) >= 1) => (R.dref = 3.1415)] // =, primitiveTypesAndCoersions.cfr:5:1
 0..* D -> double 1..1 {}
+[((#D) >= 1) => (D.dref = 1.2e2)] // =, primitiveTypesAndCoersions.cfr:6:1
 0..* R2 -> real 1..1 {}
+[((#R2) >= 1) => (R2.dref = (3.1415 + 6))] // =, primitiveTypesAndCoersions.cfr:11:1
 0..* D2 -> double 1..1 {}
+[((#D2) >= 1) => (D2.dref = (3.1415e2 + 7))] // =, primitiveTypesAndCoersions.cfr:14:1
 0..* R3 -> real 1..1 {}
+[((#R3) >= 1) => (R3.dref = (3.1415 + 6.0e0))] // =, primitiveTypesAndCoersions.cfr:17:1
 0..* R4 -> real 1..1 {}
+[((#R4) >= 1) => (R4.dref = 8)] // =, primitiveTypesAndCoersions.cfr:20:1
 0..* D3 -> double 1..1 {}
+[((#D3) >= 1) => (D3.dref = 9)] // =, primitiveTypesAndCoersions.cfr:23:1
 0..* R5 -> real 1..1 {}
+[((#R5) >= 1) => (R5.dref = 3.0e0)] // =, primitiveTypesAndCoersions.cfr:26:1

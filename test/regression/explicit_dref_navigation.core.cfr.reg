@@ -11,18 +11,18 @@ abstract 0..* Port 0..* {
 }
 abstract 0..* Component 0..* {
   abstract 0..* link -> Port 0..* {
-    [this.dref.Port__speed.dref >= this.link__speed.dref]
-    [all t : this.dref | t.Port__speed.dref >= this.latency.dref]
     0..* latency -> int 1..1 {}
     0..* link__speed -> int 1..1 {}
+    [this.dref.Port__speed.dref >= this.link__speed.dref]
+    [all t : this.dref | t.Port__speed.dref >= this.latency.dref]
   }
 }
 0..* cam : Component 1..1 {
-  [this.l.dref.Port__speed.dref = 3]
   0..* l : link -> p 1..1 {
     [this.dref.Port__speed.dref = 3]
     [this.dref.name.dref = 1]
   }
+  [this.l.dref.Port__speed.dref = 3]
 }
 0..* b ->> Port 2..2 {
   [this.dref.Port__speed.dref = 3]

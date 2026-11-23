@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --tl=10
 enum UserRequest = stop | up | down
 0..* Elevator 1..1 {
+  0..* request -> UserRequest 1..1 {}
   [initially (this.request.dref = stop)]
   [always ((this.request.dref = up) => (X (this.request.dref = stop)))]
-  0..* request -> UserRequest 1..1 {}
 }

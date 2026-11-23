@@ -1,11 +1,11 @@
 //# OPTIONS --explicit
 abstract 0..* Feature 0..* {
-  [this.mass.dref >= 0]
-  [this.cost.dref >= 0]
   0..* performance -> int 1..1 {}
   0..* energy -> int 1..1 {}
   0..* mass -> int 1..1 {}
+  [this.mass.dref >= 0]
   0..* cost -> int 1..1 {}
+  [this.cost.dref >= 0]
 }
 abstract 0..* SecurityFeature : Feature 0..* {
   0..* security -> int 1..1 {}

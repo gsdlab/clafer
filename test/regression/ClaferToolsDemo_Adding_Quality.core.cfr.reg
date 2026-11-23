@@ -6,10 +6,6 @@ abstract 0..* Feature 0..* {
   0..* security -> int 1..1 {}
 }
 abstract 0..* MobilePhone 0..* {
-  [((#this.total_productivity) >= 1) => (this.total_productivity.dref = (sum Feature.productivity.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:62:5
-  [((#this.total_batterylife) >= 1) => (this.total_batterylife.dref = (sum Feature.batterylife.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:63:5
-  [((#this.total_security) >= 1) => (this.total_security.dref = (sum Feature.security.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:64:5
-  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:65:5
   0..* Connectivity : Feature 1..1 {
     [this.batterylife.dref = -12]
     [this.productivity.dref = 14]
@@ -75,9 +71,13 @@ abstract 0..* MobilePhone 0..* {
     }
   }
   0..* total_productivity -> int 1..1 {}
+  [((#this.total_productivity) >= 1) => (this.total_productivity.dref = (sum Feature.productivity.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:62:5
   0..* total_batterylife -> int 1..1 {}
+  [((#this.total_batterylife) >= 1) => (this.total_batterylife.dref = (sum Feature.batterylife.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:63:5
   0..* total_security -> int 1..1 {}
+  [((#this.total_security) >= 1) => (this.total_security.dref = (sum Feature.security.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:64:5
   0..* total_cost -> int 1..1 {}
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))] // =, ClaferToolsDemo_Adding_Quality.cfr:65:5
 }
 0..* OptimalPhone : MobilePhone 1..1 {}
 

@@ -1,15 +1,14 @@
 //# OPTIONS --explicit --core
-[((#twoPercent) >= 1) => (twoPercent.dref = 2)] // =, subtyping-primitive-types.cfr:5:1
-[((#threePercent) >= 1) => (threePercent.dref = (twoPercent.dref + 1))] // =, subtyping-primitive-types.cfr:7:1
-[((#today) >= 1) => (today.dref = "Mar 20, 2012")] // =, subtyping-primitive-types.cfr:12:1
-[((#time) >= 1) => (time.dref = (time.minute.dref + time.hour.dref))] // =, subtyping-primitive-types.cfr:14:1
 abstract 0..* percent ->> int 0..* {
   [(this.dref >= 0) && (this.dref <= 5)]
 }
 0..* twoPercent : percent 1..1 {}
+[((#twoPercent) >= 1) => (twoPercent.dref = 2)] // =, subtyping-primitive-types.cfr:5:1
 0..* threePercent : percent 1..1 {}
+[((#threePercent) >= 1) => (threePercent.dref = (twoPercent.dref + 1))] // =, subtyping-primitive-types.cfr:7:1
 abstract 0..* date ->> string 0..* {}
 0..* today : date 1..1 {}
+[((#today) >= 1) => (today.dref = "Mar 20, 2012")] // =, subtyping-primitive-types.cfr:12:1
 abstract 0..* time ->> int 0..* {
   0..* minute -> int 1..1 {
     [(this.dref >= 0) && (this.dref <= 5)]
@@ -18,6 +17,7 @@ abstract 0..* time ->> int 0..* {
     [(this.dref >= 0) && (this.dref <= 5)]
   }
 }
+[((#time) >= 1) => (time.dref = (time.minute.dref + time.hour.dref))] // =, subtyping-primitive-types.cfr:14:1
 0..* now : time 1..1 {
   [this.minute.dref = 3]
   [this.hour.dref = 1]

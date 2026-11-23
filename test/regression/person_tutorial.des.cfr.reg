@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
-enum NorthAmericanCountry = Canada | USA
 abstract 0..* date ->> string 0..* {}
+enum NorthAmericanCountry = Canada | USA
 abstract 0..* Person 0..* {
   0..* Name -> string 1..1 {}
   0..* Surname -> string 1..1 {}

@@ -1,20 +1,20 @@
 //# OPTIONS --explicit --core --tl=10
-[(#Val) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:8:1
-[(#Wal) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:9:1
-[(!(previous ((#root) >= 1))) => (((#Wal) >= 1) => (Wal.dref = 1))] // := together, tmp_initializerClocks.cfr:9:1
-[(!(previous ((#root) >= 1))) => (((#Vi) = 0) && ((#Wi) = 0))]
-[(F ((#Vi) >= 1)) && (F ((#Wi) >= 1))]
 abstract 0..* Val ->> int 0..* {
   [(!(previous ((#this) >= 1))) => (this.dref = 1)] // := each, tmp_initializerClocks.cfr:8:1
 }
+[(#Val) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:8:1
 abstract 0..* Wal ->> int 0..* {}
+[(#Wal) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:9:1
+[(!(previous ((#root) >= 1))) => (((#Wal) >= 1) => (Wal.dref = 1))] // := together, tmp_initializerClocks.cfr:9:1
 0..* Vi : Val 0..* {}
 0..* Wi : Wal 0..* {}
+[(!(previous ((#root) >= 1))) => (((#Vi) = 0) && ((#Wi) = 0))]
+[(F ((#Vi) >= 1)) && (F ((#Wi) >= 1))]
 0..* A 1..1 {
-  [(!(previous ((#this) >= 1))) => (((#this.ys) >= 1) => (this.ys.dref = 3))] // := together, tmp_initializerClocks.cfr:17:5
-  [F ((#this.xs) = 2)]
   0..* xs ->> int 0..2 {
     [(!(previous ((#this) >= 1))) => (this.dref = 2)] // := each, tmp_initializerClocks.cfr:16:5
   }
   0..* ys ->> int 0..2 {}
+  [(!(previous ((#this) >= 1))) => (((#this.ys) >= 1) => (this.ys.dref = 3))] // := together, tmp_initializerClocks.cfr:17:5
+  [F ((#this.xs) = 2)]
 }

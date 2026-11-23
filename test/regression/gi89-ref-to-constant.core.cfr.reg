@@ -1,13 +1,13 @@
 //# OPTIONS --explicit --core
-[((#A) >= 1) => (A.dref = 1)] // =, gi89-ref-to-constant.cfr:2:1
-[((#B) >= 1) => (B.dref = 2)] // =, gi89-ref-to-constant.cfr:3:1
-[((#C) >= 1) => (C.dref = 3)] // =, gi89-ref-to-constant.cfr:4:1
-[((#D) >= 1) => (D.dref = 4)] // =, gi89-ref-to-constant.cfr:5:1
 abstract 0..* ASIL ->> int 0..* {}
 0..* A : ASIL -> int 1..1 {}
+[((#A) >= 1) => (A.dref = 1)] // =, gi89-ref-to-constant.cfr:2:1
 0..* B : ASIL -> int 1..1 {}
+[((#B) >= 1) => (B.dref = 2)] // =, gi89-ref-to-constant.cfr:3:1
 0..* C : ASIL -> int 1..1 {}
+[((#C) >= 1) => (C.dref = 3)] // =, gi89-ref-to-constant.cfr:4:1
 0..* D : ASIL -> int 1..1 {}
+[((#D) >= 1) => (D.dref = 4)] // =, gi89-ref-to-constant.cfr:5:1
 
 assert [A.dref = 1]
 assert [B.dref = 2]
