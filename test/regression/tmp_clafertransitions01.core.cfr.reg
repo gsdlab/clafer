@@ -2,7 +2,7 @@
 0..* a 1..1 {
   1..1 b 1..1 {
     0..* c 0..1 {
-      [(some this) => (X (some this.parent.d))] // transition, tmp_clafertransitions01.cfr:5:17
+      [(some this) => (X (some this.parent.d))] // -->, tmp_clafertransitions01.cfr:5:17
     }
     0..* d 0..1 {}
   }

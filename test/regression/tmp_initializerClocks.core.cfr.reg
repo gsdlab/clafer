@@ -2,9 +2,9 @@
 abstract 0..* Val ->> int 0..* {
   [(!(previous (some this))) => (this.dref = 1)] // := each, tmp_initializerClocks.cfr:8:1
 }
-[(#Val) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:8:1
+[(#Val) <= 3] // abstract 0..3, tmp_initializerClocks.cfr:8:1
 abstract 0..* Wal ->> int 0..* {}
-[(#Wal) <= 3] // abstract multiplicity, tmp_initializerClocks.cfr:9:1
+[(#Wal) <= 3] // abstract 0..3, tmp_initializerClocks.cfr:9:1
 [(!(previous (some root))) => ((some Wal) => (Wal.dref = 1))] // := together, tmp_initializerClocks.cfr:9:1
 0..* Vi : Val 0..* {}
 0..* Wi : Wal 0..* {}

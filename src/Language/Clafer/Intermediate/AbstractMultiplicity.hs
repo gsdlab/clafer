@@ -67,9 +67,14 @@ lowerAbstractBounds which imodule = imodule{_mDecls = lowerElements $ _mDecls im
     (c', constraints) = case _card c of
       Just b | _isAbstract c, b /= unrestricted, which == AllBounds || isTopLevel c ->
         ( c{_card = Just unrestricted}
-        , [ IEConstraint' True p (Just $ Origin "abstract multiplicity" $ _cinPos c) | Just p <- [boundOf c b] ] )
+        , [ IEConstraint' True p (Just $ Origin (multiplicitySyntax b) $ _cinPos c) | Just p <- [boundOf c b] ] )
       _ -> (c, [])
   lowerElement e = [e]
+
+-- | The multiplicity of an abstract clafer, as the explicit model prints it, for
+--   @--record-provenance@: e.g., @abstract 3..6@ for @abstract Tools 3..6@.
+multiplicitySyntax :: Interval -> String
+multiplicitySyntax (low, high) = "abstract " ++ show low ++ ".." ++ (if high < 0 then "*" else show high)
 
 -- | The constraint of the bound on the number of instances of the abstract clafer, in the context
 --   of its parent: @#A@ at the top level, @#this.A@ in the parent.

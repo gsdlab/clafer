@@ -547,6 +547,19 @@ patternOf op' = lookup op' [ (patternOp k s, (k, s)) | k <- patternKinds, s <- p
 patternOps :: [String]
 patternOps = [ patternOp k s | k <- patternKinds, s <- patternScopes ]
 
+-- | The keywords of a pattern or a transition as written, for @--record-provenance@: e.g.,
+--   @must precede between and@ for @s must precede p between q and r@, and @-[]->@ for
+--   @a -[g]-> b@.
+richOpSyntax :: String -> String
+richOpSyntax op' = case patternOf op' of
+  Just (kind, scope) -> unwords $ kindSyntax kind ++ scopeSyntax scope
+  Nothing -> op'
+  where
+  kindSyntax k = if k `elem` ["precede", "follow"] then ["must", k] else [k]
+  scopeSyntax "" = []
+  scopeSyntax "between" = ["between", "and"]
+  scopeSyntax s = [s]
+
 -- | The transitions, which the IR keeps: @a --> b@, @a -[g]-> b@, @a -->> b@ and @a -[g]->> b@.
 iTrans, iTransGuarded, iTransSync, iTransSyncGuarded :: String
 iTrans            = "-->"

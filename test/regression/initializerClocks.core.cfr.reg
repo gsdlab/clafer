@@ -4,6 +4,6 @@
 0..* ys ->> int 2..2 {}
 [(some ys) => (ys.dref = (1 ++ 2))] // := together, initializerClocks.cfr:9:1
 abstract 0..* Val ->> int 0..* {}
-[(#Val) <= 3] // abstract multiplicity, initializerClocks.cfr:11:1
+[(#Val) <= 3] // abstract 0..3, initializerClocks.cfr:11:1
 [(some Val) => (Val.dref = 5)] // := each, initializerClocks.cfr:11:1
 0..* V : Val 2..2 {}

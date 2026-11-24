@@ -80,7 +80,7 @@ markRich = transformOnOf biplate uniplate mark
   where
   mark (IEConstraint' h p Nothing)
     | q@PExp{_exp = IFunExp op' _} : _ <- [ q | q@PExp{_exp = IFunExp op' _} <- universe p, op' `elem` richTemporalOps ]
-    = IEConstraint' h p $ Just $ Origin (if op' `elem` transitionOps then "transition" else op') (_inPos q)
+    = IEConstraint' h p $ Just $ Origin (richOpSyntax op') (_inPos q)
   mark e = e
 
 -- | The clafers of the enumerations are ordinary clafers.

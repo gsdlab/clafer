@@ -1,10 +1,10 @@
 //# OPTIONS --explicit --core --tl=10
 1..1 s 1..1 {
   0..* a 0..1 {
-    [(some this) => (X (some this.parent.b))] // transition, tmp_nested_assertions.cfr:4:13
+    [(some this) => (X (some this.parent.b))] // -->, tmp_nested_assertions.cfr:4:13
   }
   0..* b 0..1 {
-    [(some this) => (X (some this.parent.a))] // transition, tmp_nested_assertions.cfr:5:5
+    [(some this) => (X (some this.parent.a))] // -->, tmp_nested_assertions.cfr:5:5
   }
   [(!(previous (some this))) => (some this.a)] // initial, tmp_nested_assertions.cfr:4:5
 }

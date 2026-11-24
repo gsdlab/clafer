@@ -1,6 +1,6 @@
 //# OPTIONS --explicit --core --tl=10
 abstract 0..* Tools 0..* {}
-[((#Tools) >= 3) && ((#Tools) <= 6)] // abstract multiplicity, tmp_abstract_multiplicity.cfr:5:1
+[((#Tools) >= 3) && ((#Tools) <= 6)] // abstract 3..6, tmp_abstract_multiplicity.cfr:5:1
 0..* hammer : Tools 0..* {}
 0..* saw : Tools 0..4 {}
 [(!(previous (some root))) => (((#hammer) = 3) && (no saw))]

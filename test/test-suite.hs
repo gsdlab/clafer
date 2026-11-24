@@ -32,6 +32,7 @@ import Language.Clafer
 import Language.Clafer.Import
 import Language.Clafer.QNameUID
 import Language.Clafer.ClaferArgs (ClaferMode (Clafer))
+import Language.Clafer.Common (richOpSyntax)
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
@@ -1046,6 +1047,13 @@ case_InitialLowered = do
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
+-- | The origin of a pattern or a transition names its keywords as written.
+case_RichOpSyntax :: Assertion
+case_RichOpSyntax = do
+    map richOpSyntax ["-->", "-[]->", "-->>", "-[]->>"] @?= ["-->", "-[]->", "-->>", "-[]->>"]
+    map richOpSyntax ["never", "always before", "precede between", "follow after until", "lonce after"]
+      @?= ["never", "always before", "must precede between and", "must follow after until", "lonce after"]
+
 -- With --record-provenance, the explicit core model has the origin of each clafer and constraint
 -- that a lowering made, as a comment with the rich construct and its position, as in the messages; the comments do not
 -- change the core, which compiles to the same core. Without the flag, the core and the JSON have
@@ -1060,8 +1068,8 @@ case_RecordProvenance = do
             Left errs' -> assertFailure (show errs') >> return ""
     x <- output Clafer True model
     all (`isInfixOf` x)
-      [ "] // abstract multiplicity, 2:1", "{} // enum, 1:1", "] // final, 5:5", "] // :=, 6:1"
-      , "] // initial, 4:1", "] // initial, 8:5", "] // transition, 8:13", "] // never before, 10:3" ] @? ("origins missing:\n" ++ x)
+      [ "] // abstract 1..3, 2:1", "{} // enum, 1:1", "] // final, 5:5", "] // :=, 6:1"
+      , "] // initial, 4:1", "] // initial, 8:5", "] // -->, 8:13", "] // never before, 10:3" ] @? ("origins missing:\n" ++ x)
     plain <- output Clafer False model
     not ("//" `isInfixOf` drop 1 (dropWhile (/= '\n') plain)) @? ("an origin without the flag:\n" ++ plain)
     -- the comments of the origins are what a core with them compiles to without

@@ -336,7 +336,7 @@ the one in its file, also in a model with imports. The file is its name only, wi
 folders, which depend on where the compiler runs.
 
 ```
-[((#Tools) >= 1) && ((#Tools) <= 3)] // abstract multiplicity, model.cfr:2:1
+[((#Tools) >= 1) && ((#Tools) <= 3)] // abstract 1..3, model.cfr:2:1
 abstract 0..* Color 0..* {} // enum, model.cfr:1:1
 0..* a 0..1 {
   0..* b 0..1 {
@@ -348,8 +348,12 @@ abstract 0..* Color 0..* {} // enum, model.cfr:1:1
 }
 ```
 
-The constructs are `enum`, `=`, `:=`, `initial`, `final`, `finalref`, `finaltarget`,
-`abstract multiplicity`, `transition` and the patterns (e.g., `never before`). The IR records the
+The construct is named by its syntax as written, its keywords without their arguments:
+`enum`, `=`, `:=`, `:= each`, `:= together`, `initial`, `final`, `finalref`, `finaltarget`, the
+multiplicity of an abstract clafer (e.g., `abstract 1..3` for `abstract Tools 1..3`), the
+transitions `-->`, `-[]->`, `-->>` and `-[]->>` (the guard left out), and the patterns with
+their scopes (e.g., `never before` for `never p before r`, and `must precede between and` for
+`s must precede p between q and r`). The IR records the
 origin (`_cOrigin` of a clafer, `_eOrigin` of a constraint, with the position in the file, in
 `-m json --core`). The flag is off by default: the comments are for reading the core against
 the model, and the core without them is what the backends get. A comment does not change the
@@ -476,10 +480,13 @@ With `--record-provenance`, each clafer and constraint that a lowering made ends
 ` // construct, file:line:column`, or ` // construct` when the construct has no position (see
 [Provenance](#provenance)). Nothing else has a comment.
 
-- **The constructs** are `enum`, `=`, `:=`, `:= each`, `:= together`, `initial`, `final`,
-  `finalref`, `finaltarget`, `abstract multiplicity`, `transition` (for each of the four
-  transitions) and the patterns with their scopes (`never`, `never before`, `always between`,
-  `s must precede p` is `precede`, …). `:= each` and `:= together` are the clocks as written:
+- **The constructs** are named by their syntax as written, the keywords without the arguments:
+  `enum`, `=`, `:=`, `:= each`, `:= together`, `initial`, `final`, `finalref`, `finaltarget`,
+  the multiplicity of an abstract clafer as the core prints a multiplicity (`abstract 3..6`
+  for `abstract Tools 3..6`, `abstract 0..0` for `abstract a 0`), the transitions `-->`,
+  `-[]->`, `-->>` and `-[]->>` (the guard left out), and the patterns with their scopes
+  (`never`, `never before`, `always between and`, `must precede after until` for
+  `s must precede p after q until r`, …). `:= each` and `:= together` are the clocks as written:
   from a model, `:=` when the clock was not written; from a rich explicit model, which writes
   every clock, always the clock.
 - **The position** is the one of the rich construct:
