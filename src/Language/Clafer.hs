@@ -445,8 +445,13 @@ parse =
     let allTokens = myLexer model'
     let (parseableTokens, otherTokens') = partition isParseable allTokens
     tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout otherTokens' parseableTokens else return parseableTokens
-    return (pModule tokens2, otherTokens')
+    return (atEnd tokens2 $ pModule tokens2, otherTokens')
     where
+      -- a syntax error at the end of the model is after its last token
+      atEnd tokens' (Bad (Pos 0 0) m) = case [ (l, c + length (prToken t)) | t@(PT (Pn _ l c) _) <- tokens', l > 0 ] of
+        [] -> Bad (Pos 1 1) m
+        ends -> let (l, c) = last ends in Bad (Pos (toInteger l) (toInteger c)) m
+      atEnd _ result = result
       isParseable (PT _ (T_PosLineComment _))  = False
       isParseable (PT _ (T_PosBlockComment _)) = False
       isParseable (PT _ (T_PosAlloy _))        = False

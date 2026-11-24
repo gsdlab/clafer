@@ -27,3 +27,4 @@ test/positive/*.core.cfr
 test/positive/*.html
 test/positive/*.dot
 test/positive/*.dot.svg
+test/parse-trees/

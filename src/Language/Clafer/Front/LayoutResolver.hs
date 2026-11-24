@@ -125,23 +125,6 @@ isExTokenIn _ _ = False
 isNewLine :: Token -> Token -> Bool
 isNewLine t1 t2 = line t1 < line t2
 
--- | Add to the global and column positions of a token.
--- | The column position is only changed if the token is on
--- | the same line as the given position.
-incrGlobal :: (Monad m) => Position -- ^ If the token is on the same line
-                       --   as this position, update the column position.
-           -> Int      -- ^ Number of characters to add to the position.
-           -> Token -> ClaferT m Token
-incrGlobal (Pn _ l0 _) i (PT (Pn g l c) t) =
-  return $ if l /= l0 then PT (Pn (g + i) l c) t
-             else PT (Pn (g + i) l (c + i)) t
-incrGlobal _ _ (Err (Pn z x y)) = do
-  env <- getEnv
-  let claferModel = lines $ unlines $ modelFrags env
-  throwErr $ ParseErr (ErrPos z fPos fPos) $ "Cannot add token at '" ++ (take y $ claferModel !! (x-1)) ++ "'"
-  where
-    fPos = Pos (fromIntegral x) (fromIntegral y)
-
 tokenLookup :: String -> Maybe Int
 tokenLookup s = treeFind resWords
   where
@@ -225,16 +208,18 @@ adjust [t] = return [t]
 adjust (t:ts) = ((updToken (t:ts)) >>= adjust) >>= (return . (t:))
 
 updToken :: (Monad m) => [Token] -> ClaferT m [Token]
+-- | Places the tokens which the layout inserted (the braces of the indentation and the separator
+-- | of sibling lines) after the token before them. They have no characters in the model, so the
+-- | tokens after them keep their positions; a brace written in the model keeps its own.
 updToken (t0:t1:ts)
-  | isLayoutOpen t1 || isLayoutClose t1 = addToken (nextPos t0) sym ts
-  -- the separator of sibling lines has no characters, so the tokens after it keep their positions
-  | isLayoutSeparator t1 = return (PT (nextPos t0) sepTok : ts)
+  | isInserted t1 && (isLayoutOpen t1 || isLayoutClose t1 || isLayoutSeparator t1) = return (PT (nextPos t0) token' : ts)
   | otherwise = return (t1:ts)
   where
-  sym = if isLayoutOpen t1 then "{" else "}"
-  sepTok = case layoutSeparator of
+  isInserted (PT (Pn 0 0 0) _) = True
+  isInserted _ = False
+  token' = case t1 of
     PT _ t -> t
-    Err _    -> error "LayoutResolver.updToken: the layout separator is not a token"
+    Err _  -> error "LayoutResolver.updToken: an inserted token is not a token"
   -- | Get the position immediately to the right of the given token.
   nextPos :: Token -> Position
   nextPos t = Pn (g + s) l (c + s + 1)
@@ -242,18 +227,6 @@ updToken (t0:t1:ts)
           s = tokenLength t
 updToken [] = return []
 updToken (t:ts) = return (t:ts)
-
--- | Insert a new symbol token at the begninning of a list of tokens.
-addToken :: (Monad m) => Position -- ^ Position of the new token.
-         -> String   -- ^ Symbol in the new token.
-         -> [Token]  -- ^ The rest of the tokens. These will have their
-                     --   positions updated to make room for the new token.
-         -> ClaferT m [Token]
-addToken p@(Pn z x y) s ts = case tokenLookup s of
-  Nothing -> throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
-  Just t -> (>>= (return . (PT p (TS s t):))) $ mapM (incrGlobal p (length s)) ts
-  where
-    fPos = Pos (fromIntegral x) (fromIntegral y)
 
 resLayout :: String -> String
 resLayout input' =

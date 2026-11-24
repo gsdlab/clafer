@@ -424,15 +424,17 @@ happyError ts' =
   Bad (pp ts) $ "syntax error" ++
   case ts of
     [] -> " at end of file"
-    [Err _] -> " due to lexer error"
-    _ -> " before " ++ unwords (map (id . prToken) (take 4 ts))
+    Err _ : _ -> " due to lexer error"
+    _ -> " before " ++ unwords [ prToken t | t@(PT _ _) <- take 4 ts ]
 
 myLexer = tokens
 
 gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
 pp (PT (Pn _ l c) _ :_) = Pos (toInteger l) (toInteger c)
 pp (Err (Pn _ l c) :_) = Pos (toInteger l) (toInteger c)
-pp _ = error "EOF"
+-- at the end of the model, which has no token to give the position: Language.Clafer.parse puts
+-- the error after the last token
+pp _ = Pos 0 0
 
 mkCatSpan :: (Spannable c) => c -> Span
 mkCatSpan = getSpan
