@@ -182,6 +182,19 @@ alive_x) implies p`), and Alloy checks the top-level forms equivalent: each impl
 on every trace. `initial x` and the initializers are lowered through the anchors, so the
 explicit core has no `initially` or `finally`.
 
+**The core keeps the truth of an anchor, not its definedness.** An anchor reads its body only
+at the birth or the death, so `[ initially ((1 / x) = 1) ]` divides by `x` in that state alone.
+Its lowering, `[ (!(previous (some root))) => ((1 / x) = 1) ]`, is the same text as that
+implication written by hand, which reads `1 / x` in every state: in a semantics where a term
+can be undefined, as in the strict domain of the formalization
+(`Clafer/Behavioral/PartialLowering.lean`), the first is defined on a trace where `x` is `0`
+after the first state and the second is not. Both hold on the same traces, which is what the
+core preserves and what the backends solve, but a reader of the core cannot tell the two
+apart (kbak/clafer-semantics#200). **Definedness is a property of the rich model:** a checker of
+definedness reads the rich explicit model, which keeps `initially` and `finally` as written, as
+the semantics computes the domain from the source formula, before the lowering
+(`Formula.checkedCore`, `domainFormula`). Clafer does not check definedness itself.
+
 **The multiplicity of a nested abstract clafer stays in the core,** since it is inside the
 vocabulary. It is an ordinary per-parent multiplicity, counted over the instances of all its
 subclafers, as a UML property typed by an abstract class counts the instances of all its
