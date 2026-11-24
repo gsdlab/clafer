@@ -30,8 +30,7 @@ import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List ( isPrefixOf )
 import Language.Clafer.SplitJoin
-import Paths_clafer (version)
-import Data.Version (showVersion)
+import Language.Clafer.Version (claferVersion)
 
 
 -- | Type of output to be generated at the end of compilation
@@ -117,7 +116,7 @@ clafer = ClaferArgs {
   public_imports      = def &= help "Allow only URL imports from public addresses, not from loopback, private, or link-local ones, without a proxy (command line only)." &= explicit &= name "public-imports",
   import_base         = def &= help "The URL from which the model's text was read: its imports are relative to the URL, and can only be URLs (command line only)." &= typ "URL" &= explicit &= name "import-base",
   file                = def &= args   &= typ "FILE"
- } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
+ } &= summary claferVersion &= program "clafer"
 
 -- | The command line of the compiler, built once: cmdArgs reads the annotations of 'clafer'
 --   (e.g., the names of the options) only the first time it is used, so the command line and

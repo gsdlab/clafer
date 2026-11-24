@@ -185,7 +185,7 @@ Development versions from branches `develop` should work well together but this 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.6.0
+Clafer v0.6.0.2026-11-29
 
 clafer [OPTIONS] [FILE]
 

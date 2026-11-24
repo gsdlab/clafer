@@ -72,6 +72,8 @@ library
                       , aeson >= 1.1.2.0
                       , cmdargs >= 0.10.20
                       , file-embed >= 0.0.10
+                      , template-haskell >= 2.20
+                      , time >= 1.12
                       , lens >= 4.15.4
                       , lens-aeson >= 1.0.2
                       , network-uri >= 2.6.1.0
@@ -84,6 +86,7 @@ library
                       , Language.Clafer.ClaferArgs
                       , Language.Clafer.Import
                       , Language.Clafer.Comments
+                      , Language.Clafer.BuildDate
                       , Language.Clafer.Common
                       , Language.Clafer.Css
                       , Language.Clafer.JSONMetaData
@@ -125,6 +128,7 @@ library
                       , Language.Clafer.Intermediate.TypeSystem
                       , Language.Clafer.Optimizer.Optimizer
                       , Language.Clafer.SplitJoin
+                      , Language.Clafer.Version
                       , Paths_clafer
     autogen-modules:    Paths_clafer
     other-modules:      Control.Monad.Trans.List
