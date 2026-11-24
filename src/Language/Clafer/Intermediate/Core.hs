@@ -51,12 +51,14 @@ module Language.Clafer.Intermediate.Core
   , forgetOrigins
   , enumLiterals
   , lowerPExp
+  , richConstructs
   ) where
 
 import Control.Lens (over)
 import Control.Lens.Plated (plate, transform, transformOn, transformOnOf, universe, universeOn)
 import Data.Data.Lens (biplate, uniplate)
 import Language.Clafer.Common
+import Language.Clafer.Front.AbsClafer (Span)
 import Language.Clafer.Intermediate.Finality (lowerFinality, lowerInitial)
 import Language.Clafer.Intermediate.Initializers (Semantics (..), lowerInitializers)
 import Language.Clafer.Intermediate.Intclafer
@@ -64,6 +66,41 @@ import Language.Clafer.Intermediate.Intclafer
 -- | The core of the module, for a backend that reads it with the given semantics.
 lowerToCore :: Semantics -> IModule -> IModule
 lowerToCore sem = lowerAnchors . lowerInitial . lowerFinality . lowerEnums . over biplate lowerPExp . markRich . lowerInitializers sem
+
+-- | The rich constructs of the module, which the core does not have, each with its position, in
+--   the order of the source: what 'lowerToCore' lowers. These are chocosolver's rich node types
+--   (@Ir.Node.isRich@): the enumerations, the temporal modifiers, the initializers, the
+--   multiplicities of the top-level abstract clafers (the nested ones stay in the core), the
+--   anchors, the patterns and the transitions. An explicit model that declares itself the core
+--   (@//# OPTIONS --explicit --core@) has none.
+richConstructs :: IModule -> [(String, Span)]
+richConstructs imodule = concatMap element $ _mDecls imodule
+  where
+  element (IEClafer c) = clafer c ++ concatMap element (_elements c)
+  element (IEConstraint' _ p _) = expression p
+  element (IEInitializer k setInit _ p) = ("initializer " ++ initSyntax k setInit, _inPos p) : expression p
+  element (IEGoal _ p) = expression p
+  clafer c =
+    [ ("enumeration", _cinPos c) | _enum (_modifiers c), _isAbstract c ]
+    ++ [ ("temporal modifier " ++ m, _cinPos c) | m <- writtenModifiers c ]
+    ++ [ ("multiplicity of a top-level abstract clafer", _cinPos c)
+       | _isAbstract c, isTopLevel c, _card c `notElem` [Nothing, Just (0, -1)] ]
+  -- the clock is written in an explicit model ('clocklessInitializers')
+  initSyntax True _ = "="
+  initSyntax False setInit = if setInit then ":= together" else ":= each"
+  writtenModifiers c =
+    [ "initial" | _initial (_modifiers c) ] ++ [ "final" | _final (_modifiers c) ]
+    ++ [ "finalref" | not (_final (_modifiers c)), FinalRef `elem` referenceModifiers c ]
+    ++ [ "finaltarget" | not (_final (_modifiers c)), FinalTarget `elem` referenceModifiers c ]
+  referenceModifiers c = _finalReferences (_modifiers c) ++ maybe [] _refModifiers (_reference c)
+  expression p =
+    [ (name op', _inPos q)
+    | q@PExp{_exp = IFunExp op' _} <- universe p
+    , op' `elem` richTemporalOps ++ [iInitially, iFinally] ]
+  name op'
+    | op' `elem` transitionOps = "transition"
+    | op' `elem` [iInitially, iFinally] = "anchor " ++ op'
+    | otherwise = "behavioral pattern " ++ richOpSyntax op'
 
 -- | The module without the origins of its clafers and constraints, without @--record-provenance@.
 forgetOrigins :: IModule -> IModule

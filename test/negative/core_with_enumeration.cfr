@@ -1,0 +1,3 @@
+//# OPTIONS --explicit --core
+enum Color = red | green
+0..* c -> Color 1..1 {}

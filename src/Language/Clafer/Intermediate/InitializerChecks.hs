@@ -43,11 +43,12 @@ module Language.Clafer.Intermediate.InitializerChecks
   ( atMostOne
   , unsupportedInitialValues
   , unsupportedInitializerBounds
+  , clocklessInitializers
   , severalValues
   ) where
 
-import Control.Lens.Plated (universeOn)
-import Data.Data.Lens (biplate)
+import Control.Lens.Plated (universeOn, universeOnOf)
+import Data.Data.Lens (biplate, uniplate)
 import Data.List (isPrefixOf, nub)
 import Data.Maybe (mapMaybe)
 import Language.Clafer.Common
@@ -166,6 +167,22 @@ unsupportedInitializerBounds (Module _ declarations) =
           ++ " together at time zero. Without a clock, ':=' initializes each instance without a"
           ++ " multiplicity, and all the instances together with * (or 0..*)."
   boundErr _ = Nothing
+
+-- | The errors for the initializers @:=@ without a written clock in an explicit model
+--   (@--explicit@), at the positions of the @:=@. An explicit model writes everything out, and
+--   the clock of @:=@ is either @each@ or @together@ there: the rich explicit model prints it
+--   (kbak/clafer-semantics#194), and chocosolver's explicit parser requires it, so that both read
+--   the same models.
+clocklessInitializers :: Module -> [CErr Span]
+clocklessInitializers ast' =
+  [ SemanticErr s $
+      "The initializer ':=' of " ++ name ++ " has no clock, which an explicit model writes:"
+      ++ " ':= each' initializes each instance of " ++ name ++ " at its birth, and ':= together'"
+      ++ " all the instances of " ++ name ++ " under a parent together."
+  | Clafer _ _ _ _ (PosIdent (_, name)) _ _ _ (InitSome _ (InitDefault s) _) _ _ <- clafers ast' ]
+  where
+  clafers :: Module -> [Clafer]
+  clafers = universeOnOf biplate uniplate
 
 -- | The initializers whose value has several different literals, e.g., @x -> integer ? := 1, 2@,
 --   that a single reference has to equal, with whether they are @=@ and whether the clafer has at

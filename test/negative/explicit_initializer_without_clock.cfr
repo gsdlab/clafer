@@ -1,0 +1,2 @@
+//# OPTIONS --explicit
+0..* n -> int 1..1 := 3 {}

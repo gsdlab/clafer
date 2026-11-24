@@ -136,7 +136,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.AbstractMultiplicity (Bounds (..), lowerAbstractBounds)
-import           Language.Clafer.Intermediate.Core (Semantics (..), enumLiterals, forgetOrigins, lowerToCore)
+import           Language.Clafer.Intermediate.Core (Semantics (..), enumLiterals, forgetOrigins, lowerToCore, richConstructs)
 import           Language.Clafer.Intermediate.Finality (staticClafers)
 import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
@@ -466,10 +466,18 @@ compile desugaredMod = do
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ "The model contains clafers with keywords as names in the following places:\n" ++ clafersWithKeyWords :: CErr Span)
     -- the multiplicities of the abstract clafers with :=, which have no meaning (#126)
     ast' <- getAst
+    -- an explicit model writes the clock of each := (each or together), as chocosolver requires
+    let clockless = if explicit_model (args env) then clocklessInitializers ast' else []
+    unless (null clockless) $ throwErrs clockless
     let unsupportedBounds = unsupportedInitializerBounds ast'
     unless (null unsupportedBounds) $ throwErrs unsupportedBounds
     ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
+    -- a model that declares itself the core in its first line (//# OPTIONS --explicit --core) has
+    -- no rich construct, as in chocosolver; --core on the command line only asks for the core
+    let richInCore = [ SemanticErr s $ "The core has no " ++ what ++ ": the model declares itself the core (--core)"
+                     | declaresCore env, (what, s) <- richConstructs imodule ]
+    unless (null richInCore) $ throwErrs richInCore
 
     let spanList = foldMapIR gt1 imodule
     when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ "The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n" ++ spanList :: CErr Span)
@@ -486,6 +494,14 @@ compile desugaredMod = do
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) IClaferModifiers{_abstract=False} _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if m > 1 || m < 0 then "Line " ++ show l ++ " column " ++ show c ++ "\n" else ""
       gt1 _ = ""
+      -- the options of the first line of the model, the last file (or the text of the fragments
+      -- when the files are not known), with both --explicit and --core
+      declaresCore env' = case reverse (inputFiles env') of
+        ModelFile _ text : _ -> declares text
+        [] -> declares $ concat $ modelFrags env'
+      declares text = case fileOptions text of
+        Right options -> explicit_model options && core options
+        Left _ -> False
 
 
 -- | The spans of the JSON output in the files of the model:
