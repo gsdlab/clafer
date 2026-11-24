@@ -3,6 +3,6 @@
   0..* b 0..1 {
     0..* c 0..1 {}
     0..* d 0..1 {}
-    [(!(previous (some this))) => (some this.c)] // initial, tmp_initially02.cfr:5:3
+    [((some this) && (!(previous (some this)))) => (some this.c)] // initial, tmp_initially02.cfr:5:3
   }
 }

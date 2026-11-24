@@ -22,7 +22,7 @@ sig y
 fun alive_y : set y { root.@r_y }
 fact { always ~@r_y in @p_y }
 
-fact { all self_ : y | always (self_ in alive_y implies ((before (some (self_ & alive_y))) || ((self_.@y_ref) = 2))) }
+fact { all self_ : y | always (self_ in alive_y implies (((!(some (self_ & alive_y))) || (before (some (self_ & alive_y)))) || ((self_.@y_ref) = 2))) }
 
 
 sig level
@@ -33,7 +33,7 @@ sig level
 fun alive_level : set level { root.@r_level }
 fact { always ~@r_level in @p_level }
 
-fact { all self_ : level | always (self_ in alive_level implies ((before (some (self_ & alive_level))) || ((self_.@level_ref) = (alive_y.@y_ref)))) }
+fact { all self_ : level | always (self_ in alive_level implies (((!(some (self_ & alive_level))) || (before (some (self_ & alive_level)))) || ((self_.@level_ref) = (alive_y.@y_ref)))) }
 fact { all self_ : level | always (self_ in alive_level implies (all  level_1 : (self_ & alive_level) | all  level_2 : level_1.@level_ref | after ((some level_1.@level_ref) => (level_2 in (level_1.@level_ref))))) }
 
 
@@ -45,7 +45,7 @@ sig mode
 fun alive_mode : set mode { root.@r_mode }
 fact { always ~@r_mode in @p_mode }
 
-fact { all self_ : mode | always (self_ in alive_mode implies ((before (some (self_ & alive_mode))) || ((self_.@mode_ref) = 1))) }
+fact { all self_ : mode | always (self_ in alive_mode implies (((!(some (self_ & alive_mode))) || (before (some (self_ & alive_mode)))) || ((self_.@mode_ref) = 1))) }
 fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | after (mode_1 in (alive_mode)))) }
 fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | (not before not (!(some root))) || (before (mode_1 in (alive_mode))))) }
 fact { all self_ : mode | always (self_ in alive_mode implies (all  mode_1 : (self_ & alive_mode) | all  mode_2 : mode_1.@mode_ref | after ((some mode_1.@mode_ref) => (mode_2 in (mode_1.@mode_ref))))) }

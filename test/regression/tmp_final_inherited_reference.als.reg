@@ -88,7 +88,7 @@ fact { always ~@r_gear in @p_gear
 
 fact { all self_ : gear | always (self_ in alive_gear implies (lone self_.@r_park)) }
 fact { all self_ : gear | always (self_ in alive_gear implies (lone self_.@r_drive)) }
-fact { all self_ : gear | always (self_ in alive_gear implies ((before (some self_.(@p_gear :> alive_Car) and (some (self_ & alive_gear)))) || (some self_.@r_park))) }
+fact { all self_ : gear | always (self_ in alive_gear implies (((!(some (self_ & alive_gear))) || (before (some self_.(@p_gear :> alive_Car) and (some (self_ & alive_gear))))) || (some self_.@r_park))) }
 
 
 sig park

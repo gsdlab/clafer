@@ -5,7 +5,7 @@
     0..* flashing 0..1 {}
   }
   0..* off 0..1 {}
-  [(!(previous (some this))) => (some this.off)]
+  [((some this) && (!(previous (some this)))) => (some this.off)]
   [((some this.on.normal) && (X (no this.on))) => (X ((no this.on) W (some this.on.normal)))]
   [((some this.on.flashing) && (X (no this.on))) => (X ((no this.on) W (some this.on.flashing)))]
 }

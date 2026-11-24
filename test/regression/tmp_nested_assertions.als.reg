@@ -21,7 +21,7 @@ fact { always ~@r_s in @p_s }
 
 fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_a)) }
 fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_b)) }
-fact { all self_ : s | always (self_ in alive_s implies ((before (some (self_ & alive_s))) || (some self_.@r_a))) }
+fact { all self_ : s | always (self_ in alive_s implies (((!(some (self_ & alive_s))) || (before (some (self_ & alive_s)))) || (some self_.@r_a))) }
 
 assert assertAt_6_14 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_a) => (after (some self_.@r_b)))) }
 check assertAt_6_14 for 1 but 10 steps

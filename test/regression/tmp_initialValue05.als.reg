@@ -29,7 +29,7 @@ sig A
 fun alive_A : set A { root.@r_A }
 fact { always ~@r_A in @p_A }
 
-fact { all self_ : A | always (self_ in alive_A implies ((before (some (self_ & alive_A))) || ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = (1 + 2))))) }
+fact { all self_ : A | always (self_ in alive_A implies (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = (1 + 2))))) }
 fact { all self_ : A | always (self_ in alive_A implies (eventually (some self_.@r_ys))) }
 
 

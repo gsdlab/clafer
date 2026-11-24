@@ -47,7 +47,7 @@ fact { always ~@r_x in @p_x
   always @r_x.univ in alive_A }
 
 fact { all self_ : x | always (self_ in alive_x implies (one self_.@r_x__y)) }
-fact { all self_ : x | always (self_ in alive_x implies ((before (some self_.(@p_x :> alive_A) and (some (self_ & alive_x)))) || ((self_.@x_ref) = ((((self_.(@p_x :> alive_A)).@r_A__y).@A__y_ref).plus[1])))) }
+fact { all self_ : x | always (self_ in alive_x implies (((!(some (self_ & alive_x))) || (before (some self_.(@p_x :> alive_A) and (some (self_ & alive_x))))) || ((self_.@x_ref) = ((((self_.(@p_x :> alive_A)).@r_A__y).@A__y_ref).plus[1])))) }
 
 
 sig x__y
@@ -69,7 +69,7 @@ fun alive_z : set z { A.@r_z }
 fact { always ~@r_z in @p_z
   always @r_z.univ in alive_A }
 
-fact { all self_ : z | always (self_ in alive_z implies ((before (some self_.(@p_z :> alive_A) and (some (self_ & alive_z)))) || ((self_.@z_ref) = (((self_.(@p_z :> alive_A)).@r_A__y).@A__y_ref)))) }
+fact { all self_ : z | always (self_ in alive_z implies (((!(some (self_ & alive_z))) || (before (some self_.(@p_z :> alive_A) and (some (self_ & alive_z))))) || ((self_.@z_ref) = (((self_.(@p_z :> alive_A)).@r_A__y).@A__y_ref)))) }
 
 
 abstract sig Val
@@ -77,7 +77,7 @@ abstract sig Val
 { always (this in alive_Val implies (one this.@Val_ref))
   always (this not in alive_Val implies no this.@Val_ref) }
 fun alive_Val : set Val { alive_v1 + alive_v2 }
-fact { all self_ : Val | always (self_ in alive_Val implies ((before (some self_.((@p_v1 :> root) + (@p_v2 :> alive_B)) and (some (self_ & alive_Val)))) || ((self_.@Val_ref) = 2))) }
+fact { all self_ : Val | always (self_ in alive_Val implies (((!(some (self_ & alive_Val))) || (before (some self_.((@p_v1 :> root) + (@p_v2 :> alive_B)) and (some (self_ & alive_Val))))) || ((self_.@Val_ref) = 2))) }
 
 
 sig v1 extends Val

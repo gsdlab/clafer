@@ -1,6 +1,6 @@
 //# OPTIONS --explicit --core --tl=10
 abstract 0..* Val ->> int 0..* {
-  [(!(previous (some this))) => (this.dref = 1)] // := each, tmp_initializerClocks.cfr:8:1
+  [((some this) && (!(previous (some this)))) => (this.dref = 1)] // := each, tmp_initializerClocks.cfr:8:1
 }
 [(#Val) <= 3] // abstract 0..3, tmp_initializerClocks.cfr:8:1
 abstract 0..* Wal ->> int 0..* {}
@@ -12,9 +12,9 @@ abstract 0..* Wal ->> int 0..* {}
 [(F (some Vi)) && (F (some Wi))]
 0..* A 1..1 {
   0..* xs ->> int 0..2 {
-    [(!(previous (some this))) => (this.dref = 2)] // := each, tmp_initializerClocks.cfr:16:5
+    [((some this) && (!(previous (some this)))) => (this.dref = 2)] // := each, tmp_initializerClocks.cfr:16:5
   }
   0..* ys ->> int 0..2 {}
-  [(!(previous (some this))) => ((some this.ys) => (this.ys.dref = 3))] // := together, tmp_initializerClocks.cfr:17:5
+  [((some this) && (!(previous (some this)))) => ((some this.ys) => (this.ys.dref = 3))] // := together, tmp_initializerClocks.cfr:17:5
   [F ((#this.xs) = 2)]
 }

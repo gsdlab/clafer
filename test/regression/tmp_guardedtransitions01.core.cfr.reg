@@ -7,14 +7,14 @@
   0..* green 0..1 {
     [((some this) && (no signal)) => ((some this) U (some this.parent.red))] // -[]->>, tmp_guardedtransitions01.cfr:8:5
   }
-  [(!(previous (some this))) => (some this.red)] // initial, tmp_guardedtransitions01.cfr:7:5
+  [((some this) && (!(previous (some this)))) => (some this.red)] // initial, tmp_guardedtransitions01.cfr:7:5
 }
 1..1 door 1..1 {
   0..* closed 0..1 {}
   0..* opened 0..1 {}
   [((some this.closed) && (some signal)) => (X (some this.opened))] // -[]->, tmp_guardedtransitions01.cfr:17:7
   [((some this.opened) && (no signal)) => (((some this) && (some this.opened)) U (some this.closed))] // -[]->>, tmp_guardedtransitions01.cfr:18:7
-  [(!(previous (some this))) => (some this.closed)] // initial, tmp_guardedtransitions01.cfr:15:5
+  [((some this) && (!(previous (some this)))) => (some this.closed)] // initial, tmp_guardedtransitions01.cfr:15:5
 }
 
 assert [((some light.red) && (some signal)) => (X (some light.green))]

@@ -6,7 +6,7 @@
   0..* b 0..1 {
     [(some this) => (X (some this.parent.a))] // -->, tmp_nested_assertions.cfr:5:5
   }
-  [(!(previous (some this))) => (some this.a)] // initial, tmp_nested_assertions.cfr:4:5
+  [((some this) && (!(previous (some this)))) => (some this.a)] // initial, tmp_nested_assertions.cfr:4:5
 }
 
 assert [all this_ : s | (some this_.a) => (X (some this_.b))]

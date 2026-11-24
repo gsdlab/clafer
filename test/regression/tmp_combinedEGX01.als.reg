@@ -18,7 +18,7 @@ fact { always ~@r_a in @p_a }
 fact { all self_ : a | always (self_ in alive_a implies (lone self_.@r_b)) }
 fact { all self_ : a | always (self_ in alive_a implies (lone self_.@r_c)) }
 fact { all self_ : a | always (self_ in alive_a implies (eventually (some self_.@r_c))) }
-fact { all self_ : a | always (self_ in alive_a implies ((before (some (self_ & alive_a))) || (some self_.@r_b))) }
+fact { all self_ : a | always (self_ in alive_a implies (((!(some (self_ & alive_a))) || (before (some (self_ & alive_a)))) || (some self_.@r_b))) }
 
 
 sig b

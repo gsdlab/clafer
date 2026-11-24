@@ -203,17 +203,70 @@ lowerAnchors :: IModule -> IModule
 lowerAnchors imodule = imodule{_mDecls = map (lowerElement rootIdent) $ _mDecls imodule}
   where
   lowerElement _ (IEClafer c) = IEClafer c{_elements = map (lowerElement $ _uid c) $ _elements c}
-  lowerElement ctx (IEConstraint' h p o) = IEConstraint' h (transform (anchor ctx) p) o
-  lowerElement ctx (IEGoal m p) = IEGoal m (transform (anchor ctx) p)
+  lowerElement ctx (IEConstraint' h p o) = IEConstraint' h (signedAnchors ctx True p) o
+  lowerElement ctx (IEGoal m p) = IEGoal m (signedAnchors ctx True p)
   lowerElement _ e = e
 
--- | The anchor as a guard on the birth or the death of the context instance: it exists now, and
---   not in the previous state of its lifetime, or not in the next state.
-anchor :: UID -> PExp -> PExp
-anchor ctx q@PExp{_exp = IFunExp op' [a]}
-  | op' == iInitially = mk q iImpl [mk q iNot [mk q iPrevious [present ISome]], a]
-  | op' == iFinally   = mk q iImpl [mk q iAnd [present ISome, mk q iX [present INo]], a]
+-- | The anchors of a formula in a position of the given sign (positive: 'True'), as the source
+--   semantics reads them (kbak/clafer-semantics#200, @Formula.denote@): a negation goes into the
+--   anchor, so that @!(initially p)@ is @initially !p@, which holds wherever the context is not
+--   born. A positive anchor is @birth => p@, a negative one @birth && p@, whose negation is
+--   @birth => !p@. The sign changes under @!@, on the left of @=>@ and in the body of @no x : X |@;
+--   the operands of @<=>@, @xor@ and @if then else@ have both signs, so these are written out
+--   with @=>@, @&&@ and @||@ when they have an anchor. The bodies of @one@ and @lone@ count their
+--   witnesses classically, and an @if then else@ that is a value, not a formula, is a term: their
+--   anchors are positive guards, under classical negation.
+signedAnchors :: UID -> Bool -> PExp -> PExp
+signedAnchors ctx = go
+  where
+  go s q@PExp{_exp = IFunExp op' [a]}
+    | op' == iInitially = guarded s q (birth ctx q) (go s a)
+    | op' == iFinally   = guarded s q (death ctx q) (go s a)
+    | op' == iNot       = q{_exp = IFunExp op' [go (not s) a]}
+  go s q@PExp{_exp = IFunExp op' [a, b]}
+    | op' == iImpl = q{_exp = IFunExp op' [go (not s) a, go s b]}
+    | op' == iIff, anchored q = go s $ mk q iAnd [mk q iImpl [a, b], mk q iImpl [b, a]]
+    | op' == iXor, anchored q = go s $ mk q iOr [mk q iAnd [a, negation q b], mk q iAnd [negation q a, b]]
+  go s q@PExp{_exp = IFunExp op' [c, a, b]}
+    | op' == iIfThenElse, _iType q /= Just TBoolean = transform (classical ctx) q
+    | op' == iIfThenElse, anchored q = go s $ mk q iAnd [mk q iImpl [c, a], mk q iImpl [negation q c, b]]
+  go s q@PExp{_exp = IDeclPExp quantifier ds bd}
+    | quantifier == INo = q{_exp = IDeclPExp quantifier ds (go (not s) bd)}
+    | quantifier `elem` [IOne, ILone] = q{_exp = IDeclPExp quantifier ds (transform (classical ctx) bd)}
+  go s q = over plate (go s) q
+  anchored q = not $ null [ () | PExp{_exp = IFunExp op' _} <- universe q, op' `elem` [iInitially, iFinally] ]
+  guarded True q g a = mk q iImpl [g, a]
+  guarded False q g a = mk q iAnd [g, a]
+
+-- | The negation of a formula, at the place of @q@: @!(some x)@ is @no x@, as the desugarer writes
+--   it, so that the core compiles to itself.
+negation :: PExp -> PExp -> PExp
+negation q PExp{_exp = IDeclPExp ISome [] x} = PExp (Just TBoolean) (_pid q) (_inPos q) (IDeclPExp INo [] x)
+negation q a = mk q iNot [a]
+
+-- | An anchor as a positive guard, under classical negation: in the body of @one@ and @lone@,
+--   and in a term.
+classical :: UID -> PExp -> PExp
+classical ctx q@PExp{_exp = IFunExp op' [a]}
+  | op' == iInitially = mk q iImpl [birth ctx q, a]
+  | op' == iFinally   = mk q iImpl [death ctx q, a]
+classical _ q = q
+
+-- | The birth of the context instance: it exists now, and not in the previous state of its
+--   lifetime; the root, which exists in every state, is born at time zero.
+birth :: UID -> PExp -> PExp
+birth ctx q
+  | ctx == rootIdent = notPrevious
+  | otherwise = mk q iAnd [present ctx q ISome, notPrevious]
+  where
+  notPrevious = mk q iNot [mk q iPrevious [present ctx q ISome]]
+
+-- | The death of the context instance: it exists now, and not in the next state.
+death :: UID -> PExp -> PExp
+death ctx q = mk q iAnd [present ctx q ISome, mk q iX [present ctx q INo]]
+
+-- | @some this@ or @no this@, @some root@ or @no root@ at the top level.
+present :: UID -> PExp -> IQuant -> PExp
+present ctx q quantifier = PExp (Just TBoolean) (_pid q) (_inPos q) (IDeclPExp quantifier [] self')
   where
   self' = PExp (Just $ TClafer [ctx]) "" (_inPos q) $ IClaferId "" (if ctx == rootIdent then rootIdent else thisIdent) True (GlobalBind ctx)
-  present quantifier = PExp (Just TBoolean) (_pid q) (_inPos q) (IDeclPExp quantifier [] self')
-anchor _ q = q

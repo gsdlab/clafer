@@ -158,7 +158,7 @@ abstract 0..* Client : Node 0..* {}
     }
     1..1 serverResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [(!(previous (some this))) => ((some this.serverHello) || (some this.mismatch))]
+      [((some this) && (!(previous (some this)))) => ((some this.serverHello) || (some this.mismatch))]
       0..* mismatch 0..1 {
         [no (this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)]
         [this.parent.parent.parent.server.dref.send.dref = protocolMismatch]
@@ -194,8 +194,8 @@ abstract 0..* Client : Node 0..* {}
     [(some this.serverResponse.serverHelloDone) => (X (some this.clientResponse))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:147:11
     1..1 clientResponse 0..1 {
       [this.parent.parent.handshakeStatus.dref = initiated]
-      [(!(previous (some this))) => ((some TLSFeatures.clientAuthentication) => (some this.clientCertificate))]
-      [(!(previous (some this))) => ((no TLSFeatures.clientAuthentication) => (some this.clientKeyExchange))]
+      [((some this) && (!(previous (some this)))) => ((some TLSFeatures.clientAuthentication) => (some this.clientCertificate))]
+      [((some this) && (!(previous (some this)))) => ((no TLSFeatures.clientAuthentication) => (some this.clientKeyExchange))]
       0..* clientCertificate 0..1 {
         [some TLSFeatures.clientAuthentication]
         [this.parent.parent.parent.client.dref.send.dref = clientCertificateMessage]
@@ -231,7 +231,7 @@ abstract 0..* Client : Node 0..* {}
         [this.parent.parent.parent.server.dref.send.dref = serverFinishedMessage]
         [this.parent.parent.parent.handshakeStatus.dref = completed]
       }
-      [(!(previous (some this))) => (some this.serverChangeCipherSpec)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:179:13
+      [((some this) && (!(previous (some this)))) => (some this.serverChangeCipherSpec)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:179:13
     }
     [((some this.serverFinish) && (no this.serverFinish.serverFinished)) => (X (some this.serverFinish))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:188:11
     [(some this.serverFinish.serverFinished) => (X (some this.dataTransfer))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:189:11
@@ -244,7 +244,7 @@ abstract 0..* Client : Node 0..* {}
       [this.parent.parent.handshakeStatus.dref = failed]
       [(some this) => (X (some this))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:197:9
     }
-    [(!(previous (some this))) => (some this.clientHello)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:105:9
+    [((some this) && (!(previous (some this)))) => (some this.clientHello)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:105:9
   }
   [all Protocol_1 : this | X (Protocol_1 in Protocol)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:95:1
   [all Protocol_1 : this | (previous (some root)) => (previous (Protocol_1 in Protocol))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:95:1

@@ -1,13 +1,13 @@
 //# OPTIONS --explicit --core --tl=10
 0..* y -> int 1..1 {
-  [(!(previous (some this))) => (this.dref = 2)] // :=, tmp_initialValue04.cfr:6:1
+  [((some this) && (!(previous (some this)))) => (this.dref = 2)] // :=, tmp_initialValue04.cfr:6:1
 }
 0..* level -> int 0..1 {
-  [(!(previous (some this))) => (this.dref = y.dref)] // :=, tmp_initialValue04.cfr:7:1
+  [((some this) && (!(previous (some this)))) => (this.dref = y.dref)] // :=, tmp_initialValue04.cfr:7:1
   [all level_1 : this | all level_2 : level_1.dref | X ((some level_1.dref) => (level_2 in level_1.dref))] // finalref, tmp_initialValue04.cfr:7:1
 }
 0..* mode -> int 1..1 {
-  [(!(previous (some this))) => (this.dref = 1)] // :=, tmp_initialValue04.cfr:8:1
+  [((some this) && (!(previous (some this)))) => (this.dref = 1)] // :=, tmp_initialValue04.cfr:8:1
   [all mode_1 : this | X (mode_1 in mode)] // final, tmp_initialValue04.cfr:8:1
   [all mode_1 : this | (previous (some root)) => (previous (mode_1 in mode))] // final, tmp_initialValue04.cfr:8:1
   [all mode_1 : this | all mode_2 : mode_1.dref | X ((some mode_1.dref) => (mode_2 in mode_1.dref))] // final, tmp_initialValue04.cfr:8:1

@@ -755,7 +755,7 @@ case_RichAndCoreExplicit = do
     -- the enumeration is final in a temporal model: its literals do not change (#127)
     has True "abstract 0..* Color 0..* {}"
     has True "[all red_1 : this | X (red_1 in red)]"
-    has True "[(!(previous (some this))) => (this.dref = 3)]"
+    has True "[((some this) && (!(previous (some this)))) => (this.dref = 3)]"
     has True "[(some this.on) => (X ((some this.off) && (X (some this.on))))]"
     has True "[G ((((some q) && (no r)) && (F (some r))) => ((no p) U (some r)))]"
 
@@ -866,14 +866,14 @@ case_CoreInitializers = do
     has False "abstract 0..* Val -> int 0..* := each 1 {}"
     has False "abstract 0..* Vs -> int 0..* := together 3 {}"
     -- core: per instance, a fixed value, parent birth, time zero
-    has True "0..* x -> int 0..1 {\n    [(!(previous (some this))) => (this.dref = 1)]"
+    has True "0..* x -> int 0..1 {\n    [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
     has True "[(some this.y) => (this.y.dref = 2)]"
-    has True "[(!(previous (some this))) => ((some this.xs) => (this.xs.dref = (1 ++ 2)))]"
-    has True "abstract 0..* Val -> int 0..* {\n  [(!(previous (some this))) => (this.dref = 1)]"
+    has True "[((some this) && (!(previous (some this)))) => ((some this.xs) => (this.xs.dref = (1 ++ 2)))]"
+    has True "abstract 0..* Val -> int 0..* {\n  [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
     has True "[(!(previous (some root))) => ((some Vs) => (Vs.dref = 3))]"
     -- a collection is initialized at the parent's birth, in the parent's context, so its
     -- temporal value needs no past-time operator
-    has True "[(!(previous (some this))) => ((some this.t) => (this.t.dref = (if (X (some this.b)) then 1 else 2)))]"
+    has True "[((some this) && (!(previous (some this)))) => ((some this.t) => (this.t.dref = (if (X (some this.b)) then 1 else 2)))]"
     -- per instance with a temporal value: in the context of the parent, each instance that
     -- appears, i.e., was not there in the previous state, has the value (#127)
     has False "0..* z -> int 1..1 := each if (X (some this.b)) then 1 else 2 {}"
@@ -912,10 +912,10 @@ case_InitializerClocks = do
       , "[(some Wal) => (Wal.dref = 6)]" ]
     -- temporal: at each instance's birth, at the parent's birth, at time zero
     mapM_ (has True temporal)
-      [ "0..* xs -> int 0..* {\n    [(!(previous (some this))) => (this.dref = 1)]"
-      , "[(!(previous (some this))) => ((some this.x) => (this.x.dref = 2))]"
-      , "0..* ys -> int 2..2 {\n    [(!(previous (some this))) => (this.dref = (3 ++ 4))]"
-      , "abstract 0..* Val -> int 0..* {\n  [(!(previous (some this))) => (this.dref = 5)]"
+      [ "0..* xs -> int 0..* {\n    [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
+      , "[((some this) && (!(previous (some this)))) => ((some this.x) => (this.x.dref = 2))]"
+      , "0..* ys -> int 2..2 {\n    [((some this) && (!(previous (some this)))) => (this.dref = (3 ++ 4))]"
+      , "abstract 0..* Val -> int 0..* {\n  [((some this) && (!(previous (some this)))) => (this.dref = 5)]"
       , "[(!(previous (some root))) => ((some Wal) => (Wal.dref = 6))]" ]
     -- both explicit models compile to themselves
     forM_ [model, temporal] $ \m -> forM_ [False, True] $ \core' -> do
@@ -1042,8 +1042,8 @@ case_InitialLowered = do
     not ("initial " `isInfixOf` x) @? ("a modifier in the core:\n" ++ x)
     all (`isInfixOf` x)
       [ "[(!(previous (some root))) => (some top)]", "[(!(previous (some root))) => (some V)]"
-      , "[(!(previous (some this))) => (some this.b)]"
-      , "[(!(previous (some this))) => (some this.c)]" ] @? ("constraints missing:\n" ++ x)
+      , "[((some this) && (!(previous (some this)))) => (some this.b)]"
+      , "[((some this) && (!(previous (some this)))) => (some this.c)]" ] @? ("constraints missing:\n" ++ x)
     y <- explicit True (lines x)
     x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
 
@@ -1228,5 +1228,5 @@ case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
     hasAlloy (model "X (some flag)") "fact { all self_ : Box | always (self_ in alive_Box implies (all  x_1 : self_.@r_x | (before (some self_.(@p_Box :> alive_P) and (x_1 in (self_.@r_x)))) || ((x_1.@x_ref) = ((after (not some self_.(@p_Box :> alive_P) or (some self_.@r_flag))) => 1 else 2)))) }"
-    hasAlloy (model "initially (some flag)") "(((!(before (some self_.(@p_Box :> alive_P) and (some (self_ & alive_Box))))) => (some self_.@r_flag)) => 1 else 2)"
+    hasAlloy (model "initially (some flag)") "((((some (self_ & alive_Box)) && (!(before (some self_.(@p_Box :> alive_P) and (some (self_ & alive_Box)))))) => (some self_.@r_flag)) => 1 else 2)"
     hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

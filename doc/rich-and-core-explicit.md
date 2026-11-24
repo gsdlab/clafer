@@ -95,7 +95,7 @@ The criterion decides each construct:
 |---|---|---|
 | `enum Color = red \| green` | no: an abstract clafer and a clafer for each literal | an abbreviation for clafers |
 | `final x`, `finalref x`, `finaltarget x` | no: constraints in `x` with `X` and `previous`, e.g., `[ all c : this \| X (c in parent.x) ]` and `[ all c : this \| previous (some parent) => previous (c in parent.x) ]` for the instances of a final `x` | stability over a lifetime, defined with the temporal operators |
-| `initial x` | no: `[ (!(previous (some this))) => (some this.x) ]` in the parent, `[ (!(previous (some root))) => (some x) ]` at the top level | defined with `initially` |
+| `initial x` | no: `[ ((some this) && (!(previous (some this)))) => (some this.x) ]` in the parent, `[ (!(previous (some root))) => (some x) ]` at the top level | defined with `initially` |
 | the multiplicity of a top-level abstract clafer, e.g., `abstract Tools 3..6` | no: `[ (#Tools >= 3) && (#Tools <= 6) ]` next to it, and `abstract Tools 0..*` | a global count over all the instances of its subclafers, defined with a constraint |
 | the multiplicity of a nested abstract clafer | yes, see [below](#the-anchors-and-the-abstract-multiplicities) | an ordinary multiplicity, counted over the instances of its subclafers |
 | `initially p`, `finally p` | no: guards on the birth and the death of the instance, see [below](#the-anchors-and-the-abstract-multiplicities) | anchored to the lifetime of an instance |
@@ -146,13 +146,29 @@ trace. The core writes them with the birth and the death of the instance, as the
 does (`expandAnchors`, with `birth` and `death`: the instance is present now and was not in
 the previous state, or will not be in the next one):
 
-- `initially p` is `(!(previous (some this))) => p`;
+- `initially p` is `((some this) && (!(previous (some this)))) => p`;
 - `finally p` is `((some this) && (X (no this))) => p`.
 
 `previous` and `X` look within the lifetime of the parent, so the birth of an instance whose
 parent is born with it is its first state, and its death with the parent's is its last. `this`
 is the context instance while it exists and empty otherwise, so `some this` is its presence,
-and no quantifier has to capture it.
+and no quantifier has to capture it. The birth needs the presence: under `X`, the anchor is
+evaluated in later states, where the instance may be gone, and `!(previous (some this))` alone
+would hold in the second state of an absence, a birth that did not happen
+(kbak/clafer-semantics#200, `nested_initially_requires_current_presence`).
+
+**An anchor has the sign of its place.** In the semantics, a negation goes into the anchor:
+`!(initially p)` is `initially !p`, which holds wherever the instance is not born
+(`Formula.denote`, `negation_at_inactive_root_birth`). So a positive anchor is `birth => p`, and
+a negative one `birth && p`, whose negation is `birth => !p`: `[ !(initially b) ]` is
+`[ !(((some this) && (!(previous (some this)))) && (some this.b)) ]`. The sign changes under `!`, on the left of `=>` and in the body
+of `no x : X |`, and stays under the other connectives, the temporal operators and `all` and
+`some`. The operands of `<=>`, `xor` and `if then else` have both signs, so these are written
+out with `=>`, `&&` and `||` when they have an anchor, e.g., `a <=> b` as
+`(a => b) && (b => a)`, and `!(some x)` written out as `no x`, as the compiler reads it. The
+bodies of `one` and `lone` count their witnesses classically, and an `if then else` that is a
+value, e.g. `n = (if initially c then 1 else 2)`, is a term, not a formula: their anchors are
+positive guards, under classical negation (test model `tmp_anchor_signs`).
 
 At the top level, the context is the root, which lives in every state, so its only birth is
 the first state of the trace, as in the semantics (`Trace.Starts`, `root_live`):
@@ -265,7 +281,7 @@ multiplicity, `0..*` when none was written. The core:
   `xs.dref = 1, 2` together).
 - `:=` of each instance, in a temporal model: `[ initially (this.dref = e') ]` in `x`, where
   `e'` is `e` with `this.parent` for `this`, which the core writes with the birth of the
-  instance, `[ (!(previous (some this))) => (this.dref = e') ]` (see
+  instance, `[ ((some this) && (!(previous (some this)))) => (this.dref = e') ]` (see
   [the anchors](#the-anchors-and-the-abstract-multiplicities)), and so the `initially` of the
   next one.
 - `:=` of a set of instances (`xs -> T * := e`, kbak/clafer-semantics#170):
@@ -299,7 +315,7 @@ equivalent to the one of 0.5.8 (Alloy, up to 10 states).
 `initial x` is `[ initially (some this.x) ]` in the parent (kbak/clafer-semantics#195): the
 parent has an `x` in the first state of each of its lifetimes. At the top level, the model has
 an `x` at the start of the trace. The core writes it with the birth of the parent,
-`[ (!(previous (some this))) => (some this.x) ]`, and `[ (!(previous (some root))) => (some x) ]`
+`[ ((some this) && (!(previous (some this)))) => (some this.x) ]`, and `[ (!(previous (some root))) => (some x) ]`
 at the top level. The temporal Alloy output is equivalent to the one of 0.5.8.
 
 ### Behavioral patterns
@@ -344,7 +360,7 @@ abstract 0..* Color 0..* {} // enum, model.cfr:1:1
   }
 }
 0..* x -> int 1..1 {
-  [(!(previous (some this))) => (this.dref = 1)] // :=, model.cfr:6:1
+  [((some this) && (!(previous (some this)))) => (this.dref = 1)] // :=, model.cfr:6:1
 }
 ```
 
@@ -418,7 +434,8 @@ form's (`Language.Clafer.Generator.Explicit`), the same in the rich model. The c
   `q ∧ ¬r ∧ ◇r` of a pattern, which is left-associative.
 - **One simplification.** Where a pattern negates an argument `some p`, it writes `no p`, as the
   desugarer writes `!(some p)`; any other negated argument is `!p`. The anchors write their
-  guards in full: `!(previous (some this))`, `(some this) && (X (no this))`.
+  guards in full: `(some this) && (!(previous (some this)))`, `(some this) && (X (no this))`, and
+  write out `<=>`, `xor` and `if then else` around an anchor, as its sign requires.
 
 ### Names
 

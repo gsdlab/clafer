@@ -477,7 +477,7 @@ fact { all self_ : channel | always (self_ in alive_channel implies (((some self
 fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_clientResponse).@r_clientFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
 fact { all self_ : channel | always (self_ in alive_channel implies (((some self_.@r_serverFinish) && (no (self_.@r_serverFinish).@r_serverFinished)) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
 fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_serverFinish).@r_serverFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_dataTransfer))))) }
-fact { all self_ : channel | always (self_ in alive_channel implies ((before (some self_.(@p_channel :> alive_Protocol) and (some (self_ & alive_channel)))) || (some self_.@r_clientHello))) }
+fact { all self_ : channel | always (self_ in alive_channel implies (((!(some (self_ & alive_channel))) || (before (some self_.(@p_channel :> alive_Protocol) and (some (self_ & alive_channel))))) || (some self_.@r_clientHello))) }
 
 
 sig clientHello
@@ -511,7 +511,7 @@ fact { all self_ : serverResponse | always (self_ in alive_serverResponse implie
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_certificateRequest)) }
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_serverHelloDone)) }
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((((self_.(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
-fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies ((before (some self_.(@p_serverResponse :> alive_channel) and (some (self_ & alive_serverResponse)))) || ((some self_.@r_serverHello) || (some self_.@r_mismatch)))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((!(some (self_ & alive_serverResponse))) || (before (some self_.(@p_serverResponse :> alive_channel) and (some (self_ & alive_serverResponse))))) || ((some self_.@r_serverHello) || (some self_.@r_mismatch)))) }
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverHello) && (no alive_TLSFeatures.@r_annonymousMode)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_serverCertificate))))) }
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverHello) && (some alive_TLSFeatures.@r_annonymousMode)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_serverKeyExchange))))) }
 fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverCertificate) && (some alive_TLSFeatures.@r_clientAuthentication)) => (after (not some self_.(@p_serverResponse :> alive_channel) or ((some self_.@r_serverKeyExchange) || (some self_.@r_certificateRequest)))))) }
@@ -597,8 +597,8 @@ fact { all self_ : clientResponse | always (self_ in alive_clientResponse implie
 fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientChangeCipherSpec)) }
 fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientFinished)) }
 fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
-fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies ((before (some self_.(@p_clientResponse :> alive_channel) and (some (self_ & alive_clientResponse)))) || ((some alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientCertificate)))) }
-fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies ((before (some self_.(@p_clientResponse :> alive_channel) and (some (self_ & alive_clientResponse)))) || ((no alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientKeyExchange)))) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((!(some (self_ & alive_clientResponse))) || (before (some self_.(@p_clientResponse :> alive_channel) and (some (self_ & alive_clientResponse))))) || ((some alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientCertificate)))) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((!(some (self_ & alive_clientResponse))) || (before (some self_.(@p_clientResponse :> alive_channel) and (some (self_ & alive_clientResponse))))) || ((no alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientKeyExchange)))) }
 fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((some self_.@r_clientKeyExchange) && ((some alive_TLSFeatures.@r_clientAuthentication) && (some (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_certificate).@r_signing))) => (after (not some self_.(@p_clientResponse :> alive_channel) or (some self_.@r_certificateVerify))))) }
 fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((some self_.@r_clientKeyExchange) && (!((some alive_TLSFeatures.@r_clientAuthentication) && (some (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_certificate).@r_signing)))) => (after (not some self_.(@p_clientResponse :> alive_channel) or (some self_.@r_clientChangeCipherSpec))))) }
 
@@ -664,7 +664,7 @@ fact { always ~@r_serverFinish in @p_serverFinish
 
 fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverChangeCipherSpec)) }
 fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverFinished)) }
-fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies ((before (some self_.(@p_serverFinish :> alive_channel) and (some (self_ & alive_serverFinish)))) || (some self_.@r_serverChangeCipherSpec))) }
+fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (((!(some (self_ & alive_serverFinish))) || (before (some self_.(@p_serverFinish :> alive_channel) and (some (self_ & alive_serverFinish))))) || (some self_.@r_serverChangeCipherSpec))) }
 
 
 sig serverChangeCipherSpec

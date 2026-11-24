@@ -1,0 +1,11 @@
+digraph "tmp_anchor_signs"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"A" [label="A *" URL="#A" tooltip="A *&#10;  b ?&#10;  c ?&#10;  [ X X (initially c) ]&#10;  [  ! (initially b) ]&#10;  [ (initially b) => (finally c) ]&#10;  [ (initially b) <=> (finally c) ]&#10;  [ (initially b) xor c ]&#10;  [ if b then initially c else finally c ]&#10;  [ no x : b | initially c ]&#10;  [ lone x : b |  ! (initially c) ]&#10;  n -&gt; int&#10;  [ n = (if initially c then 1 else 2) ]&#10;  [  ! n = (if b then 1 else if finally c then 2 else 3) ]&#10;"];
+"d" [label="d ?" URL="#d" tooltip="d ?&#10;"];
+}

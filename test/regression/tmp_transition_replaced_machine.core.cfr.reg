@@ -6,7 +6,7 @@
   }
   0..* b 0..1 {}
   0..* c 0..1 {}
-  [(!(previous (some this))) => (some this.a)] // initial, tmp_transition_replaced_machine.cfr:7:3
+  [((some this) && (!(previous (some this)))) => (some this.a)] // initial, tmp_transition_replaced_machine.cfr:7:3
 }
 
 assert [all m : sm | ((some m.a) && (some go)) => (X ((some m.b) || (no (m ** sm))))]

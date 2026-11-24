@@ -5,7 +5,7 @@
   [F (some this.c)]
   [all a_1 : this | X (a_1 in a)] // final, tmp_combinedEGX02.cfr:2:1
   [all a_1 : this | (previous (some root)) => (previous (a_1 in a))] // final, tmp_combinedEGX02.cfr:2:1
-  [(!(previous (some this))) => (some this.b)] // initial, tmp_combinedEGX02.cfr:3:9
+  [((some this) && (!(previous (some this)))) => (some this.b)] // initial, tmp_combinedEGX02.cfr:3:9
 }
 
 assert [(G (no a.b)) || (F ((some a.b) && (F (some a.c))))] // sometime after, tmp_combinedEGX02.cfr:7:8

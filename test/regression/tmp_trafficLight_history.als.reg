@@ -17,7 +17,7 @@ fact { always ~@r_TrafficLight_4 in @p_TrafficLight_4 }
 
 fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (lone self_.@r_on)) }
 fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (lone self_.@r_off)) }
-fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies ((before (some (self_ & alive_TrafficLight_4))) || (some self_.@r_off))) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (((!(some (self_ & alive_TrafficLight_4))) || (before (some (self_ & alive_TrafficLight_4)))) || (some self_.@r_off))) }
 fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (((!(some (self_.@r_on).@r_normal)) || (after (!(no self_.@r_on)))) || (after ((always (no self_.@r_on)) || ((no self_.@r_on) until (some (self_.@r_on).@r_normal)))))) }
 fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (((!(some (self_.@r_on).@r_flashing)) || (after (!(no self_.@r_on)))) || (after ((always (no self_.@r_on)) || ((no self_.@r_on) until (some (self_.@r_on).@r_flashing)))))) }
 

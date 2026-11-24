@@ -37,7 +37,7 @@ abstract sig TrafficLight_2
 fun alive_TrafficLight_2 : set TrafficLight_2 { alive_tl }
 fact { all self_ : TrafficLight_2 | always (self_ in alive_TrafficLight_2 implies (lone self_.@r_on)) }
 fact { all self_ : TrafficLight_2 | always (self_ in alive_TrafficLight_2 implies (lone self_.@r_off)) }
-fact { all self_ : TrafficLight_2 | always (self_ in alive_TrafficLight_2 implies ((before (some (self_ & alive_TrafficLight_2))) || (some self_.@r_on))) }
+fact { all self_ : TrafficLight_2 | always (self_ in alive_TrafficLight_2 implies (((!(some (self_ & alive_TrafficLight_2))) || (before (some (self_ & alive_TrafficLight_2)))) || (some self_.@r_on))) }
 
 
 sig on
@@ -52,7 +52,7 @@ fact { always ~@r_on in @p_on
 fact { all self_ : on | always (self_ in alive_on implies (lone self_.@r_normal)) }
 fact { all self_ : on | always (self_ in alive_on implies (lone self_.@r_flashing)) }
 fact { all self_ : on | always (self_ in alive_on implies ((some (self_ & alive_on)) => ((some self_.(@p_on :> alive_TrafficLight_2) and (some (self_ & alive_on))) until (not some self_.(@p_on :> alive_TrafficLight_2) or (some (self_.(@p_on :> alive_TrafficLight_2)).@r_off))))) }
-fact { all self_ : on | always (self_ in alive_on implies ((before (some self_.(@p_on :> alive_TrafficLight_2) and (some (self_ & alive_on)))) || (some self_.@r_normal))) }
+fact { all self_ : on | always (self_ in alive_on implies (((!(some (self_ & alive_on))) || (before (some self_.(@p_on :> alive_TrafficLight_2) and (some (self_ & alive_on))))) || (some self_.@r_normal))) }
 
 
 sig normal
@@ -68,7 +68,7 @@ fact { always ~@r_normal in @p_normal
 fact { all self_ : normal | always (self_ in alive_normal implies (lone self_.@r_green)) }
 fact { all self_ : normal | always (self_ in alive_normal implies (lone self_.@r_yellow)) }
 fact { all self_ : normal | always (self_ in alive_normal implies (lone self_.@r_red)) }
-fact { all self_ : normal | always (self_ in alive_normal implies ((before (some self_.(@p_normal :> alive_on) and (some (self_ & alive_normal)))) || (some self_.@r_green))) }
+fact { all self_ : normal | always (self_ in alive_normal implies (((!(some (self_ & alive_normal))) || (before (some self_.(@p_normal :> alive_on) and (some (self_ & alive_normal))))) || (some self_.@r_green))) }
 
 
 sig green
@@ -110,7 +110,7 @@ fact { always ~@r_flashing in @p_flashing
 fact { all self_ : flashing | always (self_ in alive_flashing implies (lone self_.@r_yellow_on)) }
 fact { all self_ : flashing | always (self_ in alive_flashing implies (lone self_.@r_yellow_off)) }
 fact { all self_ : flashing | always (self_ in alive_flashing implies ((some (self_ & alive_flashing)) => ((some self_.(@p_flashing :> alive_on) and (some (self_ & alive_flashing))) until (not some self_.(@p_flashing :> alive_on) or (some (self_.(@p_flashing :> alive_on)).@r_normal))))) }
-fact { all self_ : flashing | always (self_ in alive_flashing implies ((before (some self_.(@p_flashing :> alive_on) and (some (self_ & alive_flashing)))) || (some self_.@r_yellow_on))) }
+fact { all self_ : flashing | always (self_ in alive_flashing implies (((!(some (self_ & alive_flashing))) || (before (some self_.(@p_flashing :> alive_on) and (some (self_ & alive_flashing))))) || (some self_.@r_yellow_on))) }
 
 
 sig yellow_on
@@ -146,6 +146,6 @@ sig tl extends TrafficLight_2
 fun alive_tl : set tl { root.@r_tl }
 fact { always ~@r_tl in @p_tl }
 
-fact { all self_ : tl | always (self_ in alive_tl implies ((before (some (self_ & alive_tl))) || ((some ((self_.@r_on).@r_normal).@r_green) => (after ((some ((self_.@r_on).@r_normal).@r_yellow) && (after ((some ((self_.@r_on).@r_normal).@r_red) && (after (some ((self_.@r_on).@r_normal).@r_green))))))))) }
+fact { all self_ : tl | always (self_ in alive_tl implies (((!(some (self_ & alive_tl))) || (before (some (self_ & alive_tl)))) || ((some ((self_.@r_on).@r_normal).@r_green) => (after ((some ((self_.@r_on).@r_normal).@r_yellow) && (after ((some ((self_.@r_on).@r_normal).@r_red) && (after (some ((self_.@r_on).@r_normal).@r_green))))))))) }
 
 

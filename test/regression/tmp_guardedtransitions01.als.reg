@@ -40,7 +40,7 @@ fact { always ~@r_light in @p_light }
 
 fact { all self_ : light | always (self_ in alive_light implies (lone self_.@r_red)) }
 fact { all self_ : light | always (self_ in alive_light implies (lone self_.@r_green)) }
-fact { all self_ : light | always (self_ in alive_light implies ((before (some (self_ & alive_light))) || (some self_.@r_red))) }
+fact { all self_ : light | always (self_ in alive_light implies (((!(some (self_ & alive_light))) || (before (some (self_ & alive_light)))) || (some self_.@r_red))) }
 
 
 sig red
@@ -73,7 +73,7 @@ fact { all self_ : door | always (self_ in alive_door implies (lone self_.@r_clo
 fact { all self_ : door | always (self_ in alive_door implies (lone self_.@r_opened)) }
 fact { all self_ : door | always (self_ in alive_door implies (((some self_.@r_closed) && (some alive_signal)) => (after (some self_.@r_opened)))) }
 fact { all self_ : door | always (self_ in alive_door implies (((some self_.@r_opened) && (no alive_signal)) => (((some (self_ & alive_door)) && (some self_.@r_opened)) until (some self_.@r_closed)))) }
-fact { all self_ : door | always (self_ in alive_door implies ((before (some (self_ & alive_door))) || (some self_.@r_closed))) }
+fact { all self_ : door | always (self_ in alive_door implies (((!(some (self_ & alive_door))) || (before (some (self_ & alive_door)))) || (some self_.@r_closed))) }
 
 
 sig closed

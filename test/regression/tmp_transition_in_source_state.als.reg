@@ -33,7 +33,7 @@ fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_b)) }
 fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_c)) }
 fact { all self_ : sm | always (self_ in alive_sm implies (all  sm_1 : (self_ & alive_sm) | after (sm_1 in (alive_sm)))) }
 fact { all self_ : sm | always (self_ in alive_sm implies (all  sm_1 : (self_ & alive_sm) | (not before not (!(some root))) || (before (sm_1 in (alive_sm))))) }
-fact { all self_ : sm | always (self_ in alive_sm implies ((before (some (self_ & alive_sm))) || (some self_.@r_a))) }
+fact { all self_ : sm | always (self_ in alive_sm implies (((!(some (self_ & alive_sm))) || (before (some (self_ & alive_sm)))) || (some self_.@r_a))) }
 
 
 sig a

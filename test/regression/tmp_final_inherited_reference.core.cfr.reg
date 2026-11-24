@@ -9,7 +9,7 @@ abstract 0..* Car 0..* {
       [(some this) => (X (some this.parent.drive))] // -->, tmp_final_inherited_reference.cfr:13:17
     }
     0..* drive 0..1 {}
-    [(!(previous (some this))) => (some this.park)] // initial, tmp_final_inherited_reference.cfr:13:9
+    [((some this) && (!(previous (some this)))) => (some this.park)] // initial, tmp_final_inherited_reference.cfr:13:9
   }
 }
 0..* tesla : Car 1..1 {

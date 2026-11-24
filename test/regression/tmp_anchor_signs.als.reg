@@ -1,0 +1,64 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_A : set A
+, var r_d : set d }
+fact { always (lone root.@r_d) }
+fact { always ((before (some root)) || (!(some alive_d))) }
+
+
+sig A
+{ p_A : lone root
+, var r_b : set b
+, var r_c : set c
+, var r_n : set n }
+fun alive_A : set A { root.@r_A }
+fact { always ~@r_A in @p_A }
+
+fact { all self_ : A | always (self_ in alive_A implies (lone self_.@r_b)) }
+fact { all self_ : A | always (self_ in alive_A implies (lone self_.@r_c)) }
+fact { all self_ : A | always (self_ in alive_A implies (one self_.@r_n)) }
+fact { all self_ : A | always (self_ in alive_A implies (after (after (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (some self_.@r_c))))) }
+fact { all self_ : A | always (self_ in alive_A implies (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (!(some self_.@r_b)))) }
+fact { all self_ : A | always (self_ in alive_A implies ((((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (!(some self_.@r_b))) || (((!(some (self_ & alive_A))) || (after (!(no (self_ & alive_A))))) || (some self_.@r_c)))) }
+fact { all self_ : A | always (self_ in alive_A implies (((((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (!(some self_.@r_b))) || (((!(some (self_ & alive_A))) || (after (!(no (self_ & alive_A))))) || (some self_.@r_c))) && ((((!(some (self_ & alive_A))) || (after (!(no (self_ & alive_A))))) || (!(some self_.@r_c))) || (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (some self_.@r_b))))) }
+fact { all self_ : A | always (self_ in alive_A implies (((((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (some self_.@r_b)) && (no self_.@r_c)) || ((((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (!(some self_.@r_b))) && (some self_.@r_c)))) }
+fact { all self_ : A | always (self_ in alive_A implies (((some self_.@r_b) => (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (some self_.@r_c))) && ((no self_.@r_b) => (((!(some (self_ & alive_A))) || (after (!(no (self_ & alive_A))))) || (some self_.@r_c))))) }
+fact { all self_ : A | always (self_ in alive_A implies (all  x : self_.@r_b | ((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || (!(some self_.@r_c)))) }
+fact { all self_ : A | always (self_ in alive_A implies (lone  x : self_.@r_b | !(((some (self_ & alive_A)) && (!(before (some (self_ & alive_A))))) => (some self_.@r_c)))) }
+fact { all self_ : A | always (self_ in alive_A implies (((self_.@r_n).@n_ref) = ((((some (self_ & alive_A)) && (!(before (some (self_ & alive_A))))) => (some self_.@r_c)) => 1 else 2))) }
+fact { all self_ : A | always (self_ in alive_A implies (!(((self_.@r_n).@n_ref) = ((some self_.@r_b) => 1 else ((((some (self_ & alive_A)) && (after (no (self_ & alive_A)))) => (some self_.@r_c)) => 2 else 3))))) }
+
+
+sig b
+{ p_b : lone A }
+fun alive_b : set b { A.@r_b }
+fact { always ~@r_b in @p_b
+  always @r_b.univ in alive_A }
+
+
+sig c
+{ p_c : lone A }
+fun alive_c : set c { A.@r_c }
+fact { always ~@r_c in @p_c
+  always @r_c.univ in alive_A }
+
+
+sig n
+{ p_n : lone A
+, var n_ref : set Int }
+{ always (this in alive_n implies (one this.@n_ref))
+  always (this not in alive_n implies no this.@n_ref) }
+fun alive_n : set n { A.@r_n }
+fact { always ~@r_n in @p_n
+  always @r_n.univ in alive_A }
+
+
+sig d
+{ p_d : lone root }
+fun alive_d : set d { root.@r_d }
+fact { always ~@r_d in @p_d }
+
+
