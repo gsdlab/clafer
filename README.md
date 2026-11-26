@@ -75,7 +75,7 @@ The compiler itself needs nothing else. The following are optional, regardless o
   * only needed for validating the outputs (`--validate`) and for `--ecore2clafer`
 * [Alloy 6.2.0](https://github.com/AlloyTools/org.alloytools.alloy/releases/tag/v6.2.0) (`alloy6.2.0.jar`)
   * only needed for validating the Alloy output (`--validate`)
-* `chocosolver.jar` from [chocosolver](https://github.com/gsdlab/chocosolver)
+* `clafersg.jar` from [chocosolver](https://github.com/gsdlab/chocosolver)
   * only needed for validating the Choco output (`--validate`)
 * `ecore2clafer.jar` (in this repository)
   * only needed for `--ecore2clafer`
@@ -86,13 +86,13 @@ The compiler itself needs nothing else. The following are optional, regardless o
 
 ### Installation from binaries
 
-Binary distributions of Clafer Tools (`clafer`, `claferIG`, and `chocosolver` with the jars they need; Linux x86-64 for the recent releases)
+Binary distributions of Clafer Tools (`clafer`, `claferIG`, and `clafersg` with the jars they need; Linux x86-64 for the recent releases)
 can be downloaded from
 [Clafer Tools - Binary Distributions](https://wiselab.uwaterloo.ca/clafer-tools-binary-distributions/).
 
 1. Download the binaries and unpack them into a `<target directory>` of your choice.
 2. Add the `<target directory>` to your system path so that the executables can be found.
-3. The bundle contains `alloy6.2.0.jar`, `chocosolver.jar`, and `ecore2clafer.jar`: use `--tooldir=<target directory>` for `--validate` and `--ecore2clafer`.
+3. The bundle contains `alloy6.2.0.jar`, `clafersg.jar`, and `ecore2clafer.jar`: use `--tooldir=<target directory>` for `--validate` and `--ecore2clafer`.
 
 ### Installation from Hackage
 
@@ -125,7 +125,7 @@ The executable is copied to `~/.local/bin`.
 
 #### Tools for validation
 
-To use `--validate`, put `alloy6.2.0.jar` (and `chocosolver.jar` for the Choco output) into a directory, and pass it with `--tooldir=<directory>`.
+To use `--validate`, put `alloy6.2.0.jar` (and `clafersg.jar` for the Choco output) into a directory, and pass it with `--tooldir=<directory>`.
 In a checkout of this repository, `make alloy6.2.0.jar` downloads the Alloy jar.
 
 ### Installation from the source code
@@ -259,7 +259,7 @@ Common flags:
                                           exit with 1 if a tool rejects one.
                                           Uses '<tooldir>/alloy6.2.0.jar' for
                                           Alloy models,
-                                          '<tooldir>/chocosolver.jar' for Choco
+                                          '<tooldir>/clafersg.jar' for Choco
                                           models, dot for graphs, and clafer
                                           itself for explicit models, which
                                           must compile to themselves. Use

@@ -47,7 +47,7 @@ generateAlloyJSHTMLDot:
 	@echo "==================================================================================="
 	@echo "| Testing 'Positive' suite - generating Alloy, JavaScript, HTML, and Graph output |"
 	@echo "|                          and the explicit form (-m clafer)                      |"
-	@echo "|                          - validating them: Alloy and chocosolver run them,     |"
+	@echo "|                          - validating them: Alloy and clafersg run them,        |"
 	@echo "|                            dot draws the graphs, the explicit form compiles to  |"
 	@echo "|                            itself                                                |"
 	@echo "==================================================================================="
@@ -56,8 +56,8 @@ generateAlloyJSHTMLDot:
 		echo "[ERROR] Missing ../alloy6.2.0.jar."; false; \
 	fi
 
-	@if test ! -f "../chocosolver.jar"; then \
-		echo "[ERROR] Missing ../chocosolver.jar."; false; \
+	@if test ! -f "../clafersg.jar"; then \
+		echo "[ERROR] Missing ../clafersg.jar."; false; \
 	fi
 
 	@# Compile the positive test suite to Alloy, Choco, the explicit form, HTML, and Graph,

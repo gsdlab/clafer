@@ -16,7 +16,7 @@ codex.tags
 .cabal-sandbox
 .stack-work
 alloy6.2.0.jar
-chocosolver.jar
+clafersg.jar
 stack.yaml.lock
 # make test: the copied compiler and the outputs generated in test/positive
 /clafer

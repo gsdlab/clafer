@@ -352,7 +352,7 @@ validateAlloy :: String -> String
 validateAlloy path = "java --enable-native-access=ALL-UNNAMED -jar \"" ++ path ++ "alloy6.2.0.jar\" exec -c \"*\" -t table -o - "
 
 validateChoco :: String -> String
-validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
+validateChoco path = "java -jar \"" ++ path ++ "clafersg.jar\" -v --file "
 
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
