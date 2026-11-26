@@ -47,7 +47,8 @@ module Language.Clafer.Intermediate.Finality
   , staticClafers
   ) where
 
-import Control.Lens.Plated (transformOn, universeOn)
+import Control.Lens.Plated (transformM, transformOn, universeOn)
+import Control.Monad.State (evalState, state)
 import Data.Data.Lens (biplate)
 import Data.List (find)
 import Data.Maybe (fromMaybe, isJust, listToMaybe)
@@ -63,7 +64,9 @@ lowerFinality imodule = unmark $ transformOn biplate lowerClafer imodule
        ++ concat [ concatMap _decls ds | PExp{_exp = IDeclPExp _ ds _} <- universeOn biplate imodule :: [PExp] ]
   lowerClafer c
     | isRoot c = c
-    | otherwise = c{_elements = _elements c ++ [ IEConstraint' True p (Just $ Origin m $ _cinPos c) | (m, p) <- finality uidIClaferMap' taken c ]}
+    | otherwise = c{_elements = _elements c ++ [ IEConstraint' True p (Just $ Origin m $ _cinPos c) | (m, p) <- zip modifiers' (namePExps ("final_" ++ _uid c ++ "_") ps) ]}
+    where
+    (modifiers', ps) = unzip $ finality uidIClaferMap' taken c
   -- no modifier is left
   unmark = transformOn biplate $ \c -> c
     { _modifiers = (_modifiers c){_final = False, _finalReferences = []}
@@ -145,11 +148,23 @@ lowerInitial :: IModule -> IModule
 lowerInitial imodule = imodule{_mDecls = lowerElements Nothing $ _mDecls imodule}
   where
   lowerElements parent' es = map lowerElement es ++
-    [ IEConstraint' True (initially' parent' x) (Just $ Origin "initial" $ _cinPos x) | IEClafer x <- es, _isInitial x, not (_isAbstract x && isTopLevel x) ]
+    [ IEConstraint' True p (Just $ Origin "initial" $ _cinPos x)
+    | IEClafer x <- es, _isInitial x, not (_isAbstract x && isTopLevel x)
+    , [p] <- [namePExps ("initial_" ++ _uid x ++ "_") [initially' parent' x]] ]
   lowerElement (IEClafer c) = IEClafer c
     { _elements = lowerElements (Just c) $ _elements c
     , _modifiers = (_modifiers c){_initial = False} }
   lowerElement e = e
+
+-- | The expressions with the pid of each one that has none: the prefix and a number, unique
+--   if the prefix names the clafer and the modifier. A backend finds an expression by its pid,
+--   e.g., claferIG the constraint of an unsat core; the resolver names the others @e\<n\>_@.
+namePExps :: String -> [PExp] -> [PExp]
+namePExps prefix ps = evalState (mapM (transformM name) ps) (0 :: Int)
+  where
+  name p
+    | null (_pid p) = state $ \n -> (p{_pid = prefix ++ show n}, n + 1)
+    | otherwise = pure p
 
 -- | The constraint that the parent, or the model at the top level, has an instance of x initially.
 initially' :: Maybe IClafer -> IClafer -> PExp
