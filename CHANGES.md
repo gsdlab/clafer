@@ -1,4 +1,4 @@
-##### Clafer Version 0.6.0, unreleased
+##### Clafer Version 0.6.0, Nov 29, 2026
 
 * Builds with GHC 9.12.4 (Stackage nightly-2026-11-15) and still with GHC 9.6.7.
 * `--validate` runs the Choco output with `<tooldir>/clafersg.jar`, the new name of `chocosolver.jar` (the command `chocosolver` is now `clafersg`).
