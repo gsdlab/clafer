@@ -1,0 +1,66 @@
+//# OPTIONS --explicit --core
+0..* midYearReview : Meeting 1..1 {
+  0..* month -> Month 1..1 {}
+  [(some this.month) => (this.month.dref = June)] // =, EDM_Intro.cfr:2:5
+  0..* midYearReview__chair -> Member 1..1 {}
+  [(some this.midYearReview__chair) => (this.midYearReview__chair.dref = Steven)] // =, EDM_Intro.cfr:3:5
+  0..* midYearReview__room -> Room 1..1 {}
+  [(some this.midYearReview__room) => (this.midYearReview__room.dref = C)] // =, EDM_Intro.cfr:4:5
+  [some this.onlineParticipant]
+}
+0..* Steven : Member 1..1 {}
+0..* C : Room 1..1 {
+  0..* C__whiteboard 1..1 {}
+  0..* C__audioConferencing 1..1 {}
+}
+0..* ondemandMeeting : Meeting 1..1 {
+  0..* ondemandMeeting__chair -> Member 1..1 {}
+  [(some this.ondemandMeeting__chair) => (this.ondemandMeeting__chair.dref = Joanna)] // =, EDM_Intro.cfr:14:5
+  [no this.onlineParticipant]
+  0..* ondemandMeeting__room -> Room 1..1 {}
+  [(some this.ondemandMeeting__room) => (this.ondemandMeeting__room.dref = D)] // =, EDM_Intro.cfr:16:5
+}
+0..* Joanna : Member 1..1 {}
+0..* D : Room 1..1 {
+  0..* D__whiteboard 1..1 {}
+}
+abstract 0..* Meeting 0..* {
+  0..* Meeting__chair -> Member 1..1 {}
+  0..* participant -> Member 1..* {}
+  [this.Meeting__chair.dref not in this.participant.dref]
+  0..* onlineParticipant -> Member 0..* {}
+  [this.Meeting__chair.dref not in this.onlineParticipant.dref]
+  0..* Meeting__room -> Room 1..1 {
+    [this.dref.capacity.dref >= ((#this.parent.participant) + 1)]
+  }
+  [(some this.onlineParticipant) => (some this.Meeting__room.dref.Room__audioConferencing)]
+}
+abstract 0..* Month 0..* {} // enum, EDM_Intro.cfr:33:1
+0..* June : Month 1..1 {} // enum, EDM_Intro.cfr:33:14
+0..* July : Month 1..1 {} // enum, EDM_Intro.cfr:33:21
+abstract 0..* Member 0..* {}
+abstract 0..* Room 0..* {
+  0..* capacity -> int 1..1 {}
+  1..* Room__whiteboard 1..1 {
+    0..* traditional 0..1 {}
+    0..* electronic 0..1 {}
+  }
+  0..* projector 0..1 {}
+  0..* computer 0..1 {}
+  0..* Room__audioConferencing 0..1 {}
+}
+0..* M : Member 5..5 {}
+0..* SueAgenda : Agenda 1..1 {
+  0..* m1 -> Meeting 0..1 {}
+  [(some this.m1) => (this.m1.dref = M1)] // =, EDM_Intro.cfr:49:5
+  0..* m2 -> Meeting 0..1 {}
+  [(some this.m2) => (this.m2.dref = M2)] // =, EDM_Intro.cfr:50:5
+}
+0..* M1 : Meeting 0..1 {}
+0..* M2 : Meeting 0..1 {
+  0..* time -> int 1..1 {}
+  [(some this.time) => (this.time.dref = 10)] // =, EDM_Intro.cfr:55:4
+}
+abstract 0..* Agenda 0..* {
+  0..* mt -> Meeting 0..* {}
+}

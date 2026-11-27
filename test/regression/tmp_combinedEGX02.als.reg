@@ -15,14 +15,16 @@ sig a
 { p_a : lone root
 , var r_b : set b
 , var r_c : set c }
-{ always (this in alive_a implies (let children = (this.@r_b + this.@r_c) | one children))
-  always (this in alive_a and not before this in alive_a implies (some this.@r_b)) }
+{ always (this in alive_a implies (let children = (this.@r_b + this.@r_c) | one children)) }
 fun alive_a : set a { root.@r_a }
 fact { always ~@r_a in @p_a }
 
 fact { all self_ : a | always (self_ in alive_a implies (lone self_.@r_b)) }
 fact { all self_ : a | always (self_ in alive_a implies (lone self_.@r_c)) }
 fact { all self_ : a | always (self_ in alive_a implies (eventually (some self_.@r_c))) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | after (a_1 in (alive_a)))) }
+fact { all self_ : a | always (self_ in alive_a implies (all  a_1 : (self_ & alive_a) | (not before not (!(some root))) || (before (a_1 in (alive_a))))) }
+fact { all self_ : a | always (self_ in alive_a implies (((!(some (self_ & alive_a))) || (before (some (self_ & alive_a)))) || (some self_.@r_b))) }
 
 
 sig b

@@ -99,11 +99,10 @@ resolveNClafer allClafers ancestors' abstractClafers parent clafer =
     return $ clafer
       { _super = super'
       , _parentUID = parentUID'
-      , _modifiers = IClaferModifiers
-          (_isAbstract clafer)
-          (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
-          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
-          (_finalReferences $ _modifiers clafer)
+      , _modifiers = (_modifiers clafer)
+          { _initial = _isInitial clafer || maybe False _isInitial superIClafer'  -- the clafer is declared as initial or inherits it
+          , _final = _isFinal clafer || maybe False _isFinal superIClafer'        -- the clafer is declared as final or inherits it
+          }
       , _elements = elements'
       }
 
@@ -116,9 +115,9 @@ resolveNSuper _ ancestors' abstractClafers parent _ (Just (PExp _ pid' pos' (ICl
         r <- case inheritedSuper of
           Just c  -> return $ Just (_uid c, [c])
           Nothing -> resolveN pos' ancestors' abstractClafers id'
-        ~(id'', [superClafer']) <- case r of
-          Nothing -> throwError $ SemanticErr pos' ("No superclafer found: " ++ id')
-          Just m  -> return m
+        (id'', superClafer') <- case r of
+          Just (u, c : _) -> return (u, c)
+          _ -> throwError $ SemanticErr pos' ("No superclafer found: " ++ id')
         return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
                  , Just superClafer')
   where
@@ -197,6 +196,7 @@ resolveNElement allClafers ancestors' abstractClafers parent x = case x of
   IEClafer clafer  -> IEClafer <$> resolveNClafer allClafers ancestors' abstractClafers parent clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 -- | The abstract clafer with the name. An ambiguous name is an error which shows the
 --   paths of the candidates, e.g., @A.A__T@ and @B.B__T@, and two candidates in the same
@@ -248,6 +248,7 @@ resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveOClafer env clafer
   IEConstraint _ _ -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 
 -- | Resolve inherited and default cardinalities
@@ -292,6 +293,7 @@ analyzeElement env x = case x of
   IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
   IEConstraint _ _ -> x
   IEGoal _ _ -> x
+  IEInitializer{} -> x
 
 -- | Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
@@ -316,6 +318,7 @@ unrollabeDeclaration x = case x of
                         else Nothing
   IEConstraint _ _ -> Nothing
   IEGoal _ _ -> Nothing
+  IEInitializer{} -> Nothing
 
 unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer = (getSuper clafer) ++ deps
@@ -390,6 +393,7 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+  IEInitializer{} -> return x
 
 -- -----------------------------------------------------------------------------
 

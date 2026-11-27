@@ -1,0 +1,13 @@
+//# OPTIONS --explicit --tl=10
+0..* Shift 0..1 {
+  0..* Worker 0..1 {
+    0..* alarm 0..1 {}
+    0..* warned 0..1 {}
+    [(some this.warned) <=> (previous (once (some this.alarm)))]
+  }
+}
+[initially (some Shift.Worker.alarm)]
+[initially (X (no Shift))]
+[initially (X (X ((some Shift.Worker) && (no Shift.Worker.alarm))))]
+
+assert [initially (X (X (no Shift.Worker.warned)))]

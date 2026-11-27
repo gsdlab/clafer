@@ -7,4 +7,5 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "a" [label="a ?" URL="#a" tooltip="a ?&#10;  xor b 1&#10;    c ?&#10;    d ?&#10;    [ never d after c ]&#10;"];
+"e" [label="final e" URL="#e" tooltip="final e&#10;  final xor f 1&#10;    g ?&#10;    h ?&#10;    [ never h after g ]&#10;"];
 }

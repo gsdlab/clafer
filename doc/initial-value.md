@@ -214,6 +214,79 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
 - Negative: `:=` on a clafer that is not a reference, which `=` rejects with a type error
   (`x = 10`: "Function '=' cannot be performed on TClafer … = TInteger").
 
+## The lowering of a value with temporal operators (0.6.0)
+
+A per-instance `:=` whose value has temporal operators is evaluated in the context of the
+parent (gsdlab/clafer#123). Since the past-time operators (gsdlab/clafer#127), it is a
+constraint of the parent in the core, `[ all c : this.x | (not previous (c in this.x)) =>
+(c.dref = e) ]`: an instance of `x` appears when it was not there in the previous state of the
+parent's lifetime. The temporal Alloy generator has no interpretation of its own for it any
+more; its output for `tmp_initialValue07` is equivalent to the one of 0.5.8.
+
+## Support limits (0.6.0)
+
+kbak/clafer-semantics#170 has two support limits, which 0.6.0 checks (#126) right after name
+resolution, before the optimizer removes the abstract clafers that nothing extends and before
+any output, so that every mode, also the rich explicit model, gets only supported forms
+(`Language.Clafer.Intermediate.InitializerChecks`):
+
+- **Scalar admission:** a per-instance `:=` of an abstract clafer needs a value with at most one
+  element. Otherwise, in a temporal model, no instance can be born with the value, while in a
+  static model, where `:=` is the aggregate `[ some Val => Val.dref = e ]`, several instances
+  can share the values, so the two would disagree. The bound comes from the declarations and
+  simple, sound rules (literals; clafers with at most one instance; navigations to them, to
+  `dref` and to `parent`; counts, sums, products, minima and maxima; arithmetic; an
+  intersection with, or a difference from, such a value; a union of the same value; and
+  `if then else`), not from the constraints: `pool.dref` with `pool ->> integer *` is not
+  admitted, also with `[ #pool <= 1 ]`. `1 / 0` is admitted: it has one element, and the
+  obligation simply cannot be met.
+- **The multiplicity of a top-level abstract clafer with `:=` without a clock:** `*` (or `0..*`)
+  makes `:=` a set initializer at time zero, and the absence of a multiplicity a per-instance
+  one; any other, e.g., `?`, `1` or `1..*`, has no meaning as a clock and is an error, which asks
+  for `:= each` or `:= together` (see below). In 0.5.8, it gave the
+  per-instance clock, and it bounded the number of instances in static Alloy only, while the
+  other backends and the explicit models ignored it (#129, which proposes one meaning for the
+  multiplicity of an abstract clafer). The contract classifies only the top-level abstract
+  clafers: on a nested one, `*` makes `:=` a set initializer under the parent, as for a
+  concrete clafer, and another multiplicity keeps the per-instance clock.
+
+A single reference whose initializer, `:=` or `=`, is a union of different literals of one kind,
+e.g., `x -> integer ? := 1, 2`, is well-formed but has no instance, so the compiler warns.
+
+Tests: `case_InitializerDiagnostics` in the test suite (every mode, static and temporal models,
+the rich and core explicit models of the admitted forms compile to themselves), and the negative
+models `initializer_value_not_scalar*.cfr` and `initializer_bound_of_abstract.cfr`.
+
+## Explicit clocks (0.6.0)
+
+kbak/clafer-semantics#194 (kbak/clafer-semantics#197) makes the clock of `:=` independent of the
+multiplicity: `x -> T := each e` is per instance, each instance at its birth, and
+`x -> T := together e` per collection, all the instances under the declared parent at the
+parent's birth, or all the instances of a top-level abstract clafer at time zero. A written
+clock overrides the shorthand of the multiplicity, and changing the multiplicity does not
+change it. Without a clock, `:=` keeps the meaning above. `=` has no clock.
+
+- In the IR, `IEInitializer` has `_isExplicitClock`; `_isSetInit` is the clock, written or
+  decided by the multiplicity (`Language.Clafer.Intermediate.Desugarer.desugarInit`).
+- A top-level abstract clafer with any multiplicity may have `:=` with a clock, e.g.,
+  `abstract Val -> integer 0..3 := together 1`. Its multiplicity bounds the number of
+  instances in every state (#129), and the clock decides the value: with an empty collection at
+  time zero and an instance born at 7 later, `:= together 1` holds and `:= each 1` does not
+  (Alloy checks both on `tmp_initializerClocks`).
+- A per-instance `:=` of an abstract clafer needs a value with at most one element, also
+  with `:= each`.
+- On a concrete clafer with more than one instance under a parent, `:= each e` is one
+  equation for each instance, also in a static model, `[ all c : this.xs | c.dref = e ]` in the
+  parent, and not the aggregate `this.xs.dref = e`: with three instances whose values are
+  1, 1 and 2, the aggregate equality to `1, 2` holds, and `:= each 1, 2` does not. A
+  static-first lowering must not erase the per-instance clock. `:= each 1, 2` has no instance,
+  so the compiler warns.
+- The rich explicit model writes the clock of every `:=`, and `--record-provenance` labels the
+  lowered constraints of a written clock `:= each` or `:= together`.
+
+Tests: `case_InitializerClocks` and `case_InitializerDiagnostics` in the test suite, and the
+positive models `initializerClocks.cfr` and `tmp_initializerClocks.cfr`.
+
 ## What 0.5.8 does
 
 - **Temporality:** the desugarer already desugars a model twice when it is dynamic (for the final

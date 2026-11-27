@@ -114,6 +114,13 @@ import Language.Clafer.Front.ErrM
   'until' { PT _ (TS _ 94) }
   'weakuntil' { PT _ (TS _ 95) }
   'xor' { PT _ (TS _ 96) }
+  'historically' { PT _ (TS _ 102) }
+  'once' { PT _ (TS _ 103) }
+  'previous' { PT _ (TS _ 104) }
+  'since' { PT _ (TS _ 105) }
+  'triggered' { PT _ (TS _ 106) }
+  'each' { PT _ (TS _ 107) }
+  'together' { PT _ (TS _ 108) }
   '{' { PT _ (TS _ 97) }
   '|' { PT _ (TS _ 98) }
   '||' { PT _ (TS _ 99) }
@@ -191,6 +198,8 @@ Init : {- empty -} { Language.Clafer.Front.AbsClafer.InitEmpty noSpan }
 InitHow :: { InitHow }
 InitHow : '=' { Language.Clafer.Front.AbsClafer.InitConstant ((mkTokenSpan $1)) }
         | ':=' { Language.Clafer.Front.AbsClafer.InitDefault ((mkTokenSpan $1)) }
+        | ':=' 'each' { Language.Clafer.Front.AbsClafer.InitEach ((mkTokenSpan $1) >- (mkTokenSpan $2)) }
+        | ':=' 'together' { Language.Clafer.Front.AbsClafer.InitTogether ((mkTokenSpan $1) >- (mkTokenSpan $2)) }
 GCard :: { GCard }
 GCard : {- empty -} { Language.Clafer.Front.AbsClafer.GCardEmpty noSpan }
       | 'xor' { Language.Clafer.Front.AbsClafer.GCardXor ((mkTokenSpan $1)) }
@@ -251,6 +260,8 @@ Exp7 : Exp7 '&&' Exp8 { Language.Clafer.Front.AbsClafer.EAnd ((mkCatSpan $1) >- 
 Exp8 :: { Exp }
 Exp8 : Exp8 'U' Exp9 { Language.Clafer.Front.AbsClafer.LtlU ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp8 'until' Exp9 { Language.Clafer.Front.AbsClafer.TmpUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp8 'since' Exp9 { Language.Clafer.Front.AbsClafer.TmpSince ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp8 'triggered' Exp9 { Language.Clafer.Front.AbsClafer.TmpTriggered ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp9 {  $1 }
 Exp9 :: { Exp }
 Exp9 : Exp9 'W' Exp10 { Language.Clafer.Front.AbsClafer.LtlW ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -263,6 +274,9 @@ Exp10 : 'F' Exp10 { Language.Clafer.Front.AbsClafer.LtlF ((mkTokenSpan $1) >- (m
       | 'globally' Exp10 { Language.Clafer.Front.AbsClafer.TmpGlobally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'X' Exp10 { Language.Clafer.Front.AbsClafer.LtlX ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'next' Exp10 { Language.Clafer.Front.AbsClafer.TmpNext ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'previous' Exp10 { Language.Clafer.Front.AbsClafer.TmpPrevious ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'once' Exp10 { Language.Clafer.Front.AbsClafer.TmpOnce ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'historically' Exp10 { Language.Clafer.Front.AbsClafer.TmpHistorically ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp11 {  $1 }
 Exp11 :: { Exp }
 Exp11 : '!' Exp11 { Language.Clafer.Front.AbsClafer.ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
@@ -410,15 +424,17 @@ happyError ts' =
   Bad (pp ts) $ "syntax error" ++
   case ts of
     [] -> " at end of file"
-    [Err _] -> " due to lexer error"
-    _ -> " before " ++ unwords (map (id . prToken) (take 4 ts))
+    Err _ : _ -> " due to lexer error"
+    _ -> " before " ++ unwords [ prToken t | t@(PT _ _) <- take 4 ts ]
 
 myLexer = tokens
 
 gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
 pp (PT (Pn _ l c) _ :_) = Pos (toInteger l) (toInteger c)
 pp (Err (Pn _ l c) :_) = Pos (toInteger l) (toInteger c)
-pp _ = error "EOF"
+-- at the end of the model, which has no token to give the position: Language.Clafer.parse puts
+-- the error after the last token
+pp _ = Pos 0 0
 
 mkCatSpan :: (Spannable c) => c -> Span
 mkCatSpan = getSpan

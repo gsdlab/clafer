@@ -21,3 +21,4 @@ $node.refToUnique($N1);
 $edge.refToUnique($N2);
 $subgraph.refToUnique($Node);
 $E1.refToUnique($N2);
+$Node.addConstraint(lessThanEqual(card(join($this(), $Edge)), constant(1)));

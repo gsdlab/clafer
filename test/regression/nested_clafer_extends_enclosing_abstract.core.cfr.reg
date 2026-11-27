@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --core
+abstract 0..* Path 0..* {
+  0..* p : Path 0..1 {}
+  0..* isDir 0..1 {}
+  [(some this.isDir) => (some this.p)]
+}
+0..* pth : Path 1..1 {}

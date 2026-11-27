@@ -1,0 +1,16 @@
+//# OPTIONS --explicit --core --tl=10
+0..* go 0..1 {}
+0..* ready 0..1 {}
+0..* done 0..1 {}
+[G ((some done) => (once (some go)))]
+[G ((some done) => ((some ready) since (some go)))]
+[G ((some go) => (!(previous (some go))))]
+[(!(previous (some root))) => (((some go) && (no ready)) && (no done))]
+[(!(previous (some root))) => (X ((some ready) && (no go)))]
+[(!(previous (some root))) => (X (X ((some ready) && (some done))))]
+
+assert [(!(previous (some root))) => (!(previous (some go)))]
+assert [(!(previous (some root))) => (X (X (once (some go))))]
+assert [(!(previous (some root))) => (X (X ((some ready) since (some go))))]
+assert [(!(previous (some root))) => (X (X (!(historically (some ready)))))]
+assert [G ((!(once (some go))) => ((no done) triggered (no go)))]

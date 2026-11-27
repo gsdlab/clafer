@@ -5,9 +5,9 @@ pred show {}
 one sig root
 { var r_Box : set Box }
 fact { always (lone root.@r_Box) }
-fact { always ((not before some root) implies ((some alive_Box) && (after (no alive_Box)))) }
+fact { always ((before (some root)) || ((some alive_Box) && (after (no alive_Box)))) }
 
-assert assertAt_12_10 { always ((not before some root) implies (((alive_Box.@r_x).@x_ref) = 2)) }
+assert assertAt_12_10 { always ((before (some root)) || (((alive_Box.@r_x).@x_ref) = 2)) }
 check assertAt_12_10 for 1 but 10 steps
 
 
@@ -21,6 +21,7 @@ fact { always ~@r_Box in @p_Box }
 
 fact { all self_ : Box | always (self_ in alive_Box implies (lone self_.@r_flag)) }
 fact { all self_ : Box | always (self_ in alive_Box implies (one self_.@r_x)) }
+fact { all self_ : Box | always (self_ in alive_Box implies (all  x_1 : self_.@r_x | (before (x_1 in (self_.@r_x))) || ((x_1.@x_ref) = ((after (some self_.@r_flag)) => 1 else 2)))) }
 
 
 sig flag
@@ -38,7 +39,5 @@ sig x
 fun alive_x : set x { Box.@r_x }
 fact { always ~@r_x in @p_x
   always @r_x.univ in alive_Box }
-
-fact { all self_ : x | always (self_ in alive_x implies ((not before self_ in alive_x) implies ((self_.@x_ref) = (((after (some (self_.(@p_x :> alive_Box)).@r_flag)) => 1 else 2))))) }
 
 

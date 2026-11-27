@@ -45,7 +45,31 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     findClafer :: UID -> IClafer
     findClafer uid' = fromJust $ findIClafer uidClaferMap' uid'
 
-    finalAnalysis = Map.toList $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
+    finalAnalysis = Map.toList $ withSetReferences $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
+
+    -- The targets of a set reference (->) differ under each parent, so a set reference has at
+    -- most as many instances under a parent as its target has in all, e.g., three for an
+    -- enumeration with three literals, when the multiplicities bound the target, so that its
+    -- scope is not a guess that a larger scope of the target would change. A bag reference (->>)
+    -- has no such bound, nor an abstract clafer, whose subclafers may share targets (#125).
+    withSetReferences analysis' = foldr capSetReference analysis' clafers
+      where
+      capSetReference c a = case (_reference c, getReference c) of
+          (Just IReference{_isSet = True}, [target]) | not (_isAbstract c)
+                                                    , Just t <- findIClafer uidClaferMap' target
+                                                    , bounded t
+                                                    , Just targetScope <- Map.lookup (_uid t) analysis'
+              -> Map.adjust (min $ parentScopeOf c * targetScope) (_uid c) a
+          _ -> a
+      -- the multiplicities bound the number of instances of the clafer
+      bounded c = boundedParent || boundedSuper
+        where
+        boundedParent = (_isAbstract c || maybe False ((>= 0) . snd) (_card c))
+                        && maybe True (maybe False bounded . findIClafer uidClaferMap') (Map.lookup (_uid c) parentMap)
+                        && (not (_isAbstract c) || all (maybe False bounded . findIClafer uidClaferMap') (Map.findWithDefault [] (_uid c) subclaferMap))
+        boundedSuper = or [ maybe True (maybe False bounded . findIClafer uidClaferMap') (Map.lookup (_uid s) parentMap)
+                          | s <- findHierarchy getSuper uidClaferMap' c, _isAbstract s, Just (_, u) <- [_card s], u > 0 ]
+      parentScopeOf c = maybe 1 (\p -> Map.findWithDefault 1 p analysis') $ Map.lookup (_uid c) parentMap
 
     upperCards u =
         Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
@@ -53,7 +77,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
 
     supersAnalysis = foldl (analyzeSupers uidClaferMap' clafers) Map.empty decls'
     supersAndRefsAnalysis = foldl (analyzeRefs uidClaferMap' clafers) supersAnalysis decls'
-    constraintAnalysis = analyzeConstraints constraints upperCards
+    constraintAnalysis = analyzeConstraints constraints upperCards (`Map.member` upperCardsMap)
     (subclaferMap, parentMap) = analyzeHierarchy uidClaferMap' clafers
     connectedComponents = analyzeDependencies uidClaferMap' clafers
     clafers :: [ IClafer ]
@@ -61,7 +85,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     constraints = concatMap findConstraints decls'
 
     lowerOrUpperFixedCard analysis' clafer =
-        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar, lowFromGroupCard ]
+        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar, lowFromGroupCard, lowFromAbstractSupers ]
         where
         (cardLb, cardUb) = case _card clafer of
             (Just c) -> c
@@ -69,7 +93,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
         targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
             then case getReference clafer of
-                [ref'] -> Map.findWithDefault 1 (fromMaybe "unknown" $ _uid <$> findIClafer uidClaferMap' ref' ) analysis'
+                [ref'] -> Map.findWithDefault 1 (maybe "unknown" _uid (findIClafer uidClaferMap' ref')) analysis'
                 _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
@@ -79,6 +103,26 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
             Just (IGCard _ (groupLb, _)) | cardUb == -1 -> groupLb
                                          | otherwise    -> min groupLb cardUb
             Nothing -> 0
+        -- The multiplicity of an abstract super clafer counts all its instances (#129), which
+        -- this clafer may supply alone: up to its upper bound, or at least its lower bound when
+        -- it has none, unless this clafer's own upper bound is smaller.
+        lowFromAbstractSupers =
+            let low = maximum (0 : [ if u > 0 then u else l | s <- findHierarchy getSuper uidClaferMap' clafer, _isAbstract s, Just (l, u) <- [_card s] ])
+            in if cardUb == -1 then low else min low cardUb
+
+    -- The number of instances that the upper bound of the abstract clafer allows in all: the
+    -- bound at the top level, the bound times the scope of the parent otherwise, if it is known.
+    -- The 0..0 that the optimizer gives an unused abstract clafer is not a bound.
+    abstractCap analysis' c = case _card c of
+        Just (_, u) | _isAbstract c, u > 0 -> case Map.lookup (_uid c) parentMap of
+            Nothing      -> Just u
+            Just parent' -> (u *) <$> Map.lookup parent' analysis'
+        _ -> Nothing
+    -- The instances of a clafer are instances of each of its abstract super clafers.
+    abstractSupersBound analysis' c =
+        case mapMaybe (abstractCap analysis') $ drop 1 $ findHierarchy getSuper uidClaferMap' c of
+            [] -> Nothing
+            bs -> Just $ minimum bs
 
     analyzeComponent analysis' component =
         case flattenSCC component of
@@ -93,12 +137,17 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
 
     analyze :: Map String Integer -> IClafer -> Map String Integer
     analyze analysis' clafer =
-        -- Take the max between the supers and references analysis and this analysis
-        Map.insertWith max (_uid clafer) scope analysis'
+        -- Take the max between the supers and references analysis and this analysis, within the
+        -- upper bounds of the abstract clafers (#129): globally at the top level, per instance of
+        -- the parent otherwise
+        Map.adjust (maybe id min bound) (_uid clafer) $ Map.insertWith max (_uid clafer) scope analysis'
         where
         scope
             | _isAbstract clafer  = sum subclaferScopes
             | otherwise          = parentScope * (lowerOrUpperFixedCard analysis' clafer)
+        bound
+            | _isAbstract clafer  = abstractCap analysis' clafer
+            | otherwise          = abstractSupersBound analysis' clafer
 
         subclaferScopes = map (findOrError " subclafer scope not found" analysis') subclafers
         parentScope  =
@@ -147,10 +196,29 @@ analyzeRefs uidClaferMap' clafers analysis (IEClafer clafer) =
     maxLB lb' (Just lb) = Just (max lb lb')
 analyzeRefs _ _ analysis _ = analysis
 
-analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
-analyzeConstraints constraints upperCards =
-    foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
+analyzeConstraints :: [PExp] -> (String -> Integer) -> (String -> Bool) -> Map String Integer
+analyzeConstraints constraints upperCards isClafer =
+    foldr analyzeCount (foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints) counts
     where
+    -- Constraints that count the instances of a path from below, e.g., [ #Box.item = 10 ] or
+    -- [ #this.item >= 3 ], also in a conjunction: the path needs at least that many instances.
+    -- A path through a reference (#r.dref) counts its targets, not instances of clafers.
+    counts = concatMap countsOf constraints
+    countsOf PExp{_exp = IFunExp op' [a, b]}
+        | op' == iAnd = countsOf a ++ countsOf b
+        | op' `elem` [iEq, iGte], Just p <- countOf a, Just n <- intOf b = [(p, n)]
+        | op' == iGt, Just p <- countOf a, Just n <- intOf b = [(p, n + 1)]
+        | op' `elem` [iEq, iLte], Just n <- intOf a, Just p <- countOf b = [(p, n)]
+        | op' == iLt, Just n <- intOf a, Just p <- countOf b = [(p, n + 1)]
+    countsOf _ = []
+    countOf PExp{_exp = IFunExp op' [p]} | op' == iCSet, path'@(_ : _) <- dropThisAndParent (unfoldJoins p), all isClafer path' = Just path'
+    countOf _ = Nothing
+    intOf PExp{_exp = IInt n} = Just n
+    intOf _ = Nothing
+    analyzeCount (path', n) analysis
+        | n <= 0    = analysis
+        | otherwise = foldr (uncurry $ Map.insertWith max) analysis $ zip path' $ assign path' n
+
     isOneOrSomeConstraint PExp{_exp = IDeclPExp{_quant = quant'}} =
         -- Only these two quantifiers requires an increase in scope to satisfy.
         case quant' of
@@ -287,7 +355,7 @@ directSuper uidClaferMap' clafer =
 
 -- Find all constraints
 findConstraints :: IElement -> [PExp]
-findConstraints IEConstraint{_cpexp = c} = [c]
+findConstraints IEConstraint'{_cpexp = c} = [c]
 findConstraints (IEClafer clafer) = concatMap findConstraints (_elements clafer)
 findConstraints _ = []
 

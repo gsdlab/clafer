@@ -1,0 +1,22 @@
+scope({$Bench:2, $Rack:2, $Tools:6, $Workbench:2, $big:2, $hammer:2, $saw:5, $small:2});
+defaultScope(1);
+stringLength(16);
+
+$Tools = Abstract("Tools");
+$hammer = Clafer("hammer").withCard(1, 2);
+$saw = Clafer("saw").withCard(0, 5);
+$Bench = Abstract("Bench");
+$Rack = $Bench.addAbstractChild("Rack");
+$Workbench = Clafer("Workbench").withCard(2, 2);
+$big = $Workbench.addChild("big").withCard(0, 1);
+$small = $Workbench.addChild("small").withCard(0, 1);
+$hammer.extending($Tools);
+$saw.extending($Tools);
+$Workbench.extending($Bench);
+$big.extending($Rack);
+$small.extending($Rack);
+Constraint(and(greaterThanEqual(card(global($Tools)), constant(3)), lessThanEqual(card(global($Tools)), constant(6))));
+$Bench.addConstraint(lessThanEqual(card(join($this(), $Rack)), constant(1)));
+assert(and(greaterThanEqual(card(global($Tools)), constant(3)), lessThanEqual(card(global($Tools)), constant(6))));
+assert(lessThanEqual(card(global($saw)), constant(5)));
+assert(all([decl([$_w = local("w")], global($Workbench))], lessThanEqual(add(card(join($_w, $big)), card(join($_w, $small))), constant(1))));

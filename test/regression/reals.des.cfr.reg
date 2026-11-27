@@ -1,0 +1,4 @@
+//# OPTIONS --explicit
+0..* rate -> real 1..1 {}
+[rate.dref = 1.99]
+0..* interest -> real 1..1 = 100 * rate.dref {}

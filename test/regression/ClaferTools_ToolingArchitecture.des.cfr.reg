@@ -11,11 +11,7 @@ abstract 0..* claferLib 0..* {
   0..* optimizer 1..1 {}
   1..1 generator : Generator 1..1 {}
 }
-abstract 0..* Representation 0..* {}
-0..* text : Representation 1..1 {}
-0..* tokens : Representation 1..1 {}
-0..* ast : Representation 1..1 {}
-0..* ir : Representation 1..1 {}
+enum Representation = text | tokens | ast | ir
 abstract 0..* io 0..* {
   0..* input -> Representation 1..1 {}
   0..* output -> Representation 1..1 {}
@@ -62,7 +58,7 @@ abstract 0..* Intermediate 0..* {
     0..* inheritanceFlattener 0..1 {}
     0..* nameResolution 1..1 {
       0..* nameResolver 0..1 {
-        [(#this.parent.parent.parent.findDuplicates) >= 1]
+        [some this.parent.parent.parent.findDuplicates]
       }
       0..* inheritanceResolver 1..1 {}
       0..* typeResolver 1..1 {}
@@ -74,12 +70,12 @@ abstract 0..* Intermediate 0..* {
 }
 abstract 1..1 Generator : ir2text 0..* {
   0..* alloy 0..1 {
-    [((#Intermediate.stringAnalyzer) >= 1) && ((#Intermediate.scopeAnalysis) >= 1)]
+    [(some Intermediate.stringAnalyzer) && (some Intermediate.scopeAnalysis)]
   }
   0..* stats 0..1 {}
   0..* xml 0..1 {}
   0..* desClafer 0..1 {
-    [(#Front.prettyPrinter) >= 1]
+    [some Front.prettyPrinter]
   }
   0..* xsdSchema 0..1 {}
 }

@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.8
+##### v0.6.0
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -75,7 +75,7 @@ The compiler itself needs nothing else. The following are optional, regardless o
   * only needed for validating the outputs (`--validate`) and for `--ecore2clafer`
 * [Alloy 6.2.0](https://github.com/AlloyTools/org.alloytools.alloy/releases/tag/v6.2.0) (`alloy6.2.0.jar`)
   * only needed for validating the Alloy output (`--validate`)
-* `chocosolver.jar` from [chocosolver](https://github.com/gsdlab/chocosolver)
+* `clafersg.jar` from [chocosolver](https://github.com/gsdlab/chocosolver)
   * only needed for validating the Choco output (`--validate`)
 * `ecore2clafer.jar` (in this repository)
   * only needed for `--ecore2clafer`
@@ -86,13 +86,13 @@ The compiler itself needs nothing else. The following are optional, regardless o
 
 ### Installation from binaries
 
-Binary distributions of Clafer Tools (`clafer`, `claferIG`, and `chocosolver` with the jars they need; Linux x86-64 for the recent releases)
+Binary distributions of Clafer Tools (`clafer`, `claferIG`, and `clafersg` with the jars they need; Linux x86-64 for the recent releases)
 can be downloaded from
 [Clafer Tools - Binary Distributions](https://wiselab.uwaterloo.ca/clafer-tools-binary-distributions/).
 
 1. Download the binaries and unpack them into a `<target directory>` of your choice.
 2. Add the `<target directory>` to your system path so that the executables can be found.
-3. The bundle contains `alloy6.2.0.jar`, `chocosolver.jar`, and `ecore2clafer.jar`: use `--tooldir=<target directory>` for `--validate` and `--ecore2clafer`.
+3. The bundle contains `alloy6.2.0.jar`, `clafersg.jar`, and `ecore2clafer.jar`: use `--tooldir=<target directory>` for `--validate` and `--ecore2clafer`.
 
 ### Installation from Hackage
 
@@ -125,7 +125,7 @@ The executable is copied to `~/.local/bin`.
 
 #### Tools for validation
 
-To use `--validate`, put `alloy6.2.0.jar` (and `chocosolver.jar` for the Choco output) into a directory, and pass it with `--tooldir=<directory>`.
+To use `--validate`, put `alloy6.2.0.jar` (and `clafersg.jar` for the Choco output) into a directory, and pass it with `--tooldir=<directory>`.
 In a checkout of this repository, `make alloy6.2.0.jar` downloads the Alloy jar.
 
 ### Installation from the source code
@@ -185,7 +185,7 @@ Development versions from branches `develop` should work well together but this 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.8
+Clafer v0.6.0.2026-11-29
 
 clafer [OPTIONS] [FILE]
 
@@ -193,21 +193,22 @@ Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 6); 'json' (intermediate
-                                          representation of Clafer model);
-                                          'clafer' (the explicit model, with
-                                          everything written out, as Choco
-                                          solves it; a temporal model with its
-                                          temporal modifiers and operators,
-                                          which only Alloy solves);
-                                          'html' (original model in HTML);
-                                          'graph' (graphical representation
-                                          written in DOT language); 'cvlgraph'
-                                          (cvl notation representation written
-                                          in DOT language); 'choco' (Choco
-                                          constraint programming solver).
-                                          Multiple modes can be specified at
-                                          the same time, e.g., '-m alloy -m
-                                          html'.
+                                          representation of Clafer model, rich
+                                          or, with --core, core); 'clafer' (the
+                                          rich explicit model, with everything
+                                          written out except the enumerations,
+                                          initializers, behavioral patterns and
+                                          transitions; with --core, the
+                                          explicit core model, which the
+                                          backends solve); 'html' (original
+                                          model in HTML); 'graph' (graphical
+                                          representation written in DOT
+                                          language); 'cvlgraph' (cvl notation
+                                          representation written in DOT
+                                          language); 'choco' (Choco constraint
+                                          programming solver). Multiple modes
+                                          can be specified at the same time,
+                                          e.g., '-m alloy -m html'.
   -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' mode
                                           only).
@@ -225,16 +226,40 @@ Common flags:
                                           'clafer -m clafer' prints it, with
                                           every name a UID and every card
                                           written out, and its scopes in its
-                                          scope file. Shorthand for -f -k -l
+                                          scope file. Shorthand for -f -l
                                           --ss=none.
-  -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' mode only).
+     --core                               In 'clafer' and 'json' modes, print
+                                          the explicit core model and its IR,
+                                          which the backends solve: the
+                                          enumerations, initializers,
+                                          behavioral patterns and transitions,
+                                          which the explicit model keeps,
+                                          lowered to clafers, constraints and
+                                          LTL operators. The explicit core
+                                          model is written to '.core.cfr'; its
+                                          first line, '//# OPTIONS --explicit
+                                          --core', makes it compile to itself.
+     --record-provenance                  With --core, in 'clafer' and 'json'
+                                          modes, record the origin of each
+                                          clafer and constraint that a lowering
+                                          makes: the rich construct, and its
+                                          position as in the messages but with
+                                          the file name only, e.g., '// final,
+                                          model.cfr:56:5' or '// enum,
+                                          model.cfr:12:1' in the explicit core
+                                          model, which compiles to the same
+                                          core without them.
+  -k --keep-unused                        Keep the abstract clafers that
+                                          nothing needs in the Alloy and Choco
+                                          outputs, which leave them out to
+                                          solve less; the explicit models and
+                                          the JSON output always keep them.
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes, and
                                           exit with 1 if a tool rejects one.
                                           Uses '<tooldir>/alloy6.2.0.jar' for
                                           Alloy models,
-                                          '<tooldir>/chocosolver.jar' for Choco
+                                          '<tooldir>/clafersg.jar' for Choco
                                           models, dot for graphs, and clafer
                                           itself for explicit models, which
                                           must compile to themselves. Use
@@ -271,7 +296,8 @@ Common flags:
                                           the scopes map ('.cfr-scope'); in
                                           Clafer mode, the explicit model's
                                           scope file with every scope
-                                          ('.des.cfr-scope').
+                                          ('.des.cfr-scope', or
+                                          '.core.cfr-scope' with --core).
      --minint=INT                         Smallest integer value ('choco'
                                           mode only). Default: -128, chosen by
                                           chocosolver.
@@ -373,7 +399,9 @@ The outputs write the UIDs in the form their language allows: the Alloy output r
 
 ### Explicit models
 
-`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -k -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+
+`-m clafer --core` writes the explicit core model, what the backends solve, to `model.core.cfr` (and `model.core.cfr-scope`); its first line, `//# OPTIONS --explicit --core`, makes it compile to itself, also without `--core` on the command line. With `--record-provenance`, it has the origin of each lowered clafer and constraint as a comment, e.g., `// final, model.cfr:56:5` ([doc/rich-and-core-explicit.md](doc/rich-and-core-explicit.md)).
 
 ### Integer range of the Choco output
 

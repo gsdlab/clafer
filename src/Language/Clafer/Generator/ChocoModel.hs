@@ -57,15 +57,20 @@ data CModel = CModel
 
 data CElement
     = CEClafer CClafer
-    | CEConstraint CExp
-    | CEAssert CExp               -- ^ an assertion, quantified over its clafer if nested
+    | CEConstraint (Maybe Origin) CExp  -- ^ a constraint, with its origin (@--record-provenance@)
+    | CEAssert (Maybe Origin) CExp      -- ^ an assertion, quantified over its clafer if nested
     | CEObjective Bool CExp       -- ^ maximize, or minimize
+    | CEInitializer Bool Bool CExp  -- ^ the initializer of the clafer, @=@ or @:=@, whether a set
+                                  --   initializer, and its value in
+                                  --   the context of the parent; the Choco output has none
+                                  --   ("Language.Clafer.Intermediate.Initializers")
 
 data CClafer = CClafer
     { ccUid      :: UID
     , ccParent   :: UID           -- ^ "clafer" for a top-level abstract clafer, "root" for a top-level concrete one
     , ccAbstract :: Bool
-    , ccModifiers :: [String]     -- ^ its temporal modifiers, e.g., initial, final, finalref, which chocosolver does not read
+    , ccModifiers :: [String]     -- ^ its temporal modifiers, e.g., initial, final, finalref, which chocosolver does not read,
+                                  --   and enum for a clafer of an enumeration (rich explicit model)
     , ccCard     :: Maybe Interval   -- ^ only if not 0..*
     , ccGCard    :: Maybe Interval   -- ^ only if not 0..*
     , ccLinked   :: Bool          -- ^ whether it has a super clafer or a reference in the IR
@@ -73,6 +78,7 @@ data CClafer = CClafer
     , ccRef      :: Maybe (Bool, String)   -- ^ its own reference: whether a set, and the target
     , ccRefConstraints :: [CExp]  -- ^ the constraints of a reference to a set expression
     , ccElements :: [CElement]
+    , ccOrigin   :: Maybe Origin  -- ^ the rich construct that a lowering made it from (@--record-provenance@)
     }
 
 -- | An expression, by the functions of chocosolver's JavaScript API.
@@ -122,7 +128,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     uidIClaferMap' = uidClaferMap genv'
 
     genElement :: String -> IElement -> Maybe CElement
-    genElement _ (IEClafer c@IClafer{_uid, _card, _gcard, _super, _reference, _elements, _parentUID, _modifiers}) = Just $ CEClafer CClafer
+    genElement _ (IEClafer c@IClafer{_uid, _card, _gcard, _super, _reference, _elements, _parentUID, _modifiers, _cOrigin}) = Just $ CEClafer CClafer
         { ccUid = _uid
         , ccParent = _parentUID
         , ccAbstract = _abstract _modifiers
@@ -139,15 +145,16 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
              Just (IReference _ _ ref') | isSetExp ref', Just _ <- setExpType ref' -> genSetExpTarget ref'
              _                                                                     -> []
         , ccElements = mapMaybe (genElement _uid) _elements
+        , ccOrigin = _cOrigin
         }
-    genElement _ (IEConstraint True pexp) = Just $ CEConstraint $ genConstraintPExp pexp
-    genElement "root" (IEConstraint False pexp) = Just $ CEAssert $ genConstraintPExp pexp
+    genElement _ (IEConstraint' True pexp o) = Just $ CEConstraint o $ genConstraintPExp pexp
+    genElement "root" (IEConstraint' False pexp o) = Just $ CEAssert o $ genConstraintPExp pexp
     -- chocosolver's assertions have no context: a nested assertion holds for each instance of its
     -- clafer, so it is quantified over them, with `this` as the local this_, e.g., in clafer P:
     -- assert(all([decl([this_ = local("this_")], global(P))], ... join(this_, age) ...)); the
     -- instances of a nested clafer by the path from its top-level clafer, as clafer resolves
     -- its name, e.g., machine . ctx
-    genElement pUID (IEConstraint False pexp) = Just $ CEAssert $
+    genElement pUID (IEConstraint' False pexp o) = Just $ CEAssert o $
         CQuant IAll [CDecl False [thisLocal] (instancesOf pUID)] (genConstraintPExp (transformOn biplate thisToLocal pexp))
       where
         thisToLocal e@IClaferId{_sident = "this"} = e{_sident = thisLocal}
@@ -158,14 +165,15 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
           where
             c = claferWithUid u
     genElement _ (IEGoal isMax PExp{_exp=IFunExp _ [pexp]}) = Just $ CEObjective isMax $ genConstraintPExp pexp
+    genElement _ (IEInitializer k s _ PExp{_exp=IFunExp _ [_, value]}) = Just $ CEInitializer k s $ genConstraintPExp value
     genElement _ _ = Nothing
 
     thisLocal = "this_"
 
     -- the temporal modifiers of a clafer: final, which implies finalref and finaltarget, or the
     -- modifiers of its own reference or of the reference it inherits
-    temporalModifiers' IClaferModifiers{_initial, _final, _finalReferences} ref' =
-        [ "initial" | _initial ] ++ [ "final" | _final ] ++
+    temporalModifiers' IClaferModifiers{_initial, _final, _finalReferences, _enum} ref' =
+        [ "enum" | _enum ] ++ [ "initial" | _initial ] ++ [ "final" | _final ] ++
         [ refModifierKeyword m | not _final, m <- nub (maybe [] _refModifiers ref' ++ _finalReferences) ]
     refModifierKeyword FinalRef = "finalref"
     refModifierKeyword FinalTarget = "finaltarget"
@@ -242,7 +250,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         _ -> Nothing
       where
         claferOfType (TClafer (u : _)) | u `notElem` [noClaferIdent, rootIdent, baseClafer] = Just u
-        claferOfType (TMap so _) = claferOfType so
+        claferOfType (TMap s' _) = claferOfType s'
         claferOfType (TUnion (t' : _)) = claferOfType t'
         claferOfType _ = Nothing
 
@@ -309,9 +317,10 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
     rewrite p1@PExp{_iType = Just _, _exp = IFunExp "." [p2, p3@PExp{_exp = IFunExp "." _}]} =
-        p1{_exp = IFunExp "." [p3{_iType = _iType p4, _exp = IFunExp "." [p2, p4]}, p5]}
-        where
-            PExp{_exp = IFunExp "." [p4, p5]} = rewrite p3
+        -- the rewritten join p3 is a join again
+        case rewrite p3 of
+            PExp{_exp = IFunExp "." [p4, p5]} -> p1{_exp = IFunExp "." [p3{_iType = _iType p4, _exp = IFunExp "." [p2, p4]}, p5]}
+            _ -> p1
     rewrite p1@PExp{_exp = IFunExp{_op = "-", _exps = [PExp{_exp = IInt i}]}} =
         -- This is so that the output looks cleaner, no other purpose since the Choco optimizer
         -- in the backend will treat the pre-rewritten expression the same.
@@ -337,10 +346,6 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         CJoin (genConstraintPExp e1) _sident
     genConstraintExp (IFunExp "." [_, _]) =
         error "Did not rewrite all joins to left joins."
-    -- the value of an initializer with temporal operators, which the explicit form shows as it
-    -- is: its context is the parent (gsdlab/clafer#123), which only the temporal output keeps
-    genConstraintExp (IFunExp op' [arg]) | op' == iInitValue =
-        genConstraintPExp arg
     genConstraintExp (IFunExp "-" [arg]) =
         CFun "minus" [genConstraintPExp arg]
     genConstraintExp (IFunExp "-" [arg1, arg2]) =
@@ -404,4 +409,6 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     mapFunc "ifthenelse" = "ifThenElse"
     -- the temporal operators, which chocosolver does not solve, by their names
     mapFunc op' | op' `elem` ltlOps = op'
+    -- the patterns and transitions of the rich explicit model, which the backends get lowered
+    mapFunc op' | op' `elem` richTemporalOps = op'
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'

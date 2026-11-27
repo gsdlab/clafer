@@ -132,6 +132,10 @@ Useful shorthands are
 <int literal>..*
 ```
 
+The multiplicity of an abstract clafer bounds the number of all its instances, of all its subclafers together ([#129](https://github.com/gsdlab/clafer/issues/129)): `abstract Tools 3..6` with `hammer : Tools *` and `saw : Tools *` has three to six tools in all, and `hammer : Tools 4` with `saw : Tools 4` has no instance.
+For a top-level abstract clafer, the count is global, across all parents; for a nested one, it is per instance of its declared parent; in a temporal model, the bound holds in every state.
+Without a multiplicity, the number is unrestricted, and the multiplicity of a subclafer is not checked against the abstract clafer's.
+
 Reference clafers can be given values using an initializer:
 a constant using `=`, and an initial value using `:=`.
 
@@ -139,6 +143,8 @@ a constant using `=`, and an initial value using `:=`.
 ```
 = <set expression>
 := <set expression>
+:= each <set expression>
+:= together <set expression>
 ```
 
 `x -> integer ? = 10` is the constraint `[ some x => x.dref = 10 ]` in the parent's context: an optional `x` stays optional, and in a temporal model the value holds in every state.
@@ -158,10 +164,25 @@ As for the other redefinitions, the subclafer's own initializer is added to the 
 * `:= 2` under `= 2` repeats the value, which `=` fixes in every state, and `:= 3` under `= 2` has no instance. Both hold, and the compiler warns that a `:=` does not redefine an inherited `=`.
 * Another value, `:= 3` or `= 3` under `:= 2`, has no instance.
 
-An inherited initializer keeps its clock, which the abstract clafer's own multiplicity decides ([kbak/clafer-semantics#170](https://github.com/kbak/clafer-semantics/issues/170)):
+The clock of `:=` says when the value is checked ([kbak/clafer-semantics#194](https://github.com/kbak/clafer-semantics/issues/194)):
+
+* `:= each e`: each instance at its birth, also one born later or born again.
+* `:= together e`: all the instances under the parent at the parent's birth, and all the instances of a top-level abstract clafer at time zero. An instance born later under the same parent is not initialized.
+* `:= e`, without a clock: the multiplicity decides, as below, so `xs -> integer * := e` is `:= together e`, and `x -> integer ? := e` is `:= each e`.
+
+A written clock does not depend on the multiplicity: `xs -> integer * := each 1` initializes each instance of `xs`. In a static model, `:= each e` of a clafer with several instances is an equation for each instance, and `:= together e` one for all of them: `xs -> integer * := each 1, 2` has no instance (a single reference cannot equal two values; the compiler warns), while `:= together 1, 2` lets two instances have 1 and 2.
+
+An inherited initializer keeps its clock, which the abstract clafer's own clock or multiplicity decides ([kbak/clafer-semantics#170](https://github.com/kbak/clafer-semantics/issues/170)):
 
 * Without a multiplicity, `abstract Val -> integer := 1` initializes each instance when it is born, also one born later.
-* With `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
+* With `:= together`, or with `*`, `abstract Val -> integer * := 1` is a set initializer: in `abstract Base`, it constrains the instances under a `Base` when the `Base` is born, and a top-level one the instances in the first state. So under `P : Base` with `x : Base.Val ?`, a `P` born without an `x` may later get an `x` with any value, which the first form forbids. A subclafer that narrows the multiplicity, e.g., to `?`, keeps the clock.
+
+Two forms have no meaning, so the compiler rejects them ([#126](https://github.com/gsdlab/clafer/issues/126)), in every mode, also `-m clafer`:
+
+* A per-instance `:=` of an abstract clafer needs a value with at most one element, which the compiler establishes from the declarations, without the constraints: `abstract Val -> integer := 1, 2` and `:= pool.dref` with `pool -> integer *` are errors, while `:= 1`, `:= seed.dref` with `seed -> integer ?`, `:= #pool` and `:= pool.dref ** 1` are not. To initialize all the instances together, write `:= together`.
+* On a top-level abstract clafer with `:=` without a clock, only `*` (or `0..*`) has a meaning: `abstract Val -> integer ? := 1` is an error, which asks for `:= each` or `:= together`. With a clock, every multiplicity is allowed, e.g., `abstract Val -> integer 0..3 := together 1`.
+
+A single reference with several values, e.g., `x -> integer ? := 1, 2` or `= 1, 2`, has no instance, and nor does `xs -> integer * := each 1, 2`: the compiler warns.
 
 To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
 
@@ -436,10 +457,11 @@ For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
 
 ### Temporal modifiers
 
-`initial` means that the clafer is present in the first state of its parent.
+`initial` means that the clafer is present in the first state of its parent, in each of its lifetimes: in the explicit core model, `initial x` is `[ initially (some this.x) ]` in the parent.
 `final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
 `finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both, and `finalref finaltarget` means both.
 A clafer that inherits its reference can add these modifiers: `final motor : engine` fixes the reference that `motor` inherits from `abstract engine -> Engine`.
+In the explicit core model (`-m clafer --core`), the modifiers are constraints in the context of the clafer ([kbak/clafer-semantics#192](https://github.com/kbak/clafer-semantics/issues/192)), which exclude both additions and losses while the parent exists, e.g., for `final x`: `[ all c : this | X (c in parent.x) ]` and `[ all c : this | previous (some parent) => previous (c in parent.x) ]`.
 
 `<temporal modifier>`:
 ```
@@ -531,6 +553,21 @@ globally <boolean expression>
 initially <boolean expression>
 finally <boolean expression>
 ```
+
+The past-time operators of LTL with past ([#127](https://github.com/gsdlab/clafer/issues/127)), with the names of NuSMV's glosses, have keywords only:
+
+```
+previous <boolean expression>                          // NuSMV's Y, Alloy's before
+once <boolean expression>                              // O
+historically <boolean expression>                      // H
+<boolean expression> since <boolean expression>        // S
+<boolean expression> triggered <boolean expression>    // T, not ((not a) since (not b))
+```
+
+`previous a` holds when there is a previous state and `a` held in it, `once a` when `a` held now or earlier, `historically a` when `a` held now and in every earlier state, and `a since b` when `b` held now or earlier and `a` in every state after it up to now.
+They look back while the parent of the context exists, in its current lifetime, as the future operators require while the parent exists: a previous lifetime of the parent is not visible, and in the first state of the parent's lifetime, `previous a` is false and `!(previous !a)` is true, as in the first state of the trace.
+At the top level and in a top-level clafer, they look back to the start of the trace.
+`previous`, `once`, `historically`, `since` and `triggered` are reserved words.
 
 ### Dwyer's patterns
 

@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --core
+0..* xs ->> int 2..2 {}
+[all xs_1 : xs | xs_1.dref = 1] // := each, initializerClocks.cfr:8:1
+0..* ys ->> int 2..2 {}
+[(some ys) => (ys.dref = (1 ++ 2))] // := together, initializerClocks.cfr:9:1
+abstract 0..* Val ->> int 0..* {}
+[(#Val) <= 3] // abstract 0..3, initializerClocks.cfr:11:1
+[(some Val) => (Val.dref = 5)] // := each, initializerClocks.cfr:11:1
+0..* V : Val 2..2 {}

@@ -65,3 +65,5 @@ statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
   IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})
   IEGoal _ _ -> modify (\e -> e {nGoals = nGoals e + 1})
+  -- an initializer is a constraint, as it was before the IR kept it
+  IEInitializer{} -> modify (\e -> e {nConstraints = nConstraints e + 1})

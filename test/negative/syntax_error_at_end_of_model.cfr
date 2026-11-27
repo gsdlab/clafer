@@ -1,0 +1,4 @@
+// A syntax error at the end of the model, a constraint without its ]: the error is after the
+// last token, A, at 4:4.
+A
+[ A

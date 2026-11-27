@@ -1,4 +1,4 @@
-scope({$Author:2, $Person:2, $authors:2, $books:2, $dob:2, $name:2, $page:2});
+scope({$Author:2, $Person:2, $authors:2, $books:2, $dob:2, $name:2, $page:4});
 defaultScope(1);
 stringLength(16);
 

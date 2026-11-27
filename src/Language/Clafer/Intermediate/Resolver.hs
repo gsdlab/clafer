@@ -78,6 +78,7 @@ nameElement puid x = case x of
   IEClafer claf -> IEClafer <$> nameClafer puid claf
   IEConstraint isHard' pexp -> IEConstraint isHard' <$> namePExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' <$> namePExp pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk <$> namePExp pexp
 
 
 nameClafer :: MonadState GEnv m => UID -> IClafer -> m IClafer

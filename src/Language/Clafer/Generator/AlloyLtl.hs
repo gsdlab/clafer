@@ -72,12 +72,16 @@ data GenEnv = GenEnv
   , uidIClaferMap :: UIDIClaferMap
   , allClafers :: [IClafer]   -- ^ the clafers of the model, without the root
   , forScopes :: String
-  , contextInstance :: String  -- ^ the context instance, @this@ unless in the value of an initializer
+  , statics :: ([UID], [UID])  -- ^ the clafers that are final with all their ancestors in the rich
+                               --   IR, and those of them whose own references are final
+  , enumLiterals :: [UID]      -- ^ the literals of the enumerations of the rich IR
   }
 
 -- | Alloy 6 code generation
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+-- | The finality modifiers are constraints of the core ("Language.Clafer.Intermediate.Finality");
+--   the relations of the static clafers of the rich IR do not change, and are not @var@.
+genAlloyLtlModule :: ([UID], [UID]) -> [UID] -> ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    statics'          literals' claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   uidIClaferMap' = uidClaferMap genv
   -- the clafers of the module, as the optimizer left them: the map of the environment still has
@@ -86,7 +90,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherT
            { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
-  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' "this"
+  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' statics' literals'
 
   -- a scope bounds the instance identities across the trace, which may be reused when an
   -- instance reappears; the multiplicities bound the existing instances in each snapshot
@@ -140,7 +144,14 @@ containedClafers = filter hasContainment . getSubclafers . _elements
 isStatic :: GenEnv -> IClafer -> Bool
 isStatic genEnv c
   | isRoot c  = True
-  | otherwise = _isFinal c && maybe True (isStatic genEnv) (parentOf genEnv c)
+  | otherwise = _uid c `elem` fst (statics genEnv)
+
+-- | Whether the clafer is a literal of an enumeration in the rich IR: a top-level clafer with
+--   exactly one instance, which is final, so it exists in every state. Its signature is a @one sig@
+--   without a parent relation, and it has no facts of its finality, which hold trivially; its
+--   static containment relation in the root stays, so that an instance shows it.
+isEnumLiteral :: GenEnv -> IClafer -> Bool
+isEnumLiteral genEnv c = _uid c `elem` enumLiterals genEnv
 
 -- | The nearest super clafer that declares a reference, and the reference.
 inheritedReference :: GenEnv -> IClafer -> Maybe (IClafer, IReference)
@@ -183,15 +194,9 @@ parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
     rels' -> "(" ++ intercalate " + " rels' ++ ")"
   Nothing -> error $ "AlloyLtl.parentRel: clafer not found: " ++ uid'
   where
-  rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
-
--- | The relation from the instances of the clafer to their parents, also those that do not exist:
---   the parent of an instance does not change.
-fixedParentRel :: GenEnv -> IClafer -> String
-fixedParentRel genEnv c = case map (("@" ++) . genParentName . _uid) $ concreteSubs genEnv c of
-  []    -> "(none->none)"
-  [r]   -> "(" ++ r ++ ")"
-  rels' -> "(" ++ intercalate " + " rels' ++ ")"
+  rel c
+    | isEnumLiteral genEnv c = "(" ++ _uid c ++ "->" ++ rootIdent ++ ")"
+    | otherwise = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -212,7 +217,7 @@ optShowSet xs = CString "\n" +++ showSet (CString "\n  ") xs
 
 genClafer :: GenEnv -> IClafer -> Concat
 genClafer genEnv c = cunlines (filterNull
-  [ claferDecl c (showSet (CString "\n, ") (genRelations genEnv c) +++ optShowSet (filterNull $ genConstraints genEnv c))
+  [ claferDecl (isEnumLiteral genEnv c) c (showSet (CString "\n, ") (genRelations genEnv c) +++ optShowSet (filterNull $ genConstraints genEnv c))
   , if isRoot c then CString "" else aliveFun
   , mkFact $ cintercalate (CString "\n  ") $ filterNull $ genStructure genEnv c
   , cunlines $ genFacts genEnv c
@@ -221,15 +226,16 @@ genClafer genEnv c = cunlines (filterNull
   where
   aliveFun = CString $ "fun " ++ aliveName (_uid c) ++ " : set " ++ _uid c ++ " { " ++ aliveBody ++ " }"
   aliveBody
+    | isEnumLiteral genEnv c = _uid c
     | hasContainment c = sigOf (fromJust $ parentOf genEnv c) ++ ".@" ++ genRelName (_uid c)
     | otherwise        = case map (aliveName . _uid) $ subsOf genEnv c of
         []    -> "none"
         alive -> intercalate " + " alive
   sigOf p = if isRoot p then rootIdent else _uid p
 
-claferDecl :: IClafer -> Concat -> Concat
-claferDecl    c     rest    = cconcat
-  [ CString $ if isRoot c then "one " else ""
+claferDecl :: Bool -> IClafer -> Concat -> Concat
+claferDecl    one' c     rest    = cconcat
+  [ CString $ if isRoot c || one' then "one " else ""
   , CString $ if _isAbstract c then "abstract " else ""
   , CString "sig "
   , Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]
@@ -243,12 +249,12 @@ genRelations :: GenEnv -> IClafer -> [Concat]
 genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
   where
   parent'
-    | hasContainment c && not (_isAbstract c) =
+    | hasContainment c && not (_isAbstract c) && not (isEnumLiteral genEnv c) =
         [CString $ genParentName (_uid c) ++ " : lone " ++ maybe rootIdent sigName (parentOf genEnv c)]
     | otherwise = []
   sigName p = if isRoot p then rootIdent else _uid p
   reference' = case _reference c of
-    Just r  -> [CString $ var' (isStatic genEnv c && not (null (_refModifiers r))) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
+    Just _  -> [CString $ var' (_uid c `elem` snd (statics genEnv)) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
     Nothing -> []
   mkRel c' = Concat NoTrace [CString $ var' (isStatic genEnv c') ++ genRelName (_uid c') ++ " : set " ++ _uid c']
   var' static = if static then "" else "var "
@@ -273,7 +279,7 @@ getTarget    x     = case x of
 --   abstract clafer, its instances are those of its subclafers.
 genStructure :: GenEnv -> IClafer -> [Concat]
 genStructure genEnv c
-  | not (hasContainment c) = []
+  | not (hasContainment c) || isEnumLiteral genEnv c = []
   | _isAbstract c =
       [ CString $ "always @" ++ rel ++ " = " ++ case map (('@' :) . genRelName . _uid) $ subsOf genEnv c of
           []   -> "none->none"
@@ -288,7 +294,7 @@ genStructure genEnv c
 
 -- | The constraints in the signature fact of the clafer, which hold for every existing instance.
 genConstraints :: GenEnv -> IClafer -> [Concat]
-genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts ++ initialConsts ++ finalConsts
+genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts
   where
   uid' = _uid c
   alive = aliveName uid'
@@ -316,36 +322,6 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
   groupConst = [ genGroupConst genEnv c ]
   childConsts = concatMap childConst $ containedClafers c
   childConst c' = genParentSubrelationConstraint (uidIClaferMap genEnv) c' : genSetUniquenessConstraint genEnv c'
-  -- whenever this instance appears
-  initialConsts =
-    [ appears $ CString $ "some this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isInitial c' ]
-  appears x
-    | isRoot c  = x
-    | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
-  -- the relation does not change while this instance exists
-  stable x
-    | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
-    | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
-  -- final and finalref fix the target of each instance, finaltarget only the set of targets
-  fixesEach s r = _isFinal s || any (`elem` [FinalRefTarget, FinalRef]) (_refModifiers r)
-  finalConsts =
-    -- the instances of a final child do not change while this instance exists
-    [ stable $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
-    [ stable $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
-    -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
-    -- from engine, unless engine's modifier fixes it already (#109)
-    [ stable $ "this.@" ++ genRefName (_uid sup)
-    | Nothing <- [_reference c], _isFinal c || FinalRef `elem` _finalReferences (_modifiers c)
-    , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
-    -- a finaltarget child points to the same set of targets while this instance exists; its
-    -- instances may change and swap their targets
-    [ stable $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
-  finalTargetRef c' = case _reference c' of
-    Just r | FinalTarget `elem` _refModifiers r, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
-    Just _ -> Nothing
-    Nothing
-      | FinalTarget `elem` _finalReferences (_modifiers c'), not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
-      | otherwise -> Nothing
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find
@@ -356,7 +332,10 @@ genFacts :: GenEnv -> IClafer -> [Concat]
 genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts
   where
   uid' = _uid c
-  userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint True pexp <- _elements c ]
+  -- the initializers are constraints in the core ("Language.Clafer.Intermediate.Initializers")
+  userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint' True pexp o <- _elements c, not (finalityOfLiteral o) ]
+  -- the finality of a literal of an enumeration holds trivially in its encoding ('isEnumLiteral')
+  finalityOfLiteral o = isEnumLiteral genEnv c && maybe False ((`elem` ["final", "finalref", "finaltarget"]) . _construct) o
   childCards c' = case fromJust $ _card c' of
     (1, 1)  -> [(ExactCard child False, CString $ "one " ++ rel)]
     (0, 1)  -> [(ExactCard child False, CString $ "lone " ++ rel)]
@@ -393,16 +372,16 @@ bindSelf = bindTo selfIdent
 
 -- | The constraint with this replaced by the given name.
 bindTo :: String -> Concat -> Concat
-bindTo ident (CString str) = CString $ bind Nothing str
+bindTo name' (CString str) = CString $ bind Nothing str
   where
   bind prev ('t':'h':'i':'s':rest)
-    | maybe True (not . identChar) prev && not (startsIdent rest) = ident ++ bind (Just '_') rest
+    | maybe True (not . identChar) prev && not (startsIdent rest) = name' ++ bind (Just '_') rest
   bind _ (x:xs) = x : bind (Just x) xs
   bind _ [] = []
   startsIdent (x:_) = identChar x
   startsIdent [] = False
   identChar x = isAlphaNum x || x == '_' || x == '\''
-bindTo ident (Concat trace xs) = Concat trace $ map (bindTo ident) xs
+bindTo name' (Concat trace xs) = Concat trace $ map (bindTo name') xs
 
 getAssertions :: IClafer -> [PExp]
 getAssertions c = [ pexp | IEConstraint False pexp <- _elements c ]
@@ -502,6 +481,12 @@ pushNegations pos' x@(PExp t pid' sp e)
       | op' == iF   -> mk (if pos' then iF else iG) [push a]
       | op' == iG   -> mk (if pos' then iG else iF) [push a]
       | op' `elem` [iX, iInitially, iFinally] -> mk op' [push a]
+      -- the past: not previous a is the weak previous of not a, not once a is
+      -- historically not a (#127)
+      | op' == iPrevious     -> mk (if pos' then iPrevious else iWeakPrevious) [push a]
+      | op' == iWeakPrevious -> mk (if pos' then iWeakPrevious else iPrevious) [push a]
+      | op' == iOnce         -> mk (if pos' then iOnce else iHistorically) [push a]
+      | op' == iHistorically -> mk (if pos' then iHistorically else iOnce) [push a]
     IFunExp op' [a, b]
       | op' == iAnd  -> mk (if pos' then iAnd else iOr) [push a, push b]
       | op' == iOr   -> mk (if pos' then iOr else iAnd) [push a, push b]
@@ -511,14 +496,17 @@ pushNegations pos' x@(PExp t pid' sp e)
       | op' == iXor  -> pushNegations pos' $ bool iOr [bool iAnd [a, bool iNot [b]], bool iAnd [bool iNot [a], b]]
       | op' `elem` [iU, iW], pos' -> mk op' [push a, push b]
       | op' `elem` [iU, iW] -> mk (if op' == iU then iW else iU) [push b, mk iAnd [push a, push b]]
+      -- not (a since b) is (not a) triggered (not b), and the converse
+      | op' == iSince     -> mk (if pos' then iSince else iTriggered) [push a, push b]
+      | op' == iTriggered -> mk (if pos' then iTriggered else iSince) [push a, push b]
     IFunExp op' [c, a, b]
       | op' == iIfThenElse, t == Just TBoolean, not (hasTemporal c) -> mk op' [c, push a, push b]
       | op' == iIfThenElse, t == Just TBoolean ->
           pushNegations pos' $ bool iAnd [bool iImpl [c, a], bool iImpl [bool iNot [c], b]]
-    IDeclPExp q ds@(_:_) body
-      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body
-      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body
-      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body
+    IDeclPExp q ds@(_:_) body'
+      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body'
+      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body'
+      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body'
     _ -> if pos' then x else neg x
   where
   push = pushNegations pos'
@@ -529,8 +517,8 @@ pushNegations pos' x@(PExp t pid' sp e)
 -- | Whether the formula has temporal operators.
 hasTemporal :: PExp -> Bool
 hasTemporal (PExp _ _ _ e) = case e of
-  IFunExp op' es -> op' `elem` (iFinally : ltlOps) || any hasTemporal es
-  IDeclPExp _ _ body -> hasTemporal body
+  IFunExp op' es -> op' `elem` (iFinally : iWeakPrevious : ltlOps) || any hasTemporal es
+  IDeclPExp _ _ body' -> hasTemporal body'
   _ -> False
 
 genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
@@ -583,7 +571,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
 
 -- | The context instance, as long as it exists.
 thisAlive :: GenEnv -> [String] -> String
-thisAlive genEnv (ctx:_) | ctx /= rootIdent = "(" ++ contextInstance genEnv ++ " & " ++ aliveName ctx ++ ")"
+thisAlive _ (ctx:_) | ctx /= rootIdent = "(this & " ++ aliveName ctx ++ ")"
 thisAlive _ _ = rootIdent
 
 -- | Whether the parent of the context instance exists, unless the parent is the root, which
@@ -592,12 +580,12 @@ parentExists :: GenEnv -> [String] -> Maybe String
 parentExists genEnv (ctx:_)
   | Just c <- findIClafer (uidIClaferMap genEnv) ctx
   , any (maybe False (not . isRoot) . parentOf genEnv) $ concreteSubs genEnv c
-  = Just $ "some " ++ contextInstance genEnv ++ "." ++ parentRel genEnv ctx
+  = Just $ "some this." ++ parentRel genEnv ctx
 parentExists _ _ = Nothing
 
 -- | Whether the context instance appears now (its first snapshot), or the trace begins.
 appearsNow :: GenEnv -> [String] -> String
-appearsNow genEnv (ctx:_) | ctx /= rootIdent = "not before " ++ contextInstance genEnv ++ " in " ++ aliveName ctx
+appearsNow _ (ctx:_) | ctx /= rootIdent = "not before this in " ++ aliveName ctx
 appearsNow _ _ = "not before some " ++ rootIdent
 
 -- 3-May-2012 Rafael Olaechea.
@@ -626,14 +614,6 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [PExp{_exp=IClaferId{
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
   | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
   | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive genEnv resPath ++ " and after no " ++ thisAlive genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
-  -- the value of an initializer of the context clafer x, with temporal operators: it is
-  -- evaluated in the context of the parent of x, where it is written (gsdlab/clafer#123). Its
-  -- obligations last as long as the parent of the parent, and initially and finally refer to
-  -- the lifetime of the parent. The names in it are already paths from this, the instance of x.
-  | op' == iInitValue = case resPath of
-      ctx : rest | Just c <- findIClafer (uidIClaferMap genEnv) ctx, Just p <- parentOf genEnv c ->
-        brArg (genPExp' genEnv{contextInstance = "(" ++ contextInstance genEnv ++ "." ++ fixedParentRel genEnv c ++ ")"} (_uid p : rest)) (pushNegations True exp')
-      _ -> brArg (genPExp' genEnv resPath) (pushNegations True exp')
   -- the obligations hold while the parent of the context instance exists
   | Just p <- parentExists genEnv resPath, op' == iX =
       Concat (IrPExp pid') [CString $ "after (not " ++ p ++ " or ", e, CString ")"]
@@ -641,12 +621,31 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
       Concat (IrPExp pid') [CString $ "eventually (not " ++ p ++ " or ", e, CString ")"]
   | Just p <- parentExists genEnv resPath, op' == iG =
       Concat (IrPExp pid') [CString $ "(not " ++ p ++ ") releases (not " ++ p ++ " or ", e, CString ")"]
+  -- the past is looked at while the parent exists, in its current lifetime (#127): a previous
+  -- lifetime of the parent is not visible, as the obligations of the future operators lapse
+  -- with the parent; at the top level, they are Alloy's operators
+  | Just p <- parentExists genEnv resPath, op' == iPrevious =
+      Concat (IrPExp pid') [CString $ "before (" ++ p ++ " and ", e, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iWeakPrevious =
+      Concat (IrPExp pid') [CString $ "not before (" ++ p ++ " and not ", e, CString ")"]
+  | Nothing <- parentExists genEnv resPath, op' == iWeakPrevious =
+      Concat (IrPExp pid') [CString "not before not ", e]
+  | Just p <- parentExists genEnv resPath, op' == iOnce =
+      Concat (IrPExp pid') [CString $ p ++ " since (" ++ p ++ " and ", e, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iHistorically =
+      Concat (IrPExp pid') [CString $ "not (" ++ p ++ " since (" ++ p ++ " and not ", e, CString "))"]
   where
   e = brArg (genPExp' genEnv resPath) exp'
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp1, exp2])
   | Just p <- parentExists genEnv resPath, op' == iU =
       Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
                              CString $ ") until (not " ++ p ++ " or ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iSince =
+      Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
+                             CString $ ") since (" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
+  | Just p <- parentExists genEnv resPath, op' == iTriggered =
+      Concat (IrPExp pid') [CString $ "not ((" ++ p ++ " and not ", brArg (genPExp' genEnv resPath) exp1,
+                             CString $ ") since (" ++ p ++ " and not ", brArg (genPExp' genEnv resPath) exp2, CString "))"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')
   | op' == iSumSet = genIFunExp pid' genEnv resPath (IFunExp iSumSet' [removeright (head exps'), getRight $ head exps'])
   | op' == iSumSet' = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
@@ -683,6 +682,11 @@ genOp    op'
   | op' == iF = ["eventually "]
   | op' == iG = ["always "]
   | op' == iU = [" until "]
+  | op' == iPrevious = ["before "]
+  | op' == iOnce = ["once "]
+  | op' == iHistorically = ["historically "]
+  | op' == iSince = [" since "]
+  | op' == iTriggered = [" triggered "]
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
   | op' == iSumSet = ["sum temp : "," | temp."]

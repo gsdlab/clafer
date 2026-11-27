@@ -1,0 +1,7 @@
+// As initializer_value_not_scalar.cfr, in a temporal model, with a value whose bound is not
+// established from the declarations: pool has no upper bound, and the constraint is not used.
+pool ->> integer *
+[ #pool <= 1 ]
+abstract Val -> integer := pool.dref
+v : Val
+[ G some v ]

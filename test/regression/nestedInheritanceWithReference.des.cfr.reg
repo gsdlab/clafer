@@ -1,8 +1,8 @@
 //# OPTIONS --explicit
 abstract 0..* System 0..* {
-  [this.connections.dref = this.Connection]
   abstract 0..* Connection 0..* {}
   0..* connections -> Connection 0..* {}
+  [this.connections.dref = this.Connection]
 }
 0..* SystemX : System 1..1 {
   0..* con1 : Connection 1..1 {}

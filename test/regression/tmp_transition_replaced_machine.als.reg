@@ -27,14 +27,14 @@ sig sm
 , var r_a : set a
 , var r_b : set b
 , var r_c : set c }
-{ always (this in alive_sm implies (let children = (this.@r_a + this.@r_b + this.@r_c) | one children))
-  always (this in alive_sm and not before this in alive_sm implies (some this.@r_a)) }
+{ always (this in alive_sm implies (let children = (this.@r_a + this.@r_b + this.@r_c) | one children)) }
 fun alive_sm : set sm { root.@r_sm }
 fact { always ~@r_sm in @p_sm }
 
 fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_a)) }
 fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_b)) }
 fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_c)) }
+fact { all self_ : sm | always (self_ in alive_sm implies (((!(some (self_ & alive_sm))) || (before (some (self_ & alive_sm)))) || (some self_.@r_a))) }
 
 
 sig a

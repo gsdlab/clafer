@@ -137,7 +137,7 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
 model2 :: String
 model2 = unlines
     [ "abstract Person -> Bob 0..2"
-    , "Alice : Person -> Bob 3"    -- Improper cardinality refinement for clafer 'Alice' on line 2 column 1
+    , "Alice : Person -> Bob 3"    -- not an error: 0..2 bounds all the instances of Person together, so the model has no instance (#129)
     , "Bob : Person ->> Person"    -- Improper bag to set refinement for clafer 'Bob' on line 3 column 1
     , "Carol : Person -> Person 2" -- Improper target subtyping for clafer 'Carol' on line 4 column 1
     ]
@@ -148,7 +148,7 @@ case_NestedInheritanceFailTest = case compileOneFragment defaultClaferArgs model
     Left errors -> (show errors) == correctErrMsg @? "Incorrect error message:\nGot:\n" ++ show errors ++ "\nExpected:\n" ++ correctErrMsg
     Right _ -> assertFailure "The model2 is not expected to compile."
     where
-        correctErrMsg = "[SemanticErr {pos = ErrPos {fragId = 1, fragPos = Pos 0 0, modelPos = Pos 0 0}, msg = \"Refinement errors in the following places:\\nImproper cardinality refinement for clafer 'Alice' on line 2 column 1\\nImproper bag to set refinement for clafer 'Bob' on line 3 column 1\\nImproper target subtyping for clafer 'Carol' on line 4 column 1\\n\"}]"
+        correctErrMsg = "[SemanticErr {pos = ErrPos {fragId = 1, fragPos = Pos 0 0, modelPos = Pos 0 0}, msg = \"Refinement errors in the following places:\\nImproper bag to set refinement for clafer 'Bob' on line 3 column 1\\nImproper target subtyping for clafer 'Carol' on line 4 column 1\\n\"}]"
 
 -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
 model3 :: String

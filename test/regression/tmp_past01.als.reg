@@ -1,0 +1,53 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_go : set go
+, var r_ready : set ready
+, var r_done : set done }
+fact { always (lone root.@r_go) }
+fact { always (lone root.@r_ready) }
+fact { always (lone root.@r_done) }
+fact { always (always ((some alive_done) => (once (some alive_go)))) }
+fact { always (always ((some alive_done) => ((some alive_ready) since (some alive_go)))) }
+fact { always (always ((some alive_go) => (not before not (!(some alive_go))))) }
+fact { always ((before (some root)) || (((some alive_go) && (no alive_ready)) && (no alive_done))) }
+fact { always ((before (some root)) || (after ((some alive_ready) && (no alive_go)))) }
+fact { always ((before (some root)) || (after (after ((some alive_ready) && (some alive_done))))) }
+
+assert assertAt_19_10 { always ((before (some root)) || (not before not (!(some alive_go)))) }
+check assertAt_19_10 for 1 but 10 steps
+
+assert assertAt_21_10 { always ((before (some root)) || (after (after (once (some alive_go))))) }
+check assertAt_21_10 for 1 but 10 steps
+
+assert assertAt_22_10 { always ((before (some root)) || (after (after ((some alive_ready) since (some alive_go))))) }
+check assertAt_22_10 for 1 but 10 steps
+
+assert assertAt_23_10 { always ((before (some root)) || (after (after (once (!(some alive_ready)))))) }
+check assertAt_23_10 for 1 but 10 steps
+
+assert assertAt_25_10 { always (always ((once (some alive_go)) || ((no alive_done) triggered (no alive_go)))) }
+check assertAt_25_10 for 1 but 10 steps
+
+
+
+sig go
+{ p_go : lone root }
+fun alive_go : set go { root.@r_go }
+fact { always ~@r_go in @p_go }
+
+
+sig ready
+{ p_ready : lone root }
+fun alive_ready : set ready { root.@r_ready }
+fact { always ~@r_ready in @p_ready }
+
+
+sig done
+{ p_done : lone root }
+fun alive_done : set done { root.@r_done }
+fact { always ~@r_done in @p_done }
+
+

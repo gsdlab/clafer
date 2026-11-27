@@ -1,0 +1,10 @@
+//# OPTIONS --explicit --core --tl=10
+0..* a 1..1 {
+  1..1 b 1..1 {
+    0..* c 0..1 {}
+    0..* d 0..1 {}
+    [(no this.d) W ((some this.c) && (no this.d))] // sometime before, tmp_before01.cfr:8:4
+  }
+}
+
+assert [(F (some a.b.c)) => ((no a.b.d) U (some a.b.c))] // never before, tmp_before01.cfr:10:8

@@ -1,28 +1,28 @@
 //# OPTIONS --explicit
-[0 < 1]
-[a.x.dref = 2]
 0..* a 1..1 {
   0..* x -> int 1..1 {}
 }
 0..* extra 0..1 {}
 0..* b 1..1 {
-  [(#a) >= 1]
+  [some a]
   [0 < 1]
   [0 < 1]
   [a.x.dref = 2]
-  [all v : b | (#a) >= 1]
-  [(#a) >= 1]
-  [((#extra) >= 1) <=> ((#extra) >= 1)]
-  [((if ((#extra) >= 1) then 1 else 0) = 1) => ((#extra) >= 1)]
-  [((#(if ((#extra) >= 1) then a else noclafer)) >= 1) => ((#extra) >= 1)]
+  [all v : b | some a]
+  [some a]
+  [(some extra) <=> (some extra)]
+  [((if (some extra) then 1 else 0) = 1) => (some extra)]
+  [(some (if (some extra) then a else noclafer)) => (some extra)]
 }
+[0 < 1]
+[a.x.dref = 2]
 abstract 0..* Top 0..* {
   [0 < 1]
 }
 0..* top1 : Top 1..1 {}
 0..* top2 : Top 1..1 {}
 abstract 0..* Feat 0..* {
-  [(((this in f1) => (0 < 1)) && ((this in g.f2) => ((#(this ** g.f2).parent) >= 1))) && ((this in h.i.f3) => ((#(this ** h.i.f3).parent) >= 1))]
+  [(((this in f1) => (0 < 1)) && ((this in g.f2) => (some (this ** g.f2).parent))) && ((this in h.i.f3) => (some (this ** h.i.f3).parent))]
   [(((this in f1) => (0 < 1)) && ((this in g.f2) => ((#(this ** g.f2).parent) = 1))) && ((this in h.i.f3) => ((#(this ** h.i.f3).parent) = 1))]
 }
 0..* f1 : Feat 1..1 {}

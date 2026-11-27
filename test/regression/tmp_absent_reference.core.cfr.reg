@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --core --tl=10
+0..* x -> int 0..1 {
+  [((some this) && (!(previous (some this)))) => (X (this.dref = 7))]
+}
+[(!(previous (some root))) => (some x)]
+
+assert [(!(previous (some root))) => (X (some x))]

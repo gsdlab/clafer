@@ -38,5 +38,23 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="keyword">assert [</span> all b1<span class="keyword"> : </span><a href="#a"><span class="reference">a</span></a>.<a href="#b"><span class="reference">b</span></a> | <span class="tKeyword">never </span><a href="#b1"><span class="reference">b1</span></a>.<a href="#c"><span class="reference">c</span></a> &amp;&amp; X <a href="#b1"><span class="reference">b1</span></a>.<a href="#d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
 
+
+<div>
+<span class="tKeyword">final</span> <span class="claferDecl" id="e">e</span>
+  <div class="indent">
+  <span class="tKeyword">final</span> <span class="keyword">xor</span> <span class="claferDecl" id="f">f</span> 1
+    <div class="indent">
+    <span class="claferDecl" id="g">g</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="h">h</span> ?</div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="tKeyword">never </span><a href="#h"><span class="reference">h</span></a><span class="tKeyword"> after </span><a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">never </span><a href="#e"><span class="reference">e</span></a>.<a href="#f"><span class="reference">f</span></a>.<a href="#h"><span class="reference">h</span></a><span class="tKeyword"> after </span><a href="#e"><span class="reference">e</span></a>.<a href="#f"><span class="reference">f</span></a>.<a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>

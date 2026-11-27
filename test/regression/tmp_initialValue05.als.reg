@@ -9,7 +9,7 @@ one sig root
 fact { always (#(root.@r_xs) <= 3) }
 fact { always (2 <= #(root.@r_A)) }
 fact { always (#(root.@r_A) <= 2) }
-fact { always ((not before some root) implies ((some alive_xs) => ((alive_xs.@xs_ref) = (1 + 2)))) }
+fact { always ((before (some root)) || ((some alive_xs) => ((alive_xs.@xs_ref) = (1 + 2)))) }
 fact { always (eventually ((alive_xs.@xs_ref) = 3)) }
 
 
@@ -29,7 +29,7 @@ sig A
 fun alive_A : set A { root.@r_A }
 fact { always ~@r_A in @p_A }
 
-fact { all self_ : A | always (self_ in alive_A implies ((not before self_ in alive_A) implies ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = (1 + 2))))) }
+fact { all self_ : A | always (self_ in alive_A implies (((!(some (self_ & alive_A))) || (before (some (self_ & alive_A)))) || ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = (1 + 2))))) }
 fact { all self_ : A | always (self_ in alive_A implies (eventually (some self_.@r_ys))) }
 
 

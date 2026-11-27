@@ -1,0 +1,13 @@
+// The bound of an abstract clafer holds in every state of a temporal model (gsdlab/clafer#129):
+// the number of tools may change, but stays within 3..6. With four saws in the second state,
+// at most two hammers are left there.
+
+abstract Tools 3..6
+hammer : Tools *
+saw : Tools 0..4
+
+[ initially (#hammer = 3 && no saw) ]
+[ initially X (#saw = 4) ]
+
+assert [ G (#Tools >= 3 && #Tools <= 6) ]
+assert [ initially X (#hammer <= 2) ]

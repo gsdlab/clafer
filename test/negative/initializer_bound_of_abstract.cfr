@@ -1,0 +1,5 @@
+// On an abstract clafer with an initializer :=, * makes := initialize all the instances at
+// time zero, and other multiplicities have no meaning (#126, kbak/clafer-semantics#170); a
+// number of instances is a constraint, e.g., [ G (#Val = 2) ].
+abstract Val -> integer ? := 1
+v : Val

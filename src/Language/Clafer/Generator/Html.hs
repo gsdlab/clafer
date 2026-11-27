@@ -47,8 +47,7 @@ import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
-import Control.Applicative
-import Data.List (find, intersperse, genericSplitAt, nub)
+import Data.List (find, intercalate, genericSplitAt, nub)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Char (isSpace)
@@ -62,11 +61,11 @@ printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c'@((Span (Pos row' col') _), comment):cs'), comments)
             | row > row' = case take 3 comment of
-                ['/', '/', '#'] -> findAll row (cs', concat [comments, printHtmlComment (trim (drop 2 comment)) ++ "\n"])
+                ['/', '/', '#'] -> findAll row (cs', comments ++ printHtmlComment (trim (drop 2 comment)) ++ "\n")
                 ['/', '/', _]   -> if col' == 1
-                                   then findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
-                                   else findAll row (cs', concat [comments, printInlineComment comment ++ "\n"])
-                ['/', '*', _]   -> findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
+                                   then findAll row (cs', comments ++ printStandaloneComment comment ++ "\n")
+                                   else findAll row (cs', comments ++ printInlineComment comment ++ "\n")
+                ['/', '*', _]   -> findAll row (cs', comments ++ printStandaloneComment comment ++ "\n")
                 _      -> (cs', "")
             | otherwise  = (c':cs', comments)
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
@@ -139,7 +138,7 @@ printDeclaration (EnumDecl s posIdent enumIds)  indent irMap html comments =
     " " ++
     printPosIdent posIdent mUid' html ++
     " = " ++
-    concat (intersperse " | " (map (\x -> printEnumId x indent irMap html comments) enumIds)) ++
+    intercalate " | " (map (\x -> printEnumId x indent irMap html comments) enumIds) ++
     comment ++
     printIndentEnd html
   where
@@ -358,7 +357,7 @@ printAssertion' exp' indent' irMap html comments =
 
 printDecl :: Decl-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDecl (Decl _ locids setExp) indent irMap html comments =
-  concat (intersperse "; " $ map printLocId locids) ++
+  intercalate "; " (map printLocId locids) ++
   while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printOperand 21 setExp indent irMap html comments
   where
     printLocId :: LocId -> String
@@ -375,11 +374,13 @@ printVarBinding (VarBinding _ locid exp') indent irMap html comments =
 
 printInit :: Init -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printInit (InitEmpty _) _ _ _ _ = ""
-printInit (InitSome _ initHow exp') indent irMap html comments = printInitHow initHow  ++ printExp exp' indent irMap html comments
+printInit (InitSome _ initHow exp') indent irMap html comments = printInitHow initHow html ++ printExp exp' indent irMap html comments
 
-printInitHow :: InitHow -> String
-printInitHow (InitConstant _) = " = "
-printInitHow (InitDefault _) = " := "
+printInitHow :: InitHow -> Bool -> String
+printInitHow (InitConstant _) _ = " = "
+printInitHow (InitDefault _) _ = " := "
+printInitHow (InitEach _) html = " := " ++ while html "<span class=\"keyword\">" ++ "each" ++ while html "</span>" ++ " "
+printInitHow (InitTogether _) html = " := " ++ while html "<span class=\"keyword\">" ++ "together" ++ while html "</span>" ++ " "
 
 printTransition :: Transition -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printTransition (TransitionEmpty _) _ _ _ _ = ""
@@ -417,6 +418,8 @@ printExp (EOr _ exp1 exp2)        indent irMap html comments = printOperand 5 ex
 printExp (EXor _ exp1 exp2)       indent irMap html comments = printOperand 6 exp1 indent irMap html comments ++ " xor " ++ printOperand 7 exp2 indent irMap html comments
 printExp (LtlU _ exp1 exp2)       indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ " U " ++ printOperand 9 exp2 indent irMap html comments
 printExp (TmpUntil _ exp1 exp2)   indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
+printExp (TmpSince _ exp1 exp2) indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " since " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
+printExp (TmpTriggered _ exp1 exp2) indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " triggered " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
 printExp (LtlW _ exp1 exp2)       indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ " W " ++ printOperand 10 exp2 indent irMap html comments
 printExp (TmpWUntil _ exp1 exp2)  indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " weakuntil " ++ while html "</span>" ++ printOperand 10 exp2 indent irMap html comments
 printExp (LtlF _ exp')            indent irMap html comments = "F " ++ printOperand 10 exp' indent irMap html comments
@@ -424,6 +427,9 @@ printExp (TmpEventually _ exp')   indent irMap html comments = while html "<span
 printExp (LtlG _ exp')            indent irMap html comments = "G " ++ printOperand 10 exp' indent irMap html comments
 printExp (TmpGlobally _ exp')     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "globally " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (LtlX _ exp')            indent irMap html comments = "X " ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpPrevious _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "previous " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpOnce _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "once " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpHistorically _ exp') indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "historically " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (TmpNext _ exp')         indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "next " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
 printExp (ENeg _ exp')            indent irMap html comments = " ! " ++ printOperand 11 exp' indent irMap html comments
 printExp (ELt _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &lt; " else " < ") ++ printOperand 16 exp2 indent irMap html comments
@@ -495,6 +501,8 @@ expPrec exp' = case exp' of
   EAnd{}                    -> 7
   LtlU{}                    -> 8
   TmpUntil{}                -> 8
+  TmpSince{}                -> 8
+  TmpTriggered{}            -> 8
   LtlW{}                    -> 9
   TmpWUntil{}               -> 9
   LtlF{}                    -> 10
@@ -503,6 +511,9 @@ expPrec exp' = case exp' of
   TmpGlobally{}             -> 10
   LtlX{}                    -> 10
   TmpNext{}                 -> 10
+  TmpPrevious{}             -> 10
+  TmpOnce{}                 -> 10
+  TmpHistorically{}         -> 10
   ENeg{}                    -> 11
   ELt{}                     -> 15
   EGt{}                     -> 15
@@ -595,16 +606,14 @@ getUid posIdent@(PosIdent (_, id')) irMap =
     findUid name xs     = find ((== name) . nameIn irMap) xs
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
-getDivId s irMap = if isNothing $ Map.lookup s irMap
-                      then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        _uid iClaf
+getDivId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> _uid iClaf
+                      _ -> "Uid not Found"
 
 getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
-getUseId s irMap = if isNothing $ Map.lookup s irMap
-                      then ("Uid not Found", "Uid not Found")
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        (_uid iClaf, fromMaybe "" $ _sident . _exp <$> _super iClaf)
+getUseId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> (_uid iClaf, maybe "" (_sident . _exp) (_super iClaf))
+                      _ -> ("Uid not Found", "Uid not Found")
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

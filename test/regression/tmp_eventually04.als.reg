@@ -6,6 +6,10 @@ one sig root
 { var r_a : set a }
 fact { always (one root.@r_a) }
 
+assert assertAt_8_8 { always (always ((some alive_a.@r_b) => (eventually (some alive_a.@r_c)))) }
+check assertAt_8_8 for 1 but 10 steps
+
+
 
 sig a
 { p_a : lone root

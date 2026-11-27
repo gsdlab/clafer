@@ -17,23 +17,17 @@ abstract sig UserRequest
 {}
 fun alive_UserRequest : set UserRequest { alive_stop + alive_up + alive_down }
 
-sig stop extends UserRequest
-{ p_stop : lone root }
-fun alive_stop : set stop { root.@r_stop }
-fact { always ~@r_stop in @p_stop }
+one sig stop extends UserRequest
+{}
+fun alive_stop : set stop { stop }
 
+one sig up extends UserRequest
+{}
+fun alive_up : set up { up }
 
-sig up extends UserRequest
-{ p_up : lone root }
-fun alive_up : set up { root.@r_up }
-fact { always ~@r_up in @p_up }
-
-
-sig down extends UserRequest
-{ p_down : lone root }
-fun alive_down : set down { root.@r_down }
-fact { always ~@r_down in @p_down }
-
+one sig down extends UserRequest
+{}
+fun alive_down : set down { down }
 
 sig Elevator
 { p_Elevator : lone root
@@ -42,7 +36,7 @@ fun alive_Elevator : set Elevator { root.@r_Elevator }
 fact { always ~@r_Elevator in @p_Elevator }
 
 fact { all self_ : Elevator | always (self_ in alive_Elevator implies (one self_.@r_request)) }
-fact { all self_ : Elevator | always (self_ in alive_Elevator implies ((not before self_ in alive_Elevator) implies (((self_.@r_request).@request_ref) = alive_stop))) }
+fact { all self_ : Elevator | always (self_ in alive_Elevator implies (((!(some (self_ & alive_Elevator))) || (before (some (self_ & alive_Elevator)))) || (((self_.@r_request).@request_ref) = alive_stop))) }
 fact { all self_ : Elevator | always (self_ in alive_Elevator implies (always ((((self_.@r_request).@request_ref) = alive_up) => (after (((self_.@r_request).@request_ref) = alive_stop))))) }
 
 

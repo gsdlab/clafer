@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --core --tl=10
+0..* a 1..1 {
+  1..1 b 0..1 {
+    0..* c 0..1 {}
+    0..* d 0..1 {}
+    0..* e 0..1 {}
+    [((some this.c) && (some this.e)) => (X (some this.d))] // -[]->, tmp_transitionconstraintguard01.cfr:8:8
+  }
+}

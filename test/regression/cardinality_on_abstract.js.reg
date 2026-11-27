@@ -5,4 +5,5 @@ stringLength(16);
 $a = Abstract("a");
 $b = Clafer("b").withCard(1, 1);
 $c = Clafer("c").withCard(0, 1);
+Constraint(equal(card(global($a)), constant(0)));
 Constraint(some(global($a)));

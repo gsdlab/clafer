@@ -5,7 +5,7 @@ pred show {}
 one sig root
 { var r_item : set item }
 fact { always (one root.@r_item) }
-fact { always ((not before some root) implies (all  x : alive_item | after (no x & alive_item))) }
+fact { always ((before (some root)) || (all  x : alive_item | after (no x & alive_item))) }
 
 
 sig item

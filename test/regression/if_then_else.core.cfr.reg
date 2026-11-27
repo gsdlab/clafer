@@ -1,0 +1,15 @@
+//# OPTIONS --explicit --core
+0..* emergencyVehicle 0..1 {}
+0..* allWayYellow 0..1 {}
+0..* allYellow 0..1 {
+  0..* allYellow__flashing 0..1 {}
+}
+0..* warning 0..1 {
+  0..* warning__flashing 0..1 {}
+}
+[(some emergencyVehicle) => (if (some allWayYellow) then (some allYellow) else (some warning))]
+[(some emergencyVehicle) => (if (some allWayYellow) then (some allYellow) else (some warning))]
+0..* AliceAge -> int 1..1 {}
+0..* BobAge -> int 1..1 {}
+0..* BobsBirthday 0..1 {}
+[(if (some BobsBirthday) then BobAge.dref else AliceAge.dref) = 5]

@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -58,9 +58,7 @@ getSuper claf = case getSuperId <$> _super claf of
 
 -- | Returns a list of any length
 getReference :: IClafer -> [String]
-getReference c = case _ref <$> _reference c of
-    Nothing   -> []
-    Just ref' -> getRefIds ref'
+getReference c = maybe [] (getRefIds . _ref) (_reference c)
 
 -- | Returns a list of any length
 getSuperAndReference :: IClafer -> [String]
@@ -147,17 +145,17 @@ createUidIClaferMap    iModule  = foldl'
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    defaultModifiers = IClaferModifiers False True True []
-    rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
+    defaultModifiers = IClaferModifiers False True True [] False
+    rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule) Nothing
     -- integers are decimals, decimals and doubles are reals; integers also convert to doubles (see TypeSystem)
-    integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
-    stringClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    decimalClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) decimalType decimalType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) []
-    doubleClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) []
-    realClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    booleanClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    clafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
+    integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) [] Nothing
+    intClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) [] Nothing
+    stringClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) [] Nothing
+    decimalClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) decimalType decimalType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) [] Nothing
+    doubleClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) [] Nothing
+    realClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) [] Nothing
+    booleanClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) [] Nothing
+    clafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) [] Nothing
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
@@ -286,6 +284,9 @@ isProperRefinement    uidIClaferMap    (Just m)
     , properBagToSetRefinement m
     , properTargetSubtyping m )
   where
+    -- the multiplicity of an abstract clafer bounds the number of all its instances, of all its
+    -- subclafers together, not the multiplicity of each subclafer (#129)
+    properCardinalityRefinement NestedInheritanceMatch{_superClafer=hcs} | _isAbstract hcs = True
     properCardinalityRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
       = case (_card hc, _card hcs) of
           (Just (hcl, hcu), Just (hcsl, hcsu)) -> hcl >= hcsl && (hcu <= hcsu || hcsu == -1)
@@ -330,7 +331,7 @@ matchNestedInheritance    uidIClaferMap        headClafer                 = do
       Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
       Nothing    -> []
     targetsSuperClafer :: [IClafer]
-    targetsSuperClafer = mapMaybe (findIClafer uidIClaferMap) $ map getSuperId $ catMaybes $ map _super targetClafer
+    targetsSuperClafer = mapMaybe (findIClafer uidIClaferMap . getSuperId) $ mapMaybe _super targetClafer
     superClafersTarget :: [IClafer]
     superClafersTarget = case _ref <$> _reference superClafer of
       Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
@@ -404,17 +405,38 @@ iF          = "F"
 iX :: String
 iX          = "X"
 
+-- | The past-time operators of LTL with past (#127): @previous a@ (NuSMV's @Y@, Alloy's
+--   @before@), @once a@, @historically a@, @a since b@ and @a triggered b@, which look back
+--   while the parent of the context instance exists, in its current lifetime.
+iPrevious :: String
+iPrevious     = "previous"
+
+iOnce :: String
+iOnce         = "once"
+
+iHistorically :: String
+iHistorically = "historically"
+
+iSince :: String
+iSince        = "since"
+
+iTriggered :: String
+iTriggered    = "triggered"
+
+-- | The weak previous, @not previous not a@ (NuSMV's @Z@), which only the negation pushing of
+--   the temporal Alloy output writes; it has no keyword.
+iWeakPrevious :: String
+iWeakPrevious = "weakprevious"
+
+-- | The past-time operators that a model can write.
+pastOps :: [String]
+pastOps = [iPrevious, iOnce, iHistorically, iSince, iTriggered]
+
 iInitially :: String
 iInitially    = "initially"
 
 iFinally :: String
 iFinally    = "finally"
-
--- | Marks the value @e@ of an initializer @x -> T := e@ that the desugarer moved from the
---   context of the parent into the context of @x@. The name resolver resolves @e@ in the
---   context of the parent, where it is written, and removes the marker; no other phase sees it.
-iInitValue :: String
-iInitValue  = "initvalue"
 
 iCSet :: String
 iCSet         = "#"
@@ -441,7 +463,7 @@ iProdSet :: String
 iProdSet  = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally, iPrevious, iOnce, iHistorically, iWeakPrevious]
 
 -- binary operators
 iIff :: String
@@ -466,7 +488,7 @@ iW :: String
 iW          = "W"
 
 logBinOps :: [String]
-logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW]
+logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW, iSince, iTriggered]
 
 iLt :: String
 iLt           = "<"
@@ -492,18 +514,66 @@ iIn           = "in"
 iNin :: String
 iNin          = "not in"
 
--- | Whether the expression has temporal operators (X, F, G, U, W, initially, finally).
-hasLtlOps :: PExp -> Bool
-hasLtlOps pexp = not $ null [ () | IFunExp op' _ <- universeOn biplate pexp :: [IExp], op' `elem` ltlOps ]
-
 ltlOps :: [String]
-ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]
+ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally] ++ pastOps
 
 ltlBinOps :: [String]
-ltlBinOps = [iW, iU]
+ltlBinOps = [iW, iU, iSince, iTriggered]
 
 ltlUnOps :: [String]
-ltlUnOps = [iX, iG, iF, iInitially, iFinally]
+ltlUnOps = [iX, iG, iF, iInitially, iFinally, iPrevious, iOnce, iHistorically]
+
+-- | The behavioral patterns of Dwyer et al.'s catalogue: @never@, @sometime@, @lonce@ (at most
+--   once), @always@, @s must precede p@ and @s must follow p@.
+patternKinds :: [String]
+patternKinds = ["never", "sometime", "lonce", "always", "precede", "follow"]
+
+-- | The scopes of a pattern: globally (no keyword), @before r@, @after q@, @between q and r@
+--   and @after q until r@.
+patternScopes :: [String]
+patternScopes = ["", "before", "after", "between", "after until"]
+
+-- | The operator of a pattern in a scope, e.g., @never before@ for @never p before r@, which
+--   the IR keeps (the rich explicit model) and "Language.Clafer.Intermediate.Core" lowers to
+--   LTL. Its arguments are those of the pattern, @p@, or @s@ and @p@, then those of the scope.
+patternOp :: String -> String -> String
+patternOp kind ""    = kind
+patternOp kind scope = kind ++ " " ++ scope
+
+-- | The pattern and the scope of an operator, if it is a pattern's.
+patternOf :: String -> Maybe (String, String)
+patternOf op' = lookup op' [ (patternOp k s, (k, s)) | k <- patternKinds, s <- patternScopes ]
+
+patternOps :: [String]
+patternOps = [ patternOp k s | k <- patternKinds, s <- patternScopes ]
+
+-- | The keywords of a pattern or a transition as written, for @--record-provenance@: e.g.,
+--   @must precede between and@ for @s must precede p between q and r@, and @-[]->@ for
+--   @a -[g]-> b@.
+richOpSyntax :: String -> String
+richOpSyntax op' = case patternOf op' of
+  Just (kind, scope) -> unwords $ kindSyntax kind ++ scopeSyntax scope
+  Nothing -> op'
+  where
+  kindSyntax k = if k `elem` ["precede", "follow"] then ["must", k] else [k]
+  scopeSyntax "" = []
+  scopeSyntax "between" = ["between", "and"]
+  scopeSyntax s = [s]
+
+-- | The transitions, which the IR keeps: @a --> b@, @a -[g]-> b@, @a -->> b@ and @a -[g]->> b@.
+iTrans, iTransGuarded, iTransSync, iTransSyncGuarded :: String
+iTrans            = "-->"
+iTransGuarded     = "-[]->"
+iTransSync        = "-->>"
+iTransSyncGuarded = "-[]->>"
+
+transitionOps :: [String]
+transitionOps = [iTrans, iTransGuarded, iTransSync, iTransSyncGuarded]
+
+-- | The temporal operators of the rich IR, which "Language.Clafer.Intermediate.Core" lowers;
+--   their arguments and results are formulas.
+richTemporalOps :: [String]
+richTemporalOps = patternOps ++ transitionOps
 
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
@@ -561,6 +631,10 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 temporalModifiers :: [String]
 temporalModifiers = [ "final", "initial" ]
 
+-- | The clocks of an initializer @:=@: @:= each e@ and @:= together e@ (kbak/clafer-semantics#194)
+initializerClocks :: [String]
+initializerClocks = [ "each", "together" ]
+
 iLet :: String
 iLet = "let"
 
@@ -575,7 +649,7 @@ propertyKeywords =
 
 -- | Whether the expression applies a temporal operator, e.g., @always@ or @X@.
 isTempOperator :: IExp -> Bool
-isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
+isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps ++ richTemporalOps)
 isTempOperator _               = False
 
 -- | Whether the clafer is declared @initial@ or @final@.
@@ -596,7 +670,7 @@ iIfThenElse :: String
 iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: Span -> String -> [IExp] -> IExp
-mkIFunExp _ _ (x:[]) = x
+mkIFunExp _ _ [x] = x
 mkIFunExp pos' op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" pos') [x,y]) xs
 
 toLowerS :: String -> String
@@ -686,6 +760,7 @@ keywordIdents =
   [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
   [ "abstract", "enum" ] ++ -- keywords
   temporalModifiers ++ -- temporal
+  initializerClocks ++ -- the clocks of :=
   ltlOps ++ -- LTL
   propertyKeywords ++ -- temp patterns
   [ iLet ]

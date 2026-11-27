@@ -1,4 +1,4 @@
-scope({$A:0});
+scope({$A:0, $aRef:0});
 defaultScope(1);
 stringLength(16);
 

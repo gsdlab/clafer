@@ -1,0 +1,10 @@
+//# OPTIONS --explicit --core
+0..* x 0..1 {}
+0..* y 0..1 {}
+0..* z 0..1 {}
+0..* w 0..1 {}
+0..* u 0..1 {}
+0..* o 0..1 {}
+0..* p 0..1 {}
+0..* h 0..1 {}
+[(some h) <=> (if (if (some x) then (some z) else (some y)) then ((some x) => (some y)) else (if (no w) then (if (some z) then (some u) else (some o)) else (some p)))]

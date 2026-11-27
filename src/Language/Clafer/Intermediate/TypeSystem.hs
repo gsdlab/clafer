@@ -547,13 +547,13 @@ closure :: MonadFail m => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
 getTMaps :: UIDIClaferMap -> IType        -> [IType]
-getTMaps    uidIClaferMap'   (TClafer hi') = catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
+getTMaps    uidIClaferMap'   (TClafer hi') = mapMaybe (getDrefTMapByUID uidIClaferMap') hi'
 getTMaps    uidIClaferMap'   (TMap _ ta')  = getTMaps uidIClaferMap' ta'
 getTMaps    uidIClaferMap'   (TUnion un')  = concatMap (getTMaps uidIClaferMap') un'
 getTMaps    _                _             = []
 
 getTClafers :: UIDIClaferMap -> IType          -> [IType]
-getTClafers    uidIClaferMap'   (TClafer hi')   = catMaybes $ map (getTClaferByUID uidIClaferMap') hi'
+getTClafers    uidIClaferMap'   (TClafer hi')   = mapMaybe (getTClaferByUID uidIClaferMap') hi'
 getTClafers    uidIClaferMap'   (TMap _ ta')    = getTClafers uidIClaferMap' ta'
 getTClafers    uidIClaferMap'   (TUnion un')    = concatMap (getTClafers uidIClaferMap') un'
 getTClafers    _                _               = []

@@ -1,0 +1,24 @@
+//# OPTIONS --explicit --core
+abstract 0..* percent ->> int 0..* {
+  [(this.dref >= 0) && (this.dref <= 5)]
+}
+0..* twoPercent : percent 1..1 {}
+[(some twoPercent) => (twoPercent.dref = 2)] // =, subtyping-primitive-types.cfr:5:1
+0..* threePercent : percent 1..1 {}
+[(some threePercent) => (threePercent.dref = (twoPercent.dref + 1))] // =, subtyping-primitive-types.cfr:7:1
+abstract 0..* date ->> string 0..* {}
+0..* today : date 1..1 {}
+[(some today) => (today.dref = "Mar 20, 2012")] // =, subtyping-primitive-types.cfr:12:1
+abstract 0..* time ->> int 0..* {
+  0..* minute -> int 1..1 {
+    [(this.dref >= 0) && (this.dref <= 5)]
+  }
+  0..* hour -> int 1..1 {
+    [(this.dref >= 0) && (this.dref <= 5)]
+  }
+}
+[(some time) => (time.dref = (time.minute.dref + time.hour.dref))] // =, subtyping-primitive-types.cfr:14:1
+0..* now : time 1..1 {
+  [this.minute.dref = 3]
+  [this.hour.dref = 1]
+}

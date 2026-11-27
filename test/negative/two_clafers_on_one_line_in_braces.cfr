@@ -1,0 +1,3 @@
+// Two clafers on one line inside braces, b and c: the error is at c, column 10 of the last
+// line, since a brace written in the model does not move the tokens after it.
+a { b {} c ? {} }

@@ -32,10 +32,12 @@ import Language.Clafer
 import Language.Clafer.Import
 import Language.Clafer.QNameUID
 import Language.Clafer.ClaferArgs (ClaferMode (Clafer))
+import Language.Clafer.Common (richOpSyntax)
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
 import Language.Clafer.Generator.Html (highlightErrorsIn)
+import Language.Clafer.Generator.Explicit (withoutOrigins)
 
 import Network.URI (parseURI)
 import Network.Socket (tupleToHostAddress)
@@ -616,17 +618,18 @@ case_ParentOfTopLevel = do
 case_FinalInheritedReference :: Assertion
 case_FinalInheritedReference =
     forM_ ["final", "finalref", "finaltarget", ""] $ \modifier ->
-        case compileOneFragment defaultClaferArgs{mode = [Alloy]} (unlines
+        case compileOneFragment defaultClaferArgs{mode = [Clafer], core = True} (unlines
                 [ "abstract Engine", "gas : Engine", "abstract Car", "    abstract engine -> Engine"
                 , "    xor gear", "        initial park --> drive", "        drive"
                 , "tesla : Car", "    " ++ modifier ++ " motor : engine" ]) of
-            Right r -> let alloy = outputCode $ fromJust $ Map.lookup Alloy r
+            Right r -> let explicit = outputCode $ fromJust $ Map.lookup Clafer r
                            -- final and finalref fix the reference of each motor, finaltarget the
-                           -- targets of the motors of a tesla (kbak/clafer-semantics#127)
-                           eachFixed = "implies (this.@engine_ref)' = this.@engine_ref)" `isInfixOf` alloy
-                           targetsFixed = "implies (this.@r_motor.@engine_ref)' = this.@r_motor.@engine_ref)" `isInfixOf` alloy
-                       in (eachFixed, targetsFixed) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget")
-                            @? (modifier ++ ": " ++ alloy)
+                           -- targets of the motors of a tesla (kbak/clafer-semantics#127), as
+                           -- constraints of the core (kbak/clafer-semantics#192)
+                           eachFixed = "[all motor_1 : this | all motor_2 : motor_1.dref | X ((some motor_1.dref) => (motor_2 in motor_1.dref))]" `isInfixOf` explicit
+                           targetsFixed = "[all motor_2 : this.dref | X (motor_2 in this.parent.motor.dref)]" `isInfixOf` explicit
+                       in (eachFixed, targetsFixed, "final" `isInfixOf` explicit) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget", False)
+                            @? (modifier ++ ": " ++ explicit)
             Left errs' -> assertFailure $ modifier ++ ": " ++ show errs'
 
 -- A clafer which extends itself is reported as such, not as a missing super.
@@ -652,23 +655,27 @@ case_InitialValue = do
         has model expected = do
             x <- explicit model
             (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
-    -- a static model: the same outputs as with =, and no assertion
+    -- a static model: the same Alloy and Choco outputs as with =, and no assertion; the explicit
+    -- form keeps the initializers as written
     case (output [Alloy, Choco, Clafer] $ static' ":=", output [Alloy, Choco, Clafer] $ static' "=") of
         (Right a, Right b) -> do
-            a == b @? ("differs from =:\n" ++ unlines a)
+            take 2 a == take 2 b @? ("differs from =:\n" ++ unlines a)
             not (any ("assert" `isInfixOf`) a) @? ("an assertion:\n" ++ unlines a)
             not ("--tl" `isInfixOf` last a) @? ("temporal:\n" ++ last a)
+            ("0..* x -> int 1..1 := each 10 {}" `isInfixOf` last a) @? ("not :=:\n" ++ last a)
+            ("0..* x -> int 1..1 = 10 {}" `isInfixOf` last b) @? ("not =:\n" ++ last b)
         (Left errs', _) -> assertFailure $ show errs'
         (_, Left errs') -> assertFailure $ show errs'
-    -- a temporal model: in the context of x, with the value resolved in the context of the parent
+    -- a temporal model: the initializers as written, with their values in the context of the
+    -- parent (explicit initializers)
     let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
                    , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := A.y"
                    , "[ F some A.x ]" ]
-    has temporal "0..* x -> int 0..1 {\n    [initially (this.dref = (this.parent.A__y.dref + 1))]"
-    has temporal "0..* z -> int 1..1 {\n    [initially (this.dref = this.parent.A__y.dref)]"
-    has temporal "[initially (((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2)))]"
+    has temporal "0..* x -> int 0..1 := each this.A__y.dref + 1 {"
+    has temporal "0..* z -> int 1..1 := each this.A__y.dref {}"
+    has temporal "0..* zs -> int 0..* := together 1 ++ 2 {}"
     -- a finalref reference keeps the value it starts with, also when the value of A.y changes
-    has temporal "finalref 0..* f -> int 0..1 {\n  [initially (this.dref = A.A__y.dref)]"
+    has temporal "finalref 0..* f -> int 0..1 := each A.A__y.dref {}"
     x <- explicit temporal
     not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)
 
@@ -727,14 +734,499 @@ case_AbsentReference = do
     -- an inherited reference: the instances of the abstract clafer are those of its subclafers
     hasAlloy [ "abstract Ref -> integer", "r : Ref ?", "[ G some r ]" ] "always (this not in alive_Ref implies no this.@Ref_ref)"
 
+-- | The explicit model keeps the enumerations, initializers, behavioral patterns and
+--   transitions; its core (--core) has them lowered, as the backends get them
+--   (doc/rich-and-core-explicit.md).
+case_RichAndCoreExplicit :: Assertion
+case_RichAndCoreExplicit = do
+    let model = [ "enum Color = red | green", "light -> Color", "p ?", "q ?", "r ?"
+                , "Box ?", "    on ?", "    off ?", "    x -> integer := 3", "    [ on --> off --> on ]"
+                , "[ never p between q and r ]" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- explicit core'
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    has False "enum Color = red | green"
+    has False "0..* x -> int 1..1 := each 3 {}"
+    has False "[(some this.on) --> (some this.off) --> (some this.on)]"
+    has False "[never (some p) between (some q) and (some r)]"
+    -- the enumeration is final in a temporal model: its literals do not change (#127)
+    has True "abstract 0..* Color 0..* {}"
+    has True "[all red_1 : this | X (red_1 in red)]"
+    has True "[((some this) && (!(previous (some this)))) => (this.dref = 3)]"
+    has True "[(some this.on) => (X ((some this.off) && (X (some this.on))))]"
+    has True "[G ((((some q) && (no r)) && (F (some r))) => ((no p) U (some r)))]"
+
+-- | Both explicit models print the top-level declarations where they were written: the
+--   clafers, the enumerations and the constraints.
+case_ExplicitDeclarationOrder :: Assertion
+case_ExplicitDeclarationOrder = do
+    let model = unlines [ "a ?", "[ some a ]", "enum E = x | y", "b -> E" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} model of
+            Right r -> return $ drop 1 $ lines $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return []
+    rich <- explicit False
+    rich == ["0..* a 0..1 {}", "[some a]", "enum E = x | y", "0..* b -> E 1..1 {}"] @? ("rich:\n" ++ unlines rich)
+    core'' <- explicit True
+    take 3 core'' == ["0..* a 0..1 {}", "[some a]", "abstract 0..* E 0..* {}"] && last core'' == "0..* b -> E 1..1 {}"
+        @? ("core:\n" ++ unlines core'')
+
+-- | Real and double, which no backend solves, are printed in the rich and the core explicit
+--   model, which compile to themselves.
+case_RealsPrinted :: Assertion
+case_RealsPrinted = do
+    let model = [ "a -> real", "b -> double ?", "c -> real := 2.5", "[ a.dref = 1.5 ]", "[ some b => b.dref > a.dref * 2 ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    forM_ [False, True] $ \core' -> do
+      x <- explicit core' model
+      all (`isInfixOf` x) ["0..* a -> real 1..1", "0..* b -> double 0..1", "[a.dref = 1.5]"] @? ("reals missing (core: " ++ show core' ++ "):\n" ++ x)
+      y <- explicit core' (lines x)
+      x == y @? ("Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y)
+
+-- | An abstract clafer that nothing needs stays in both explicit models and the JSON IR, which
+--   print the model as written; the Alloy and Choco outputs leave it out to solve less, unless
+--   it is kept (-k).
+case_UnusedAbstractsKept :: Assertion
+case_UnusedAbstractsKept = do
+    let model = unlines [ "abstract Unused", "    x ?", "abstract Base", "b : Base" ]
+        output keep core' mode' = case compileOneFragment defaultClaferArgs{mode = [mode'], core = core', keep_unused = keep} model of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup mode' r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has keep core' mode' expected = do
+            x <- output keep core' mode'
+            (expected `isInfixOf` x) == True @? (show (mode', core', keep) ++ ": " ++ expected ++ " not in\n" ++ x)
+        lacks keep mode' unexpected = do
+            x <- output keep False mode'
+            not (unexpected `isInfixOf` x) @? (show (mode', keep) ++ ": " ++ unexpected ++ " in\n" ++ x)
+    has False False Clafer "abstract 0..* Unused 0..* {\n  0..* x 0..1 {}\n}"
+    has False True Clafer "abstract 0..* Unused 0..* {\n  0..* x 0..1 {}\n}"
+    has False False JSON "Unused"
+    has False True JSON "Unused"
+    lacks False Alloy "Unused"
+    lacks False Choco "Unused"
+    has True False Alloy "abstract sig Unused"
+    has True False Choco "Unused"
+
+-- | The JSON IR is the rich IR, or with --core the core IR that the backends get.
+case_JsonRichAndCore :: Assertion
+case_JsonRichAndCore = do
+    let model = [ "enum Color = red | green", "light -> Color", "p ?", "q ?", "r ?"
+                , "Box ?", "    on ?", "    off ?", "    x -> integer := 3", "    [ on --> off ]"
+                , "[ never p between q and r ]" ]
+        json core' = case compileOneFragment defaultClaferArgs{mode = [JSON], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup JSON r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- json core'
+            (expected `isInfixOf` x) @? (expected ++ " not in the JSON IR (core: " ++ show core' ++ ")")
+        hasNot core' unexpected = do
+            x <- json core'
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in the JSON IR (core: " ++ show core' ++ ")")
+    has False "\"_op\":\"never between\""
+    has False "\"_op\":\"-->\""
+    has False "\"_enum\":true"
+    has False "IEInitializer"
+    hasNot True "\"_op\":\"never between\""
+    hasNot True "\"_op\":\"-->\""
+    hasNot True "\"_enum\":true"
+    hasNot True "IEInitializer"
+    has True "\"_op\":\"U\""
+    has True "\"_op\":\"previous\""
+    hasNot True "\"_op\":\"initially\""
+
+-- | The initializers stay as written in the rich explicit model and are lowered to LTL in the
+--   core; a per-instance := whose value has temporal operators is evaluated in the parent's
+--   context when the instance appears, which the core says with the past-time operator
+--   previous (gsdlab/clafer#127, doc/rich-and-core-explicit.md).
+case_CoreInitializers :: Assertion
+case_CoreInitializers = do
+    let model = [ "P ?", "    b ?", "    x -> integer ? := 1", "    y -> integer = 2"
+                , "    xs -> integer * := 1, 2", "    t -> integer * := if (X some b) then 1 else 2"
+                , "    z -> integer := if (X some b) then 1 else 2"
+                , "abstract Val -> integer := 1", "v : Val"
+                , "abstract Vs -> integer * := 3", "vs : Vs"
+                , "[ G some P ]" ]
+        explicit core' = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines model) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' expected = do
+            x <- explicit core'
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        hasNot core' unexpected = do
+            x <- explicit core'
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+    -- rich: as written, with the clocks of := (kbak/clafer-semantics#194)
+    has False "0..* x -> int 0..1 := each 1 {}"
+    has False "0..* y -> int 1..1 = 2 {}"
+    has False "0..* xs -> int 0..* := together 1 ++ 2 {}"
+    has False "abstract 0..* Val -> int 0..* := each 1 {}"
+    has False "abstract 0..* Vs -> int 0..* := together 3 {}"
+    -- core: per instance, a fixed value, parent birth, time zero
+    has True "0..* x -> int 0..1 {\n    [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
+    has True "[(some this.y) => (this.y.dref = 2)]"
+    has True "[((some this) && (!(previous (some this)))) => ((some this.xs) => (this.xs.dref = (1 ++ 2)))]"
+    has True "abstract 0..* Val -> int 0..* {\n  [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
+    has True "[(!(previous (some root))) => ((some Vs) => (Vs.dref = 3))]"
+    -- a collection is initialized at the parent's birth, in the parent's context, so its
+    -- temporal value needs no past-time operator
+    has True "[((some this) && (!(previous (some this)))) => ((some this.t) => (this.t.dref = (if (X (some this.b)) then 1 else 2)))]"
+    -- per instance with a temporal value: in the context of the parent, each instance that
+    -- appears, i.e., was not there in the previous state, has the value (#127)
+    has False "0..* z -> int 1..1 := each if (X (some this.b)) then 1 else 2 {}"
+    has True "[all z_1 : this.z | (!(previous (z_1 in this.z))) => (z_1.dref = (if (X (some this.b)) then 1 else 2))]"
+    has True "0..* z -> int 1..1 {}"
+    hasNot True ":="
+    hasNot True "= 2 {}"
+
+-- The written clocks of := (kbak/clafer-semantics#194): := each initializes each instance at its
+-- birth and := together the instances under a parent at its birth (all the instances of a
+-- top-level abstract clafer at time zero), whatever the multiplicity. On a concrete clafer with
+-- more than one instance, := each is one equation for each instance, also in a static model,
+-- not the equation of all the instances together. The rich explicit model writes the clocks.
+case_InitializerClocks :: Assertion
+case_InitializerClocks = do
+    let model = [ "P ?", "    xs -> integer * := each 1", "    x -> integer ? := together 2"
+                , "    ys -> integer 2 := each 3, 4"
+                , "abstract Val -> integer 0..3 := each 5", "v : Val ?"
+                , "abstract Wal -> integer 0..3 := together 6", "w : Wal ?" ]
+        temporal = model ++ [ "[ G some P ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+        has core' m expected = do
+            x <- explicit core' m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    forM_ [model, temporal] $ \m -> mapM_ (has False m)
+      [ "0..* xs -> int 0..* := each 1 {}", "0..* x -> int 0..1 := together 2 {}"
+      , "0..* ys -> int 2..2 := each 3 ++ 4 {}", "abstract 0..* Val -> int 0..3 := each 5 {}"
+      , "abstract 0..* Wal -> int 0..3 := together 6 {}" ]
+    -- static: each instance on its own, or all together; the abstract := each has a value with
+    -- at most one element, so the equation of all its instances is the same
+    mapM_ (has True model)
+      [ "[all xs_1 : this.xs | xs_1.dref = 1]", "[(some this.x) => (this.x.dref = 2)]"
+      , "[all ys_1 : this.ys | ys_1.dref = (3 ++ 4)]", "[(some Val) => (Val.dref = 5)]"
+      , "[(some Wal) => (Wal.dref = 6)]" ]
+    -- temporal: at each instance's birth, at the parent's birth, at time zero
+    mapM_ (has True temporal)
+      [ "0..* xs -> int 0..* {\n    [((some this) && (!(previous (some this)))) => (this.dref = 1)]"
+      , "[((some this) && (!(previous (some this)))) => ((some this.x) => (this.x.dref = 2))]"
+      , "0..* ys -> int 2..2 {\n    [((some this) && (!(previous (some this)))) => (this.dref = (3 ++ 4))]"
+      , "abstract 0..* Val -> int 0..* {\n  [((some this) && (!(previous (some this)))) => (this.dref = 5)]"
+      , "[(!(previous (some root))) => ((some Wal) => (Wal.dref = 6))]" ]
+    -- both explicit models compile to themselves
+    forM_ [model, temporal] $ \m -> forM_ [False, True] $ \core' -> do
+      x <- explicit core' m
+      y <- explicit core' (lines x)
+      x == y @? ("Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y)
+
+-- The support limits of the initializers (#126, kbak/clafer-semantics#170): a per-instance :=
+-- of an abstract clafer needs a value with at most one element, and on an abstract clafer
+-- with :=, a multiplicity other than * has no meaning. Every mode rejects them, also the rich
+-- explicit model, which would otherwise print them as supported forms, in static and temporal
+-- models, also for an abstract clafer that nothing extends. A single reference with several
+-- values is a warning.
+case_InitializerDiagnostics :: Assertion
+case_InitializerDiagnostics = do
+    let
+        temporal = "[ G some v ]\n"
+        compileIn modes' core' = compileOneFragment defaultClaferArgs{mode = modes', core = core'}
+        allModes = [ ([Clafer], False), ([Clafer], True), ([JSON], False), ([JSON], True), ([Alloy], False) ]
+        rejected expected model' = forM_ [ "", temporal ] $ \t -> forM_ allModes $ \(modes', core') ->
+          case compileIn modes' core' (model' ++ t) of
+            Left errs' -> (expected `isInfixOf` show errs') @? "Unexpected errors for\n" ++ model' ++ t ++ show errs'
+            Right _ -> assertFailure $ "Compiled in " ++ show (modes', core') ++ ":\n" ++ model' ++ t
+        -- the rich and the core explicit model compile to themselves
+        admitted model' = forM_ [ "", temporal ] $ \t -> forM_ [False, True] $ \core' -> do
+          let explicit m = case compileIn [Clafer] core' m of
+                Right r -> Right $ outputCode $ fromJust $ Map.lookup Clafer r
+                Left errs' -> Left errs'
+          case explicit (model' ++ t) of
+            Right x -> either (const Nothing) Just (explicit x) == Just x @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ either show id (explicit x)
+            Left errs' -> assertFailure $ "Rejected:\n" ++ model' ++ t ++ show errs'
+        warnings model' = case compileIn [Clafer] False model' of
+          Right r -> statistics $ fromJust $ Map.lookup Clafer r
+          Left errs' -> show errs'
+        scalar = "its initial value, which must have at most one element"
+        scalarValue = "could not be established for"
+        bound = "requires an explicit clock"
+        several = "is a single reference, which cannot equal the several values"
+        severalEach = "each instance of xs is a single reference"
+    -- scalar admission
+    rejected scalar "abstract Val -> integer := 1, 2\nv : Val\n"
+    rejected scalar "abstract Val -> integer := 1, 2\nv ?\n"
+    rejected (scalarValue ++ " 'pool.dref'") "pool ->> integer *\n[ #pool <= 1 ]\nabstract Val -> integer := pool.dref\nv : Val\n"
+    rejected scalar "P *\n  q -> integer\nabstract Val -> integer := P.q.dref\nv : Val\n"
+    mapM_ (admitted . (++ "\nv : Val\n"))
+      [ "abstract Val -> integer := 1"
+      , "abstract Val -> integer := 1, 1"
+      , "seed -> integer ?\nabstract Val -> integer := seed.dref"
+      , "pool ->> integer *\nabstract Val -> integer := pool.dref ** 1"
+      , "abstract Val -> integer := 1 / 0"
+      , "P\n  q -> integer\nabstract Val -> integer := P.q.dref + 1"
+      , "seed ?\nabstract Val -> integer := if some seed then 1 else 2"
+      , "pool -> integer *\nabstract Val -> integer := #pool"
+      -- a collection initializer, which initializes all the instances together
+      , "abstract Val -> integer * := 1, 2"
+      , "abstract Val -> integer 0..* := 1, 2"
+      -- = is not an initial value, and its multiplicity is the one of the instances
+      , "abstract Val -> integer = 1, 2"
+      ]
+    -- the multiplicity of an abstract clafer with :=, as written
+    forM_ ["?", "1", "2", "1..*", "+", "0..3"] $ \m -> do
+      rejected ("the top-level abstract clafer Val with the multiplicity " ++ m ++ " " ++ bound) ("abstract Val -> integer " ++ m ++ " := 1\nv : Val\n")
+      -- with an explicit clock, every multiplicity (kbak/clafer-semantics#194), with the scalar
+      -- admission of a per-instance := of an abstract clafer
+      admitted $ "abstract Val -> integer " ++ m ++ " := each 1\nv : Val\n"
+      admitted $ "abstract Val -> integer " ++ m ++ " := together 1, 2\nv : Val\n"
+      rejected scalar $ "abstract Val -> integer " ++ m ++ " := each 1, 2\nv : Val\n"
+    -- an explicit clock overrides the shorthand of the multiplicity
+    mapM_ (admitted . (++ "\nv : Val\n"))
+      [ "abstract Val -> integer := together 1, 2", "abstract Val -> integer * := each 1" ]
+    rejected scalar "abstract Val -> integer * := each 1, 2\nv : Val\n"
+    -- the multiplicity of a nested abstract clafer is not limited (only * is a clock there,
+    -- #129); its per-instance := has the same scalar admission, in the parent's context
+    let nested m = "abstract Base\n  q -> integer\n  " ++ m ++ "\nv : Base\n  x : Base.Val\n"
+    admitted $ nested "abstract Val -> integer ? := 1"
+    admitted $ nested "abstract Val -> integer := this.q.dref"
+    rejected scalar $ nested "abstract Val -> integer := 1, 2"
+    -- a single reference with several values
+    (several `isInfixOf` warnings "P\n  x -> integer ? := 1, 2\n") @? "No warning for := 1, 2"
+    ("initializer '='" `isInfixOf` warnings "P\n  x -> integer ? = 1, 2\n") @? "No warning for = 1, 2"
+    (several `isInfixOf` warnings "P\n  x -> integer ? := together 1, 2\n") @? "No warning for := together 1, 2"
+    -- each instance with several values (kbak/clafer-semantics#194)
+    (severalEach `isInfixOf` warnings "P\n  xs -> integer * := each 1, 2\n") @? "No warning for := each 1, 2"
+    mapM_ (\m -> not (several `isInfixOf` warnings m || severalEach `isInfixOf` warnings m) @? "Warning for\n" ++ m)
+      [ "P\n  x -> integer ? := 1, 1\n", "P\n  xs -> integer * := 1, 2\n", "P\n  x -> integer ? := 1\n"
+      , "abstract Val -> integer = 1, 2\nv : Val\n", "P\n  xs -> integer * := together 1, 2\n"
+      , "P\n  xs -> integer * := each 1, 1\n" ]
+
+-- The finality modifiers are constraints of the core (kbak/clafer-semantics#192): the explicit
+-- core model has no modifier left, compiles to itself, and the rich model keeps the modifiers.
+case_FinalityLowered :: Assertion
+case_FinalityLowered = do
+    let model = [ "abstract engine -> integer", "A ?", "    final b ?", "    finalref r -> integer"
+                , "    finaltarget ts -> integer *", "    final m : engine", "final top ?", "[ G some A ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    rich <- explicit False model
+    all (`isInfixOf` rich) ["final 0..* b", "finalref", "finaltarget", "final 0..* m : engine", "final 0..* top"] @? ("modifiers not kept:\n" ++ rich)
+    x <- explicit True model
+    not (any (`isInfixOf` x) ["final", "finalref", "finaltarget"]) @? ("a modifier in the core:\n" ++ x)
+    all (`isInfixOf` x)
+      [ "[all b_1 : this | X (b_1 in this.parent.b)]"
+      , "[all r_1 : this | all r_2 : r_1.dref | X ((some r_1.dref) => (r_2 in r_1.dref))]"
+      , "[all ts_2 : this.dref | (previous (some this.parent)) => (previous (ts_2 in this.parent.ts.dref))]"
+      , "[all m_1 : this | all m_2 : m_1.dref | X ((some m_1.dref) => (m_2 in m_1.dref))]"
+      , "[all top_1 : this | X (top_1 in top)]" ] @? ("constraints missing:\n" ++ x)
+    y <- explicit True (lines x)
+    x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
+
+-- The modifier initial is a constraint of the parent in the core (kbak/clafer-semantics#195):
+-- the parent has an instance in its first state, the model at the start of the trace at the top
+-- level; a subclafer of a top-level abstract clafer inherits it. The rich model keeps it.
+case_InitialLowered :: Assertion
+case_InitialLowered = do
+    let model = [ "initial top ?", "A ?", "    initial b ?", "abstract S", "    initial c ?", "T : S ?"
+                , "abstract initial Ub", "V : Ub ?", "[ G some A ]" ]
+        explicit core' m = case compileOneFragment defaultClaferArgs{mode = [Clafer], core = core'} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Clafer r
+            Left errs' -> assertFailure (show errs') >> return ""
+    rich <- explicit False model
+    all (`isInfixOf` rich) ["initial 0..* top", "initial 0..* b", "abstract initial 0..* Ub"] @? ("modifiers not kept:\n" ++ rich)
+    x <- explicit True model
+    not ("initial " `isInfixOf` x) @? ("a modifier in the core:\n" ++ x)
+    all (`isInfixOf` x)
+      [ "[(!(previous (some root))) => (some top)]", "[(!(previous (some root))) => (some V)]"
+      , "[((some this) && (!(previous (some this)))) => (some this.b)]"
+      , "[((some this) && (!(previous (some this)))) => (some this.c)]" ] @? ("constraints missing:\n" ++ x)
+    y <- explicit True (lines x)
+    x == y @? ("Not a fixpoint:\n" ++ x ++ "\n" ++ y)
+
+-- | The origin of a pattern or a transition names its keywords as written.
+case_RichOpSyntax :: Assertion
+case_RichOpSyntax = do
+    map richOpSyntax ["-->", "-[]->", "-->>", "-[]->>"] @?= ["-->", "-[]->", "-->>", "-[]->>"]
+    map richOpSyntax ["never", "always before", "precede between", "follow after until", "lonce after"]
+      @?= ["never", "always before", "must precede between and", "must follow after until", "lonce after"]
+
+-- With --record-provenance, the explicit core model has the origin of each clafer and constraint
+-- that a lowering made, as a comment with the rich construct and its position, as in the messages; the comments do not
+-- change the core, which compiles to the same core. Without the flag, the core and the JSON have
+-- no origins.
+case_RecordProvenance :: Assertion
+case_RecordProvenance = do
+    let model = [ "enum Color = red | green", "abstract Tools 1..3", "hammer : Tools ?", "initial a ?"
+                , "    final b ?", "x -> integer := 1", "xor m", "    initial idle --> busy", "    busy"
+                , "[ never busy before a ]" ]
+        output mode' provenance m = case compileOneFragment defaultClaferArgs{mode = [mode'], core = True, record_provenance = provenance} (unlines m) of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup mode' r
+            Left errs' -> assertFailure (show errs') >> return ""
+    x <- output Clafer True model
+    all (`isInfixOf` x)
+      [ "] // abstract 1..3, 2:1", "{} // enum, 1:1", "] // final, 5:5", "] // :=, 6:1"
+      , "] // initial, 4:1", "] // initial, 8:5", "] // -->, 8:13", "] // never before, 10:3" ] @? ("origins missing:\n" ++ x)
+    plain <- output Clafer False model
+    not ("//" `isInfixOf` drop 1 (dropWhile (/= '\n') plain)) @? ("an origin without the flag:\n" ++ plain)
+    -- the comments of the origins are what a core with them compiles to without
+    withoutOrigins x == plain @? ("the comments of the origins not removed:\n" ++ withoutOrigins x)
+    withoutOrigins "[x = \"a // b\"]\n" == "[x = \"a // b\"]\n" @? "a comment that is not an origin removed"
+    y <- output Clafer False (lines x)
+    plain == y @? ("The core with origins is not the core:\n" ++ plain ++ "\n" ++ y)
+    json <- output JSON False model
+    not ("Origin" `isInfixOf` json) @? "an origin in the JSON without the flag"
+    jsonWith <- output JSON True model
+    ("\"_eOrigin\"" `isInfixOf` jsonWith && "\"_cOrigin\"" `isInfixOf` jsonWith) @? "no origin in the JSON with the flag"
+
+-- The multiplicity of an abstract clafer bounds the number of all its instances (#129,
+-- kbak/clafer-semantics#193): globally at the top level, per parent instance when nested, in
+-- every state. The rich model keeps it as written, the core has it as a constraint, which
+-- static and temporal Alloy and Choco get, and a subclafer's multiplicity is not checked
+-- against it. Only the authored multiplicity is a bound.
+case_AbstractMultiplicity :: Assertion
+case_AbstractMultiplicity = do
+    let
+        compileIn modes' core' m = compileOneFragment defaultClaferArgs{mode = modes', core = core'} $ unlines m
+        outputOf modes' core' m = case compileIn modes' core' m of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup (fromJust $ listToMaybe modes') r
+            Left errs' -> assertFailure (show errs') >> return ""
+        hasOut modes' core' m expected = do
+            x <- outputOf modes' core' m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        lacksOut modes' core' m unexpected = do
+            x <- outputOf modes' core' m
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+        tools = [ "abstract Tools 3..6", "hammer : Tools 4", "saw : Tools 4" ]
+        nested = [ "abstract Base", "    abstract Val ?", "P : Base 2", "    x : Base.Val ?", "    y : Base.Val ?" ]
+    -- no refinement error, although each subclafer has more instances than the bound allows together
+    hasOut [Clafer] False tools "abstract 0..* Tools 3..6 {}"
+    hasOut [Clafer] True tools "[((#Tools) >= 3) && ((#Tools) <= 6)]"
+    hasOut [Clafer] True tools "abstract 0..* Tools 0..* {}"
+    hasOut [Alloy] False tools "fact { ((#Tools) >= 3) && ((#Tools) <= 6) }"
+    hasOut [Choco] False tools "Constraint(and(greaterThanEqual(card(global($Tools)), constant(3)), lessThanEqual(card(global($Tools)), constant(6))));"
+    -- in every state of a temporal model
+    hasOut [Alloy] False (tools ++ ["[ G some hammer ]"]) "fact { always (((#alive_Tools) >= 3) && ((#alive_Tools) <= 6)) }"
+    -- per parent instance: the explicit core keeps the multiplicity of a nested abstract
+    -- clafer (AbstractMultiplicity.nested in the semantics), the backends get a constraint
+    hasOut [Clafer] True nested "abstract 0..* Val 0..1 {}"
+    lacksOut [Clafer] True nested "#this.Val"
+    hasOut [Alloy] False nested "(#(this.@r_Val)) <= 1"
+    -- both explicit models compile to themselves
+    forM_ [tools, nested] $ \m -> forM_ [False, True] $ \core' -> do
+        x <- outputOf [Clafer] core' m
+        y <- outputOf [Clafer] core' (lines x)
+        x == y @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y
+    -- without a multiplicity, no bound; an unused abstract clafer has no instances, which is no bound
+    lacksOut [Clafer] True [ "abstract Tools", "hammer : Tools 4" ] "#Tools"
+    lacksOut [Clafer] True [ "abstract Tools", "b ?" ] "#Tools"
+    -- an unused abstract clafer with a lower bound is kept, and the bound leaves no instance
+    hasOut [Clafer] True [ "abstract Tools 2", "b ?" ] "[(#Tools) = 2]"
+    -- the scope leaves room for the upper bound, which a subclafer may reach alone
+    hasOut [Alloy] False [ "abstract Tools 3..6", "hammer : Tools *" ] "6 hammer"
+
+-- The simple scope analysis reads the rich IR: the upper bounds of the abstract clafers, which
+-- bound their subclafers, globally or per parent instance; the counting constraints; the set
+-- references to a target that the multiplicities bound. The temporal Alloy output encodes the
+-- literals of an enumeration as constants.
+case_RichScopes :: Assertion
+case_RichScopes = do
+    let
+        outputOf m = case compileOneFragment defaultClaferArgs{mode = [Alloy]} $ unlines m of
+            Right r -> return $ outputCode $ fromJust $ Map.lookup Alloy r
+            Left errs' -> assertFailure (show errs') >> return ""
+        runLine m = do
+            x <- outputOf m
+            return $ fromMaybe "" $ find ("run show" `isPrefixOf`) $ lines x
+        scopes m expected = do
+            l <- runLine m
+            forM_ expected $ \e -> (e `isInfixOf` l) @? (e ++ " not in: " ++ l)
+        has m expected = do
+            x <- outputOf m
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+        lacks m unexpected = do
+            x <- outputOf m
+            not (unexpected `isInfixOf` x) @? (unexpected ++ " in\n" ++ x)
+    -- the upper bound of a top-level abstract clafer, also for the abstract clafer itself
+    scopes [ "abstract Tools 3..6", "hammer : Tools *", "saw : Tools *" ] [ "6 Tools", "6 hammer", "6 saw" ]
+    scopes [ "abstract Tools 3..6", "hammer : Tools 0..2", "saw : Tools 1..5" ] [ "6 Tools", "2 hammer", "5 saw" ]
+    -- per parent instance for a nested abstract clafer
+    scopes [ "abstract Shop", "    abstract Tools 2..4", "    hammer : Tools *", "s1 : Shop", "s2 : Shop" ] [ "8 Tools", "8 hammer" ]
+    -- counting constraints, also with the number first and in a conjunction
+    scopes [ "A *", "[ #A > 4 ]", "B *", "    c ?", "[ 3 <= #B.c && #B >= 2 ]" ] [ "5 A", "3 B", "3 c" ]
+    -- a set reference to a bounded target, not a bag, nor a reference to an unbounded target
+    scopes [ "enum Color = red | green | blue", "Car 2", "    paint -> Color 0..10", "    tint ->> Color 0..10" ]
+           [ "6 paint", "20 tint" ]
+    scopes [ "Gs *", "Car 2", "    paint -> Gs 0..10" ] [ "20 paint" ]
+    -- the subclafers of an abstract clafer may share targets (#125); a count through a reference
+    -- counts targets
+    scopes [ "Target 2", "abstract Ref -> Target", "r : Ref 2", "a : Ref", "c : Ref", "[ #r.dref = 2 ]" ] [ "4 Ref" ]
+    -- the literals of an enumeration are constants in the temporal Alloy output
+    let enum = [ "enum Color = red | green", "Car", "    color -> Color", "    [ color = red => X color = green ]" ]
+    has enum "one sig red extends Color"
+    has enum "fun alive_red : set red { red }"
+    has enum "r_red : set red"
+    lacks enum "p_red"
+    lacks enum "red_1"
+
+-- The past-time operators (#127): previous, once, historically, since and triggered are core
+-- operators, which both explicit models print as written; their keywords are reserved; a model
+-- with them is temporal; in the temporal Alloy output, they are Alloy's operators at the top
+-- level and in the context of a top-level clafer, and look back only in the current lifetime of
+-- the parent otherwise; their negations are their duals.
+case_PastOperators :: Assertion
+case_PastOperators = do
+    let
+        pastModel = [ "a ?", "b ?", "Q *", "    P ?", "        c ?", "        d ?"
+                , "        [ G (c => previous d) ]", "        [ G !(once c) ]", "        [ G (c since d) ]"
+                , "[ G (a => previous b) ]", "[ G (historically a || a since b) ]", "[ G (a triggered b) ]"
+                , "[ G !(previous a) ]", "[ G !(a since b) ]", "[ G some Q ]" ]
+        compileIn modes' core' m = compileOneFragment defaultClaferArgs{mode = modes', core = core'} $ unlines m
+        output modes' core' m = case compileIn modes' core' m of
+            Right r -> return $ fromJust $ Map.lookup (fromJust $ listToMaybe modes') r
+            Left errs' -> assertFailure (show errs') >> return NoCompilerResult{reason = ""}
+        hasIn modes' core' expected = do
+            x <- outputCode <$> output modes' core' pastModel
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    -- the explicit models, as written, and fixpoints
+    forM_ [False, True] $ \core' -> do
+        hasIn [Clafer] core' "[G ((some a) => (previous (some b)))]"
+        hasIn [Clafer] core' "[G ((historically (some a)) || ((some a) since (some b)))]"
+        hasIn [Clafer] core' "[G ((some a) triggered (some b))]"
+        hasIn [Clafer] core' "[G (!(once (some this.c)))]"
+        x <- outputCode <$> output [Clafer] core' pastModel
+        y <- outputCode <$> output [Clafer] core' (lines x)
+        x == y @? "Not a fixpoint (core: " ++ show core' ++ "):\n" ++ x ++ "\n" ++ y
+    hasIn [JSON] True "\"_op\":\"previous\""
+    -- the top level, and a clafer whose parent is not the root, with the negations as duals
+    hasIn [Alloy] False "fact { always (always ((some alive_a) => (before (some alive_b)))) }"
+    hasIn [Alloy] False "fact { always (always (not before not (!(some alive_a)))) }"
+    hasIn [Alloy] False "fact { always (always ((!(some alive_a)) triggered (!(some alive_b)))) }"
+    hasIn [Alloy] False "before (some self_.(@p_P :> alive_Q) and (some self_.@r_d))"
+    hasIn [Alloy] False "not (some self_.(@p_P :> alive_Q) since (some self_.(@p_P :> alive_Q) and not (!(some self_.@r_c))))"
+    hasIn [Alloy] False "((some self_.(@p_P :> alive_Q) and (some self_.@r_c)) since (some self_.(@p_P :> alive_Q) and (some self_.@r_d)))"
+    -- a temporal pastModel: no Choco output
+    choco <- output [Choco] False pastModel
+    case choco of
+      NoCompilerResult{} -> return ()
+      _ -> assertFailure "Choco output of a pastModel with past-time operators"
+    -- the keywords are reserved
+    forM_ ["previous", "once", "historically", "since", "triggered"] $ \k ->
+      case compileIn [Clafer] False [k ++ " ?"] of
+        Left _ -> return ()
+        Right _ -> assertFailure $ "A clafer named " ++ k ++ " compiled"
+
 -- The value of an initializer with temporal operators is evaluated in the context of the parent
--- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
--- guard, and it navigates from the parent, also after the parent disappeared.
+-- (#123), where the initializer is a constraint (#127): its obligations are bounded by the parent
+-- of the parent, P, and an instance of x appears when it was not there in the previous state of
+-- that lifetime. Without temporal operators, the value is the initial value in the context of x.
 case_InitialValueTemporalContext :: Assertion
 case_InitialValueTemporalContext = do
     let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
                       , "[ initially (some P.Box && X no P.Box) ]" ]
-    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x :> alive_Box)).@r_flag))"
-    hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
-    -- without temporal operators, the value is the same as before
+    hasAlloy (model "X (some flag)") "fact { all self_ : Box | always (self_ in alive_Box implies (all  x_1 : self_.@r_x | (before (some self_.(@p_Box :> alive_P) and (x_1 in (self_.@r_x)))) || ((x_1.@x_ref) = ((after (not some self_.(@p_Box :> alive_P) or (some self_.@r_flag))) => 1 else 2)))) }"
+    hasAlloy (model "initially (some flag)") "((((some (self_ & alive_Box)) && (!(before (some self_.(@p_Box :> alive_P) and (some (self_ & alive_Box)))))) => (some self_.@r_flag)) => 1 else 2)"
     hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

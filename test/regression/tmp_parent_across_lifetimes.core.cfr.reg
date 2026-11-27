@@ -1,0 +1,8 @@
+//# OPTIONS --explicit --core --tl=10
+0..* box 2..2 {
+  0..* item 0..1 {}
+}
+[(!(previous (some root))) => (some box.item)]
+[(!(previous (some root))) => (all i : box.item | X ((no (i ** box.item)) && (X (some (i ** box.item)))))]
+
+assert [all b : box | all i : b.item | G ((some (i ** box.item)) => (some (i ** b.item)))]

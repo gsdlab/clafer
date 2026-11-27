@@ -107,7 +107,7 @@ import qualified Data.Map as Map
 import           Data.Maybe
 import           Data.String.Conversions
 import           System.Exit
-import           System.FilePath (dropExtension, takeBaseName)
+import           System.FilePath (dropExtension, takeBaseName, takeFileName)
 import           System.IO
 import           System.Process (readProcessWithExitCode, system)
 import           System.Environment (getExecutablePath)
@@ -135,6 +135,10 @@ import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.AbstractMultiplicity (Bounds (..), lowerAbstractBounds)
+import           Language.Clafer.Intermediate.Core (Semantics (..), enumLiterals, forgetOrigins, lowerToCore, richConstructs)
+import           Language.Clafer.Intermediate.Finality (staticClafers)
+import           Language.Clafer.Intermediate.InitializerChecks
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
@@ -258,8 +262,8 @@ save args'=
       liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
       liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
       -- the explicit form's scope file: every scope chocosolver solves it with
-      liftIO $ when (meta_data args' && extension == "des.cfr") $ writeFile (f ++ ".des.cfr-scope") $
-        snd $ genExplicitModule (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
+      liftIO $ when (meta_data args' && extension `elem` ["des.cfr", "core.cfr"]) $ writeFile (f ++ "." ++ extension ++ "-scope") $
+        snd $ genExplicitModule False (const "") (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
       return f'
     saveResult _ _ NoCompilerResult { reason } = do
       liftIO $ putStrLn reason
@@ -282,11 +286,7 @@ save args'=
            alloyResult = Map.lookup Alloy resultsMap
            chocoResult = Map.lookup Choco resultsMap
         in
-           if (isNothing alloyResult)
-           then if (isNothing chocoResult)
-                then []
-                else scopesList $ fromJust chocoResult
-           else scopesList $ fromJust alloyResult
+           maybe (maybe [] scopesList chocoResult) scopesList alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
 summary graph result@CompilerResult{} = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
@@ -312,9 +312,9 @@ runValidate args' fo
   | Graph `elem` modes && ".dot" `isSuffixOf` fo = do
     putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
     run $ validateGraph ++ fo
-  | Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo = do
+  | Mode.Clafer `elem` modes && any (`isSuffixOf` fo) [".des.cfr", ".core.cfr"] = do
     putStrLn ("=========== Compiling the explicit model " ++ fo ++ " =============")
-    validateClafer fo
+    validateClafer (core args') fo
   | otherwise = return []
   where
   path = tooldir args' ++ "/"
@@ -323,16 +323,23 @@ runValidate args' fo
     code <- system command
     return [ fo | code /= ExitSuccess ]
 
--- | The explicit model compiles to itself: clafer -m clafer on it prints it (its first line,
---   //# OPTIONS --explicit, gives the options).
-validateClafer :: FilePath -> IO [String]
-validateClafer fo = do
+-- | The position of a construct, as in the messages, but with the name of its file only, without
+--   the folders, which depend on where the compiler runs: @file:line:column@, the line in its
+--   file; @line:column@ without a file.
+originPosition :: [ModelFile] -> Pos -> String
+originPosition files (Pos l c) = let (path, l') = modelPosition files l in (if null path then "" else takeFileName path ++ ":") ++ show l' ++ ":" ++ show c
+
+-- | The explicit model, or its core (--core), compiles to itself: clafer -m clafer on it prints
+--   it (its first line, //# OPTIONS --explicit, gives the options), without the comments of the
+--   origins (--record-provenance), which only the lowering of the model records.
+validateClafer :: Bool -> FilePath -> IO [String]
+validateClafer core' fo = do
   clafer' <- getExecutablePath
   explicit <- readFile fo
-  (code, out, err) <- readProcessWithExitCode clafer' ["-s", "-m", "clafer", "-o", fo] ""
+  (code, out, err) <- readProcessWithExitCode clafer' (["-s", "-m", "clafer", "-o", fo] ++ [ "--core" | core' ]) ""
   case code of
     -- the console output ends with one more newline
-    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') explicit -> return []
+    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') (withoutOrigins explicit) -> return []
                 | otherwise       -> do
                     putStrLn $ "The explicit model does not compile to itself: " ++ fo
                     return [fo]
@@ -345,7 +352,7 @@ validateAlloy :: String -> String
 validateAlloy path = "java --enable-native-access=ALL-UNNAMED -jar \"" ++ path ++ "alloy6.2.0.jar\" exec -c \"*\" -t table -o - "
 
 validateChoco :: String -> String
-validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
+validateChoco path = "java -jar \"" ++ path ++ "clafersg.jar\" -v --file "
 
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
@@ -438,8 +445,13 @@ parse =
     let allTokens = myLexer model'
     let (parseableTokens, otherTokens') = partition isParseable allTokens
     tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout otherTokens' parseableTokens else return parseableTokens
-    return (pModule tokens2, otherTokens')
+    return (atEnd tokens2 $ pModule tokens2, otherTokens')
     where
+      -- a syntax error at the end of the model is after its last token
+      atEnd tokens' (Bad (Pos 0 0) m) = case [ (l, c + length (prToken t)) | t@(PT (Pn _ l c) _) <- tokens', l > 0 ] of
+        [] -> Bad (Pos 1 1) m
+        ends -> let (l, c) = last ends in Bad (Pos (toInteger l) (toInteger c)) m
+      atEnd _ result = result
       isParseable (PT _ (T_PosLineComment _))  = False
       isParseable (PT _ (T_PosBlockComment _)) = False
       isParseable (PT _ (T_PosAlloy _))        = False
@@ -456,12 +468,24 @@ compile :: Monad m => IModule -> ClaferT m ()
 compile desugaredMod = do
     env <- getEnv
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) clafersWithKeyWords :: CErr Span)
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ "The model contains clafers with keywords as names in the following places:\n" ++ clafersWithKeyWords :: CErr Span)
+    -- the multiplicities of the abstract clafers with :=, which have no meaning (#126)
+    ast' <- getAst
+    -- an explicit model writes the clock of each := (each or together), as chocosolver requires
+    let clockless = if explicit_model (args env) then clocklessInitializers ast' else []
+    unless (null clockless) $ throwErrs clockless
+    let unsupportedBounds = unsupportedInitializerBounds ast'
+    unless (null unsupportedBounds) $ throwErrs unsupportedBounds
     ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
+    -- a model that declares itself the core in its first line (//# OPTIONS --explicit --core) has
+    -- no rich construct, as in chocosolver; --core on the command line only asks for the core
+    let richInCore = [ SemanticErr s $ "The core has no " ++ what ++ ": the model declares itself the core (--core)"
+                     | declaresCore env, (what, s) <- richConstructs imodule ]
+    unless (null richInCore) $ throwErrs richInCore
 
     let spanList = foldMapIR gt1 imodule
-    when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) spanList :: CErr Span)
+    when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ "The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n" ++ spanList :: CErr Span)
     let unsatisfiableGroups' = unsatisfiableGroups imodule
     unless (null unsatisfiableGroups') $ throwErrs unsatisfiableGroups'
     putEnv $ env{ cIr = Just ir }
@@ -473,8 +497,16 @@ compile desugaredMod = do
         else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) IClaferModifiers{_abstract=False} _ _ _ _ _ _ (Just (_, m)) _ _)) = if m > 1 || m < 0 then "Line " ++ show l ++ " column " ++ show c ++ "\n" else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) IClaferModifiers{_abstract=False} _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if m > 1 || m < 0 then "Line " ++ show l ++ " column " ++ show c ++ "\n" else ""
       gt1 _ = ""
+      -- the options of the first line of the model, the last file (or the text of the fragments
+      -- when the files are not known), with both --explicit and --core
+      declaresCore env' = case reverse (inputFiles env') of
+        ModelFile _ text : _ -> declares text
+        [] -> declares $ concat $ modelFrags env'
+      declares text = case fileOptions text of
+        Right options -> explicit_model options && core options
+        Left _ -> False
 
 
 -- | The spans of the JSON output in the files of the model:
@@ -607,10 +639,27 @@ generate =
       (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
+      -- the core of the model, with the bounds of all the abstract clafers as constraints (#129),
+      -- since the backends read the multiplicity of a clafer as the number of its own instances
+      semantics' = if staticClaferSubset then Static else Temporal
+      -- the model that the solvers get: without the abstract clafers that nothing needs, unless
+      -- they are kept (-k), an optimization for solving, which the explicit models do not make
+      solvedModule = if keep_unused cargs then iModule else removeUnusedAbstracts iModule
+      coreModule = lowerAbstractBounds AllBounds $ lowerToCore semantics' solvedModule
+      chocoModule = lowerAbstractBounds AllBounds $ lowerToCore Static solvedModule
+      -- the explicit core keeps the multiplicities of the nested abstract clafers
+      explicitCore = lowerAbstractBounds TopLevelBounds $ lowerToCore semantics' iModule
+      -- the explicit model and the JSON IR keep the modeling intent; with --core, the explicit
+      -- core
+      explicitModule
+        | core cargs = if record_provenance cargs then explicitCore else forgetOrigins explicitCore
+        | otherwise = iModule
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
-      scopes = getScopeStrategy (scope_strategy cargs) iModule
+      -- the scopes of the solvers, and of all the clafers for the scope file of the explicit model
+      scopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts solvedModule
+      explicitScopes = getScopeStrategy (scope_strategy cargs) $ zeroUnusedAbstracts iModule
       -- the scopes are used by the Alloy and Choco outputs only
       scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
                       then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
@@ -619,6 +668,7 @@ generate =
               ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
               ++ (if skip_resolver cargs then "" else showDoubleUnderscoreNames (inputFiles env) iModule)
               ++ showFixedInitialValues (inputFiles env) (fixedInitialValues ast' iModule)
+              ++ showSeveralValues (inputFiles env) (severalValues iModule)
 
     return $ Map.fromList (
         -- result for Alloy
@@ -626,14 +676,19 @@ generate =
          then if hasNoDecimalLiterals && hasNoRealLiterals && hasNoReferenceToDecimal && hasNoReferenceToReal && hasNoProductOperator
               then
                  let
-                    (imod,strMap) = astrModule iModule
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
-                    (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
+                    (imod,strMap) = astrModule $ zeroUnusedAbstracts coreModule
+                    (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule staticsA literalsA, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
                     -- the clafers whose UIDs cannot be Alloy names get names of their own
                     names = alloyNames imod
                     imodA = toAlloyNames names imod
-                    genvA = if Map.null names then genv else genv{uidClaferMap = createUidIClaferMap imodA}
+                    genvA = genv{uidClaferMap = createUidIClaferMap imodA}
                     scopesA = [ (Map.findWithDefault u u names, s) | (u, s) <- scopes ]
+                    -- the static clafers come from the rich IR, whose finality modifiers the core
+                    -- has as constraints
+                    -- the literals of the enumerations, which the core has as clafers
+                    literalsA = map (\u -> Map.findWithDefault u u names) $ enumLiterals solvedModule
+                    staticsA = let (cs, rs) = staticClafers solvedModule; rename u = Map.findWithDefault u u names in (map rename cs, map rename rs)
                     alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats
                  in
@@ -645,7 +700,8 @@ generate =
                        claferEnv  = env,
                        mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
                        stringMap = strMap,
-                       scopesList = scopes
+                       scopesList = scopes,
+                       alloyModule = Just imodA
                       })
                     ]
               else [ (Alloy,
@@ -667,41 +723,37 @@ generate =
                    extension = "json",
                    outputCode = concat
                      [ "{"
-                     , case gatherObjectivesAndAttributes iModule $ astModuleTrace env of
+                     , case gatherObjectivesAndAttributes explicitModule $ astModuleTrace env of
                           Nothing         -> ""
                           Just objectives -> "\"objectives\":" ++ convertString (encode $ spansInFiles (inputFiles env) $ toJSON objectives) ++ ","
                      , "\"iModule\":"
-                     , convertString $ encode $ spansInFiles (inputFiles env) $ toJSON iModule
+                     , convertString $ encode $ spansInFiles (inputFiles env) $ toJSON explicitModule
                      , "}"
                      ],
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
                    stringMap = Map.empty,
-                   scopesList = []
+                   scopesList = [],
+                   alloyModule = Nothing
                   }) ]
           else []
         )
         -- result for Clafer: the explicit form of the model, static or temporal; chocosolver
-        -- solves the static ones
+        -- solves the static ones. Real and double, which no backend solves, are printed as written.
         ++ (if Mode.Clafer `elem` modes
-          then if hasNoRealLiterals && hasNoReferenceToReal
-               then [ (Mode.Clafer,
+          then [ (Mode.Clafer,
                   CompilerResult {
-                   extension = "des.cfr",
-                   outputCode = fst $ genExplicitModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                   -- the explicit core model has an extension of its own
+                   extension = if core cargs then "core.cfr" else "des.cfr",
+                   outputCode = fst $ genExplicitModule (core cargs) (originPosition $ inputFiles env) (explicitModule, genv{uidClaferMap = createUidIClaferMap explicitModule}) explicitScopes (minint cargs, maxint cargs) (decimal_digits cargs)
                                   (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
                    stringMap = Map.empty,
-                   scopesList = scopes
-                  }) ]
-               else [ (Mode.Clafer,
-                  NoCompilerResult {
-                    reason = "Clafer output unavailable because the model contains: "
-                           ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
-                           ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
+                   scopesList = explicitScopes,
+                   alloyModule = Nothing
                   }) ]
           else []
         )
@@ -715,7 +767,8 @@ generate =
                    claferEnv  = env,
                    mappingToAlloy = [],
                    stringMap = Map.empty,
-                   scopesList = []
+                   scopesList = [],
+                   alloyModule = Nothing
                   }) ]
           else []
         )
@@ -728,7 +781,8 @@ generate =
                      claferEnv  = env,
                      mappingToAlloy = [],
                      stringMap = Map.empty,
-                     scopesList = []
+                     scopesList = [],
+                     alloyModule = Nothing
                   }) ]
           else []
         )
@@ -741,7 +795,8 @@ generate =
                        claferEnv  = env,
                        mappingToAlloy = [],
                        stringMap = Map.empty,
-                       scopesList = []
+                       scopesList = [],
+                       alloyModule = Nothing
                   }) ]
           else []
         )
@@ -751,12 +806,13 @@ generate =
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs) otherTokens',
+                          outputCode = genCModule (chocoModule, genv{uidClaferMap = createUidIClaferMap chocoModule}) scopes (minint cargs, maxint cargs) (decimal_digits cargs) otherTokens',
                           statistics = stats,
                           claferEnv  = env,
                           mappingToAlloy = [],
                           stringMap = Map.empty,
-                          scopesList = scopes
+                          scopesList = scopes,
+                          alloyModule = Nothing
                          })
                       ]
                  else [(Choco,
@@ -781,6 +837,8 @@ data CompilerResult
     , mappingToAlloy :: [(Span, IrTrace)]     -- ^ Map back from Ints used to represent Strings
     , stringMap      :: (Map.Map Int String)  -- ^ scopes generated by scope inference
     , scopesList     :: [(UID, Integer)]
+    , alloyModule    :: Maybe IModule         -- ^ for Alloy, the core module of the code, with the
+                                              --   Alloy names: the pids of 'mappingToAlloy' are its own
     }
   | NoCompilerResult
     { reason :: String
@@ -803,6 +861,9 @@ analyze args' iModule = do
     _ -> return ()
   (rTree, genv) <- liftError $ resolveModule args' iModule
   let tTree = transModule rTree
+  -- the per-instance := of the abstract clafers, also of the ones that nothing extends (#126)
+  let unsupportedValues = unsupportedInitialValues tTree
+  unless (null unsupportedValues) $ throwErrs unsupportedValues
   return (optimizeModule args' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
@@ -820,17 +881,17 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
 showLargeScopes :: [ModelFile] -> [(IClafer, Integer, IClafer, Integer)] -> String
 showLargeScopes files = unlines . map showLargeScope
   where
-  showLargeScope (clafer, scope', target, targetScope) =
+  showLargeScope (claf, scope', target, targetScope) =
     let
-      Span (Pos l c) _ = _cinPos clafer
+      Span (Pos l c) _ = _cinPos claf
       (path, l') = modelPosition files l
-      name = _ident clafer
-      reference = name ++ " -> " ++ _ident target
-      card' = fromMaybe (0, -1) $ _card clafer
+      name = _ident claf
+      refText = name ++ " -> " ++ _ident target
+      card' = fromMaybe (0, -1) $ _card claf
     in
-      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ reference ++ " " ++ showInterval card'
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ refText ++ " " ++ showInterval card'
       ++ " is " ++ show scope' ++ ", since " ++ name ++ " may point to all " ++ show targetScope ++ " " ++ _ident target ++ " in each of its parents."
-      ++ " If fewer suffice, give it an upper bound, e.g., " ++ reference ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
+      ++ " If fewer suffice, give it an upper bound, e.g., " ++ refText ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
 
 -- | Warnings about the expressions compared with, subtracted from or intersected with themselves, at their positions in the files
 showRedundantExps :: [ModelFile] -> [PExp] -> String
@@ -899,7 +960,7 @@ fixedInitialValues ast' iModule =
     initKinds = Map.fromList $ mapMaybe initKind (universeOnOf biplate uniplate ast' :: [Clafer])
     initKind (Clafer s _ _ _ _ _ reference' _ init' _ _) = case init' of
       InitSome _ (InitConstant _) _ -> Just (s, True)
-      InitSome _ (InitDefault _) _  -> Just (s, False)
+      InitSome _ _ _                -> Just (s, False)
       InitEmpty _ | isJust (referenceToConstant reference') -> Just (s, True)
       _ -> Nothing
 
@@ -915,6 +976,27 @@ showFixedInitialValues files = unlines . map showFixedInitialValue
       ++ " does not redefine the initializer '=' of " ++ _ident super' ++ ", which " ++ _ident claf
       ++ " inherits: both hold. Since '=' fixes the value in every state, the ':=' repeats an equal value,"
       ++ " and a different value leaves no instance of " ++ _ident claf ++ "."
+
+-- | Warnings about the single references with an initializer of several values, at their
+--   positions in the files
+showSeveralValues :: [ModelFile] -> [(IClafer, PExp, Bool, Bool)] -> String
+showSeveralValues files = unlines . map showSeveralValue
+  where
+  showSeveralValue (claf, PExp{_inPos = Span (Pos l c) _}, constant, single) =
+    let
+      (path, l') = modelPosition files l
+      kind = if constant then "'='" else "':='"
+      name = _ident claf
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": "
+      ++ (if single
+          then name ++ " is a single reference, which cannot equal the several values of its initializer " ++ kind
+               ++ ", so no instance of " ++ name ++ " can satisfy it. For several values, give "
+               ++ name ++ " the multiplicity *."
+          else "each instance of " ++ name ++ " is a single reference, which cannot equal the several"
+               ++ " values of its initializer ':= each' at its birth, so no instance of " ++ name
+               ++ " can be born. To initialize the instances of " ++ name ++ " under a parent together,"
+               ++ " write ':= together'.")
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

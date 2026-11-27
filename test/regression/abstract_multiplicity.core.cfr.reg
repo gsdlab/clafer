@@ -1,0 +1,16 @@
+//# OPTIONS --explicit --core
+abstract 0..* Tools 0..* {}
+[((#Tools) >= 3) && ((#Tools) <= 6)] // abstract 3..6, abstract_multiplicity.cfr:5:1
+0..* hammer : Tools 1..2 {}
+0..* saw : Tools 0..5 {}
+abstract 0..* Bench 0..* {
+  abstract 0..* Rack 0..1 {}
+}
+0..* Workbench : Bench 2..2 {
+  0..* big : Rack 0..1 {}
+  0..* small : Rack 0..1 {}
+}
+
+assert [((#Tools) >= 3) && ((#Tools) <= 6)]
+assert [(#saw) <= 5]
+assert [all w : Workbench | ((#w.big) + (#w.small)) <= 1]

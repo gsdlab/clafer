@@ -23,7 +23,6 @@
 -- | Generates Alloy code for a Clafer model
 module Language.Clafer.Generator.Alloy (genModule) where
 
-import Control.Applicative
 import Control.Monad.State
 import Data.List
 import Data.Maybe
@@ -69,7 +68,7 @@ header    genEnv    otherTokens' = CString $ unlines
     , ""]
 
 genAlloyEscapes :: [Token]  -> String
-genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
+genAlloyEscapes = concatMap printAlloyEscape
     where
       printAlloyEscape (PT _ (T_PosAlloy code)) =  let
           code' = fromJust $ stripPrefix "[alloy|" code
@@ -85,6 +84,8 @@ genDeclaration genEnv x = case x of
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
   IEGoal _ _ -> CString ""
+  -- the static generator gets the initializers as constraints ("Language.Clafer.Intermediate.Initializers")
+  IEInitializer{} -> error "[bug] Alloy.genDeclaration: an initializer that was not lowered to a constraint"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -202,7 +203,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 refType :: GenEnv -> IClafer -> Concat
-refType    genEnv c = fromMaybe (CString "") (((genType genEnv).getTarget) <$> (_ref <$> _reference c))
+refType    genEnv c = maybe (CString "") (genType genEnv . getTarget . _ref) (_reference c)
 
 
 getTarget :: PExp -> PExp
@@ -261,6 +262,7 @@ of Connection are nested under all Systems anyway.
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
         : (genSetUniquenessConstraint (uidIClaferMap genEnv) c')
     IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
+    IEInitializer{} -> error "[bug] Alloy.getConst: an initializer that was not lowered to a constraint"
 
 
 -- | The targets of the instances of a set reference under one parent are distinct (see
@@ -420,9 +422,10 @@ cardUpperConcat    constraintName = Concat . UpperCard constraintName
 
 
 genExInteger :: String -> Interval -> Integer -> Maybe Result
-genExInteger    element'  (y,z) x  =
-  if (y==0 && z==0) then Just $ concat ["#", element', " = ", "0"] else
-    if x == -1 then Nothing else Just $ concat ["#", element', " <= ", show x]
+genExInteger    element'  (y,z) x
+  | y == 0 && z == 0 = Just $ concat ["#", element', " = ", "0"]
+  | x == -1          = Nothing
+  | otherwise        = Just $ concat ["#", element', " <= ", show x]
 
 
 -- -----------------------------------------------------------------------------
@@ -537,8 +540,6 @@ genOp    op'
   | op' == iSumSet = ["sum temp : "," | temp."]
   | op' == iProdSet = ["prod temp : "," | temp."]
   | op' `elem` unOps  = [op']
-  | op' == iPlus = [".add[", "]"]
-  | op' == iSub  = [".sub[", "]"]
   | op' == iMul = [".mul[", "]"]
   | op' == iDiv = [".div[", "]"]
   | op' == iRem = [".rem[", "]"]
@@ -643,7 +644,7 @@ mapLineCol' :: MonadState AlloyEnv m => Concat -> m ()
 mapLineCol' (CString str) = addCode str
 mapLineCol' c@(Concat srcPos' n) = do
   posStart <- gets lineCol
-  _ <- mapM mapLineCol' n
+  mapM_ mapLineCol' n
   posEnd   <- gets lineCol
 
   {-

@@ -1,0 +1,36 @@
+//# OPTIONS --explicit --core --tl=10
+abstract 1..1 TrafficLight_1 0..* {
+  1..1 on 0..1 {
+    1..1 normal 0..1 {
+      0..* green 0..1 {
+        [(some this) => (X (some this.parent.yellow))] // -->, tmp_TrafficLight1.cfr:6:33
+      }
+      0..* yellow 0..1 {
+        [(some this) => (X (some this.parent.red))] // -->, tmp_TrafficLight1.cfr:7:25
+      }
+      0..* red 0..1 {
+        [(some this) => (X (some this.parent.green))] // -->, tmp_TrafficLight1.cfr:8:25
+      }
+      [((some this) && (!(previous (some this)))) => (some this.green)] // initial, tmp_TrafficLight1.cfr:6:25
+    }
+    1..1 flashing 0..1 {
+      0..* yellow_on 0..1 {
+        [(some this) => (X (some this.parent.yellow_off))] // -->, tmp_TrafficLight1.cfr:10:33
+      }
+      0..* yellow_off 0..1 {
+        [(some this) => (X (some this.parent.yellow_on))] // -->, tmp_TrafficLight1.cfr:11:25
+      }
+      [(some this) => ((some this) U (some this.parent.normal))] // -->>, tmp_TrafficLight1.cfr:9:21
+      [((some this) && (!(previous (some this)))) => (some this.yellow_on)] // initial, tmp_TrafficLight1.cfr:10:25
+    }
+    [(some this) => ((some this) U (some this.parent.off))] // -->>, tmp_TrafficLight1.cfr:4:21
+    [((some this) && (!(previous (some this)))) => (some this.normal)] // initial, tmp_TrafficLight1.cfr:5:17
+  }
+  0..* off 0..1 {
+    [(some this) => (X (some this.parent.on))] // -->, tmp_TrafficLight1.cfr:12:9
+  }
+  [((some this) && (!(previous (some this)))) => (some this.on)] // initial, tmp_TrafficLight1.cfr:4:9
+}
+1..1 t3 : TrafficLight_1 1..1 {
+  [((some this) && (!(previous (some this)))) => ((some this.on) => (((some this) && (some this.on)) U ((some this.on.flashing.yellow_off) && (X ((some this.on.flashing.yellow_on) && (X (some this.on.flashing.yellow_off)))))))] // -->>, tmp_TrafficLight1_t3.cfr:5:18
+}

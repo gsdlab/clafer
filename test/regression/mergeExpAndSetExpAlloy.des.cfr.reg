@@ -1,8 +1,6 @@
 //# OPTIONS --explicit
-[((#numberOne) >= 1) => (numberOne.dref = 1)]
-[((#alice) >= 1) => (alice.dref = "Alice")]
-0..* numberOne -> int 1..1 {}
-0..* alice -> string 1..1 {}
+0..* numberOne -> int 1..1 = 1 {}
+0..* alice -> string 1..1 = "Alice" {}
 0..* likertScaleVal -> int 1..1 {
   [((((this.dref = 1) || (this.dref = 2)) || (this.dref = 3)) || (this.dref = 4)) || (this.dref = 5)]
 }
@@ -14,12 +12,12 @@ abstract 0..* Person 0..* {
   0..* likes -> Person 0..1 {}
 }
 0..* Alice : Person 1..1 {
-  [this.likes.dref = Ella]
   0..* Alice__Head : Person__Head 1..1 {}
+  [this.likes.dref = Ella]
 }
 0..* Ella : Person 1..1 {
-  [(#this.likes) = 0]
   0..* h : Person__Head 1..1 {}
+  [no this.likes]
 }
 0..* heads -> Person__Head 0..* {}
 0..* friend -> Person 2..2 {

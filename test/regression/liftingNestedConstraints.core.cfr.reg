@@ -1,0 +1,13 @@
+//# OPTIONS --explicit --core
+0..* a 0..* {
+  0..* b 0..* {
+    0..* c 0..* {
+      0..* d 0..1 {}
+    }
+    [one this.c.d]
+  }
+  [all x : this.b.c | one x.d]
+}
+[all x : a.b.c | one x.d]
+
+assert [all x : a.b.c | some x.d]

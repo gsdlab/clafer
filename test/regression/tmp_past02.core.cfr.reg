@@ -1,0 +1,13 @@
+//# OPTIONS --explicit --core --tl=10
+0..* Shift 0..1 {
+  0..* Worker 0..1 {
+    0..* alarm 0..1 {}
+    0..* warned 0..1 {}
+    [(some this.warned) <=> (previous (once (some this.alarm)))]
+  }
+}
+[(!(previous (some root))) => (some Shift.Worker.alarm)]
+[(!(previous (some root))) => (X (no Shift))]
+[(!(previous (some root))) => (X (X ((some Shift.Worker) && (no Shift.Worker.alarm))))]
+
+assert [(!(previous (some root))) => (X (X (no Shift.Worker.warned)))]

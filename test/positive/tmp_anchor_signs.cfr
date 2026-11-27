@@ -1,0 +1,23 @@
+// The anchors in positions of both signs (kbak/clafer-semantics#200): a positive anchor is
+// birth => p, a negative one birth && p, so that !(initially p) is initially !p. The birth of a
+// nested context needs its presence: under X (X ...), a child absent in two consecutive states
+// is not born again.
+
+A *
+  b ?
+  c ?
+  [ X (X (initially c)) ]
+  [ !(initially b) ]
+  [ (initially b) => (finally c) ]
+  [ (initially b) <=> (finally c) ]
+  [ (initially b) xor c ]
+  [ if b then initially c else finally c ]
+  [ no x : b | initially c ]
+  [ lone x : b | !(initially c) ]
+  // a value, not a formula: the anchors of a term are classical, positive guards
+  n -> int
+  [ n = (if initially c then 1 else 2) ]
+  [ !(n = (if b then 1 else (if finally c then 2 else 3))) ]
+
+d ?
+[ !(initially d) ]

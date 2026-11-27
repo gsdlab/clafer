@@ -4,7 +4,7 @@ abstract 0..* Person 0..* {
 }
 0..* Team 1..1 {
   0..* Contractor : Person 1..1 {
-    0..* since -> int 1..1 {}
+    0..* hiredIn -> int 1..1 {}
   }
   0..* Member -> Person 2..* {}
 }

@@ -1,0 +1,5 @@
+//# OPTIONS --explicit
+0..* xs ->> int 2..2 := each 1 {}
+0..* ys ->> int 2..2 := together 1 ++ 2 {}
+abstract 0..* Val ->> int 0..3 := each 5 {}
+0..* V : Val 2..2 {}

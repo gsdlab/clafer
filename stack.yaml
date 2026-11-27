@@ -1,5 +1,5 @@
 # for GHC-9.12.4
-resolver: nightly-2026-11-11
+resolver: nightly-2026-11-15
 
 flags:
   # The test suite that compiles the models in test/positive and test/negative.

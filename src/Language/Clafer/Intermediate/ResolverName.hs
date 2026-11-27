@@ -28,8 +28,6 @@ import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Trans.Maybe
 import Control.Monad.State
-import Control.Lens.Plated (transformOn)
-import Data.Data.Lens (biplate)
 import Data.Maybe
 import Data.Function
 import Data.List
@@ -52,7 +50,7 @@ data SEnv
   , aClafers :: [(IClafer, [IClafer])]   -- (constant) abstract clafers (BFS)
   , cClafers :: [(IClafer, [IClafer])]   -- (constant) all concrete clafers (BFS)
   , parentEnv :: Maybe SEnv              -- the environment of the parent of the context, where
-                                         -- the value of an initializer is resolved ('iInitValue')
+                                         -- the equation of an initializer is resolved ('IEInitializer')
   } deriving Show
 
 -- | How a given name was resolved
@@ -80,16 +78,17 @@ defSEnv genv' declarations = env {aClafers = rCl aClafers',
   (aClafers', cClafers') = partition _isAbstract $ clafers env
 
 checkDuplicateSiblings :: IModule -> Resolve [IElement]
-checkDuplicateSiblings tree = let duplicate = checkDuplicateSiblings' $ _mDecls tree
-                              in if (isJust duplicate) then let Just(name,pos') = duplicate in throwError $ SemanticErr pos' $ ("Duplicate name: " ++ name) --error
-                                 else return $ _mDecls tree
+checkDuplicateSiblings tree = case checkDuplicateSiblings' $ _mDecls tree of
+  Just (name, pos') -> throwError $ SemanticErr pos' $ "Duplicate name: " ++ name
+  Nothing -> return $ _mDecls tree
 
 checkDuplicateSiblings' :: [IElement] -> Maybe (String,Span)
 checkDuplicateSiblings' tree =if (isJust check) then check
                               else checkForJust $ map checkDuplicateSiblings' elementsList
   where
-    check = checkListDuplicates $ map (\c -> (_ident c, _cinPos c)) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
-    elementsList = map (\c -> _elements c) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
+    clafers' = [ c | IEClafer c <- tree ]
+    check = checkListDuplicates $ map (\c -> (_ident c, _cinPos c)) clafers'
+    elementsList = map _elements clafers'
 
 
 checkForJust :: [Maybe (String,Span)] -> Maybe (String,Span)
@@ -104,7 +103,7 @@ checkListDuplicates list = checkListDuplicates' $ sortBy (compare `on` fst) list
 
 checkListDuplicates' :: [(String,Span)] -> Maybe (String,Span)
 checkListDuplicates' [] = Nothing
-checkListDuplicates' (_:[]) = Nothing
+checkListDuplicates' [_] = Nothing
 checkListDuplicates' ((a,b):(c,d):rest) = if a == c then
                                     Just (a,b)
                                   else
@@ -144,6 +143,10 @@ resolveElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveClafer env clafer
   IEConstraint isHard' pexp  -> IEConstraint isHard' <$> resolvePExp env pexp
   IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp
+  -- the equation of an initializer, in the context of the parent, where its value is written
+  IEInitializer k s clk pexp -> case parentEnv env of
+    Just penv -> IEInitializer k s clk <$> resolvePExp penv pexp
+    Nothing -> throwError $ SemanticErr (_inPos pexp) "BUG: an initializer outside a clafer"
 
 resolvePExp :: SEnv -> PExp                          -> Resolve PExp
 resolvePExp    env     pexp@PExp{_exp=x} = case x of
@@ -154,17 +157,6 @@ resolvePExp    env     pexp@PExp{_exp=x} = case x of
     return pexp{_exp=exp'}
 
   IFunExp "." _ -> fst <$> resolveNav env pexp True
-  -- the value of an initializer, which the desugarer moved into the context of the clafer
-  -- from that of its parent: it keeps the meaning it has in the context of the parent
-  IFunExp op' [value] | op' == iInitValue -> case parentEnv env of
-    Just penv -> do
-      value' <- fromParent (_inPos value) (context env) <$> resolvePExp penv value
-      -- a value with temporal operators keeps the marker: its obligations are bounded by the
-      -- lifetime of the parent of the parent, and initially and finally refer to the lifetime of
-      -- the parent, as where the value is written (gsdlab/clafer#123); the temporal generator
-      -- evaluates it in the context of the parent ('AlloyLtl')
-      return $ if hasLtlOps value' then pexp{_exp = IFunExp iInitValue [value']} else value'
-    Nothing -> throwError $ SemanticErr (_inPos pexp) "BUG: the value of an initializer outside a clafer"
   IFunExp op' exps' -> do
                          exp' <- IFunExp op' <$> mapM (resolvePExp env) exps'
                          return $ pexp {_exp = exp'}
@@ -174,21 +166,6 @@ resolvePExp    env     pexp@PExp{_exp=x} = case x of
   IReal _ -> return pexp
   IStr _ -> return pexp
   IClaferId{} -> fst <$> resolveNav env pexp True
-
--- | An expression resolved in the context of the parent of the clafer @x@, rewritten for the
---   context of @x@: @this@, the instance of the parent, becomes @this.parent@, or the root if @x@
---   is a top-level clafer. The other names are already resolved to absolute paths or to paths
---   from @this@.
-fromParent :: Span -> Maybe IClafer -> PExp -> PExp
-fromParent pos' ctx = transformOn biplate fromThis
-  where
-  fromThis :: IExp -> IExp
-  fromThis IClaferId{_sident = s} | s == thisIdent = case ctx of
-    Just c | _parentUID c /= rootIdent && _parentUID c /= baseClafer ->
-      IFunExp iJoin [ pExpDefPid pos' $ IClaferId "" thisIdent True (createBind ctx)
-                    , mkPLClaferId pos' parentIdent False (GlobalBind $ _parentUID c) ]
-    _ -> rootIExp
-  fromThis e = e
 
 liftError :: Monad m => Either e a -> ExceptT e m a
 liftError = ExceptT . return
@@ -328,7 +305,7 @@ toTuple c = (_uid c, Just c)
 
 toNav' :: Span -> [(String, Maybe IClafer)] -> IExp
 toNav'    pos'    tuplePath                  =
-  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (createBind cbind)) tuplePath) :: IExp
+  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (maybe False isTopLevel cbind) (createBind cbind)) tuplePath) :: IExp
 
 createBind :: Maybe IClafer -> ClaferBinding
 createBind (Just c) = GlobalBind $ _uid c

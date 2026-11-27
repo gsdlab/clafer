@@ -1,0 +1,17 @@
+//# OPTIONS --explicit --core
+abstract 0..* Course 0..* {
+  0..* assistants -> TA 0..* {}
+}
+abstract 0..* TA 0..* {
+  0..* first -> Course 0..1 {
+    [this.parent in this.dref.assistants.dref]
+  }
+}
+0..* CompilerGradStudent : TA 1..1 {}
+0..* AIGradStudent : TA 1..1 {}
+0..* CompilerCourse : Course 1..1 {}
+0..* MachineLearningCourse : Course 1..1 {}
+[CompilerGradStudent.first.dref = CompilerCourse]
+[AIGradStudent.first.dref = MachineLearningCourse]
+0..* numerOfAssistants -> int 1..1 {}
+[(some numerOfAssistants) => (numerOfAssistants.dref = (#Course.assistants))] // =, top_level_constraints_with_relational_joins.cfr:25:1

@@ -16,10 +16,10 @@ one sig Team
   all disj x, y : this.@r_Member | (x.@Member_ref) != (y.@Member_ref)  }
 
 one sig Contractor extends Person
-{ r_since_1 : one since_1 }
+{ r_hiredIn : one hiredIn }
 
-one sig since_1
-{ since_1_ref : one Int }
+one sig hiredIn
+{ hiredIn_ref : one Int }
 
 sig Member
 { Member_ref : one Person }

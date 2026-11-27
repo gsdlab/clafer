@@ -1,14 +1,14 @@
 //# OPTIONS --explicit --tl=10
 final 0..* a 1..1 {
   final 1..1 b 1..1 {
-    [G (((((#this.d) >= 1) && ((#this.e) = 0)) && (F ((#this.e) >= 1))) => (((#this.c) >= 1) U ((#this.e) >= 1)))]
-    [initially (F ((#this.d) >= 1))]
-    [initially (F ((#this.c) >= 1))]
-    [initially (F ((#this.e) >= 1))]
     0..* c 0..1 {}
     0..* d 0..1 {}
     0..* e 0..1 {}
+    [always (some this.c) between (some this.d) and (some this.e)]
+    [initially (sometime (some this.d))]
+    [initially (sometime (some this.c))]
+    [initially (sometime (some this.e))]
   }
 }
 
-assert [G (((((#a.b.d) >= 1) && ((#a.b.e) = 0)) && (F ((#a.b.e) >= 1))) => (((#a.b.c) >= 1) U ((#a.b.e) >= 1)))]
+assert [always (some a.b.c) between (some a.b.d) and (some a.b.e)]

@@ -1,0 +1,8 @@
+//# OPTIONS --explicit --core --tl=10
+0..* light 0..1 {
+  0..* level -> int 1..1 {
+    [((some this) && (!(previous (some this)))) => (this.dref = 3)] // :=, tmp_initialValue03.cfr:5:5
+  }
+}
+[F ((some light) && (light.level.dref = 5))]
+[F ((no light) && (F (some light)))]

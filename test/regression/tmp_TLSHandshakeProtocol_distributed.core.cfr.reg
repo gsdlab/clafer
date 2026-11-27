@@ -1,0 +1,251 @@
+//# OPTIONS --explicit --core --tl=10
+abstract 0..* Feature 0..* {}
+abstract 0..* FeatureModel 0..* {}
+0..* TLSFeatures : FeatureModel 1..1 {
+  0..* annonymousMode : Feature 0..1 {
+    [all annonymousMode_1 : this | X (annonymousMode_1 in this.parent.annonymousMode)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:31:5
+    [all annonymousMode_1 : this | (previous (some this.parent)) => (previous (annonymousMode_1 in this.parent.annonymousMode))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:31:5
+  }
+  0..* clientAuthentication : Feature 0..1 {
+    [all clientAuthentication_1 : this | X (clientAuthentication_1 in this.parent.clientAuthentication)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:32:5
+    [all clientAuthentication_1 : this | (previous (some this.parent)) => (previous (clientAuthentication_1 in this.parent.clientAuthentication))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:32:5
+  }
+  [(some this.clientAuthentication) => (no this.annonymousMode)]
+  [all TLSFeatures_1 : this | X (TLSFeatures_1 in TLSFeatures)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:30:1
+  [all TLSFeatures_1 : this | (previous (some root)) => (previous (TLSFeatures_1 in TLSFeatures))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:30:1
+}
+abstract 0..* Domain 0..* {}
+abstract 0..* ProtocolVersion 0..* {} // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:1
+0..* SSL2_0 : ProtocolVersion 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:24
+  [all SSL2_0_1 : this | X (SSL2_0_1 in SSL2_0)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:24
+  [all SSL2_0_1 : this | (previous (some root)) => (previous (SSL2_0_1 in SSL2_0))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:24
+}
+0..* SSL3_0 : ProtocolVersion 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:33
+  [all SSL3_0_1 : this | X (SSL3_0_1 in SSL3_0)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:33
+  [all SSL3_0_1 : this | (previous (some root)) => (previous (SSL3_0_1 in SSL3_0))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:33
+}
+0..* TLS1_0 : ProtocolVersion 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:42
+  [all TLS1_0_1 : this | X (TLS1_0_1 in TLS1_0)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:42
+  [all TLS1_0_1 : this | (previous (some root)) => (previous (TLS1_0_1 in TLS1_0))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:42
+}
+0..* TLS1_1 : ProtocolVersion 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:51
+  [all TLS1_1_1 : this | X (TLS1_1_1 in TLS1_1)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:51
+  [all TLS1_1_1 : this | (previous (some root)) => (previous (TLS1_1_1 in TLS1_1))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:51
+}
+0..* TLS1_2 : ProtocolVersion 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:39:60
+  [all TLS1_2_1 : this | X (TLS1_2_1 in TLS1_2)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:60
+  [all TLS1_2_1 : this | (previous (some root)) => (previous (TLS1_2_1 in TLS1_2))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:39:60
+}
+abstract 0..* HandshakeStatus 0..* {} // enum, tmp_TLSHandshakeProtocol_distributed.cfr:41:1
+0..* initiated : HandshakeStatus 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:41:24
+  [all initiated_1 : this | X (initiated_1 in initiated)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:24
+  [all initiated_1 : this | (previous (some root)) => (previous (initiated_1 in initiated))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:24
+}
+0..* completed : HandshakeStatus 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:41:36
+  [all completed_1 : this | X (completed_1 in completed)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:36
+  [all completed_1 : this | (previous (some root)) => (previous (completed_1 in completed))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:36
+}
+0..* failed : HandshakeStatus 1..1 { // enum, tmp_TLSHandshakeProtocol_distributed.cfr:41:48
+  [all failed_1 : this | X (failed_1 in failed)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:48
+  [all failed_1 : this | (previous (some root)) => (previous (failed_1 in failed))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:41:48
+}
+abstract 0..* Port 0..* {}
+abstract 0..* Message 0..* {}
+0..* serverHelloRequestMessage : Message 1..1 {
+  [all serverHelloRequestMessage_1 : this | X (serverHelloRequestMessage_1 in serverHelloRequestMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:48:1
+  [all serverHelloRequestMessage_1 : this | (previous (some root)) => (previous (serverHelloRequestMessage_1 in serverHelloRequestMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:48:1
+}
+0..* serverHelloMessage : Message 1..1 {
+  [all serverHelloMessage_1 : this | X (serverHelloMessage_1 in serverHelloMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:49:1
+  [all serverHelloMessage_1 : this | (previous (some root)) => (previous (serverHelloMessage_1 in serverHelloMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:49:1
+}
+0..* serverCertificateMessage : Message 1..1 {
+  [all serverCertificateMessage_1 : this | X (serverCertificateMessage_1 in serverCertificateMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:50:1
+  [all serverCertificateMessage_1 : this | (previous (some root)) => (previous (serverCertificateMessage_1 in serverCertificateMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:50:1
+}
+0..* serverKeyExchangeMessage : Message 1..1 {
+  [all serverKeyExchangeMessage_1 : this | X (serverKeyExchangeMessage_1 in serverKeyExchangeMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:51:1
+  [all serverKeyExchangeMessage_1 : this | (previous (some root)) => (previous (serverKeyExchangeMessage_1 in serverKeyExchangeMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:51:1
+}
+0..* serverCertificateRequestMessage : Message 1..1 {
+  [all serverCertificateRequestMessage_1 : this | X (serverCertificateRequestMessage_1 in serverCertificateRequestMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:52:1
+  [all serverCertificateRequestMessage_1 : this | (previous (some root)) => (previous (serverCertificateRequestMessage_1 in serverCertificateRequestMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:52:1
+}
+0..* serverHelloDoneMessage : Message 1..1 {
+  [all serverHelloDoneMessage_1 : this | X (serverHelloDoneMessage_1 in serverHelloDoneMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:53:1
+  [all serverHelloDoneMessage_1 : this | (previous (some root)) => (previous (serverHelloDoneMessage_1 in serverHelloDoneMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:53:1
+}
+0..* serverChangeCipherSpecMessage : Message 1..1 {
+  [all serverChangeCipherSpecMessage_1 : this | X (serverChangeCipherSpecMessage_1 in serverChangeCipherSpecMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:54:1
+  [all serverChangeCipherSpecMessage_1 : this | (previous (some root)) => (previous (serverChangeCipherSpecMessage_1 in serverChangeCipherSpecMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:54:1
+}
+0..* serverFinishedMessage : Message 1..1 {
+  [all serverFinishedMessage_1 : this | X (serverFinishedMessage_1 in serverFinishedMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:55:1
+  [all serverFinishedMessage_1 : this | (previous (some root)) => (previous (serverFinishedMessage_1 in serverFinishedMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:55:1
+}
+0..* protocolMismatch : Message 1..1 {
+  [all protocolMismatch_1 : this | X (protocolMismatch_1 in protocolMismatch)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:56:1
+  [all protocolMismatch_1 : this | (previous (some root)) => (previous (protocolMismatch_1 in protocolMismatch))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:56:1
+}
+0..* clientHelloMessage : Message 1..1 {
+  [all clientHelloMessage_1 : this | X (clientHelloMessage_1 in clientHelloMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:59:1
+  [all clientHelloMessage_1 : this | (previous (some root)) => (previous (clientHelloMessage_1 in clientHelloMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:59:1
+}
+0..* clientCertificateMessage : Message 1..1 {
+  [all clientCertificateMessage_1 : this | X (clientCertificateMessage_1 in clientCertificateMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:60:1
+  [all clientCertificateMessage_1 : this | (previous (some root)) => (previous (clientCertificateMessage_1 in clientCertificateMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:60:1
+}
+0..* clientKeyExchangeMessage : Message 1..1 {
+  [all clientKeyExchangeMessage_1 : this | X (clientKeyExchangeMessage_1 in clientKeyExchangeMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:61:1
+  [all clientKeyExchangeMessage_1 : this | (previous (some root)) => (previous (clientKeyExchangeMessage_1 in clientKeyExchangeMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:61:1
+}
+0..* certificateVerifyMessage : Message 1..1 {
+  [all certificateVerifyMessage_1 : this | X (certificateVerifyMessage_1 in certificateVerifyMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:62:1
+  [all certificateVerifyMessage_1 : this | (previous (some root)) => (previous (certificateVerifyMessage_1 in certificateVerifyMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:62:1
+}
+0..* clientChangeCipherSpecMessage : Message 1..1 {
+  [all clientChangeCipherSpecMessage_1 : this | X (clientChangeCipherSpecMessage_1 in clientChangeCipherSpecMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:63:1
+  [all clientChangeCipherSpecMessage_1 : this | (previous (some root)) => (previous (clientChangeCipherSpecMessage_1 in clientChangeCipherSpecMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:63:1
+}
+0..* clientFinishedMessage : Message 1..1 {
+  [all clientFinishedMessage_1 : this | X (clientFinishedMessage_1 in clientFinishedMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:64:1
+  [all clientFinishedMessage_1 : this | (previous (some root)) => (previous (clientFinishedMessage_1 in clientFinishedMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:64:1
+}
+0..* applicationDataMessage : Message 1..1 {
+  [all applicationDataMessage_1 : this | X (applicationDataMessage_1 in applicationDataMessage)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:67:1
+  [all applicationDataMessage_1 : this | (previous (some root)) => (previous (applicationDataMessage_1 in applicationDataMessage))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:67:1
+}
+abstract 0..* Node : Domain 0..* {
+  0..* send : Port -> Message 1..1 {}
+  0..* receive : Port -> Message 1..1 {}
+  0..* protocolversion -> ProtocolVersion 1..* {}
+  0..* certificate 0..1 {
+    0..* signing 0..1 {}
+  }
+}
+abstract 0..* Server : Node 0..* {}
+abstract 0..* Client : Node 0..* {}
+[Server.send.dref = Client.receive.dref]
+[Server.receive.dref = Client.send.dref]
+0..* OurServer : Server 1..1 {
+  [this.protocolversion.dref = ((SSL2_0 ++ SSL3_0) ++ TLS1_2)]
+  [all OurServer_1 : this | X (OurServer_1 in OurServer)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:87:1
+  [all OurServer_1 : this | (previous (some root)) => (previous (OurServer_1 in OurServer))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:87:1
+}
+0..* aClient : Client 1..1 {
+  [some this.certificate]
+  [this.protocolversion.dref = TLS1_2]
+  [all aClient_1 : this | X (aClient_1 in aClient)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:90:1
+  [all aClient_1 : this | (previous (some root)) => (previous (aClient_1 in aClient))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:90:1
+}
+0..* Protocol : Domain 1..1 {
+  0..* client -> aClient 1..1 {
+    [all client_1 : this | X (client_1 in this.parent.client)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:96:5
+    [all client_1 : this | (previous (some this.parent)) => (previous (client_1 in this.parent.client))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:96:5
+    [all client_1 : this | all client_2 : client_1.dref | X ((some client_1.dref) => (client_2 in client_1.dref))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:96:5
+  }
+  0..* server -> OurServer 1..1 {
+    [all server_1 : this | X (server_1 in this.parent.server)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:97:5
+    [all server_1 : this | (previous (some this.parent)) => (previous (server_1 in this.parent.server))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:97:5
+    [all server_1 : this | all server_2 : server_1.dref | X ((some server_1.dref) => (server_2 in server_1.dref))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:97:5
+  }
+  0..* handshakeStatus -> HandshakeStatus 1..1 {}
+  1..1 channel 1..1 {
+    0..* clientHello 0..1 {
+      [this.parent.parent.handshakeStatus.dref = initiated]
+      [this.parent.parent.client.dref.send.dref = clientHelloMessage]
+      [(some this) => (X ((some this.parent.serverResponse) || (some this.parent.fatalError)))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:105:17
+    }
+    1..1 serverResponse 0..1 {
+      [this.parent.parent.handshakeStatus.dref = initiated]
+      [((some this) && (!(previous (some this)))) => ((some this.serverHello) || (some this.mismatch))]
+      0..* mismatch 0..1 {
+        [no (this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)]
+        [this.parent.parent.parent.server.dref.send.dref = protocolMismatch]
+      }
+      0..* serverHello 0..1 {
+        [some (this.parent.parent.parent.client.dref.protocolversion.dref ** this.parent.parent.parent.server.dref.protocolversion.dref)]
+        [this.parent.parent.parent.server.dref.send.dref = serverHelloMessage]
+      }
+      [((some this.serverHello) && (no TLSFeatures.annonymousMode)) => (X (some this.serverCertificate))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:123:15
+      [((some this.serverHello) && (some TLSFeatures.annonymousMode)) => (X (some this.serverKeyExchange))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:124:15
+      0..* serverCertificate 0..1 {
+        [no TLSFeatures.annonymousMode]
+        [this.parent.parent.parent.server.dref.send.dref = serverCertificateMessage]
+      }
+      [((some this.serverCertificate) && (some TLSFeatures.clientAuthentication)) => (X ((some this.serverKeyExchange) || (some this.certificateRequest)))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:129:15
+      [((some this.serverCertificate) && (no TLSFeatures.clientAuthentication)) => (X ((some this.serverKeyExchange) || (some this.serverHelloDone)))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:130:15
+      0..* serverKeyExchange 0..1 {
+        [this.parent.parent.parent.server.dref.send.dref = serverKeyExchangeMessage]
+      }
+      [((some this.serverKeyExchange) && (some TLSFeatures.clientAuthentication)) => (X (some this.certificateRequest))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:134:15
+      [((some this.serverKeyExchange) && (no TLSFeatures.clientAuthentication)) => (X (some this.serverHelloDone))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:135:15
+      0..* certificateRequest 0..1 {
+        [some TLSFeatures.clientAuthentication]
+        [this.parent.parent.parent.server.dref.send.dref = serverCertificateRequestMessage]
+        [(some this) => (X (some this.parent.serverHelloDone))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:138:13
+      }
+      0..* serverHelloDone 0..1 {
+        [this.parent.parent.parent.server.dref.send.dref = serverHelloDoneMessage]
+      }
+    }
+    [((some this.serverResponse) && (!((some this.serverResponse.mismatch) || (some this.serverResponse.serverHelloDone)))) => (X (some this.serverResponse))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:145:11
+    [(some this.serverResponse.mismatch) => (X (some this.fatalError))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:146:11
+    [(some this.serverResponse.serverHelloDone) => (X (some this.clientResponse))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:147:11
+    1..1 clientResponse 0..1 {
+      [this.parent.parent.handshakeStatus.dref = initiated]
+      [((some this) && (!(previous (some this)))) => ((some TLSFeatures.clientAuthentication) => (some this.clientCertificate))]
+      [((some this) && (!(previous (some this)))) => ((no TLSFeatures.clientAuthentication) => (some this.clientKeyExchange))]
+      0..* clientCertificate 0..1 {
+        [some TLSFeatures.clientAuthentication]
+        [this.parent.parent.parent.client.dref.send.dref = clientCertificateMessage]
+        [(some this) => (X (some this.parent.clientKeyExchange))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:155:13
+      }
+      0..* clientKeyExchange 0..1 {
+        [this.parent.parent.parent.client.dref.send.dref = clientKeyExchangeMessage]
+      }
+      [((some this.clientKeyExchange) && ((some TLSFeatures.clientAuthentication) && (some this.parent.parent.client.dref.certificate.signing))) => (X (some this.certificateVerify))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:162:15
+      [((some this.clientKeyExchange) && (!((some TLSFeatures.clientAuthentication) && (some this.parent.parent.client.dref.certificate.signing)))) => (X (some this.clientChangeCipherSpec))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:163:15
+      0..* certificateVerify 0..1 {
+        [some this.parent.parent.parent.client.dref.certificate.signing]
+        [this.parent.parent.parent.client.dref.send.dref = certificateVerifyMessage]
+        [(some this) => (X (some this.parent.clientChangeCipherSpec))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:165:13
+      }
+      0..* clientChangeCipherSpec 0..1 {
+        [this.parent.parent.parent.client.dref.send.dref = clientChangeCipherSpecMessage]
+        [(some this) => (X (some this.parent.clientFinished))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:169:13
+      }
+      0..* clientFinished 0..1 {
+        [this.parent.parent.parent.client.dref.send.dref = clientFinishedMessage]
+      }
+    }
+    [((some this.clientResponse) && (no this.clientResponse.clientFinished)) => (X (some this.clientResponse))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:175:11
+    [(some this.clientResponse.clientFinished) => (X (some this.serverFinish))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:176:11
+    1..1 serverFinish 0..1 {
+      0..* serverChangeCipherSpec 0..1 {
+        [this.parent.parent.parent.handshakeStatus.dref = initiated]
+        [this.parent.parent.parent.server.dref.send.dref = serverChangeCipherSpecMessage]
+        [(some this) => (X (some this.parent.serverFinished))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:179:21
+      }
+      0..* serverFinished 0..1 {
+        [this.parent.parent.parent.server.dref.send.dref = serverFinishedMessage]
+        [this.parent.parent.parent.handshakeStatus.dref = completed]
+      }
+      [((some this) && (!(previous (some this)))) => (some this.serverChangeCipherSpec)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:179:13
+    }
+    [((some this.serverFinish) && (no this.serverFinish.serverFinished)) => (X (some this.serverFinish))] // -[]->, tmp_TLSHandshakeProtocol_distributed.cfr:188:11
+    [(some this.serverFinish.serverFinished) => (X (some this.dataTransfer))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:189:11
+    0..* dataTransfer 0..1 {
+      [this.parent.parent.handshakeStatus.dref = completed]
+      [this.parent.parent.client.dref.send.dref = applicationDataMessage]
+      [(some this) => ((some this) U (some this.parent.clientHello))] // -->>, tmp_TLSHandshakeProtocol_distributed.cfr:192:9
+    }
+    0..* fatalError 0..1 {
+      [this.parent.parent.handshakeStatus.dref = failed]
+      [(some this) => (X (some this))] // -->, tmp_TLSHandshakeProtocol_distributed.cfr:197:9
+    }
+    [((some this) && (!(previous (some this)))) => (some this.clientHello)] // initial, tmp_TLSHandshakeProtocol_distributed.cfr:105:9
+  }
+  [all Protocol_1 : this | X (Protocol_1 in Protocol)] // final, tmp_TLSHandshakeProtocol_distributed.cfr:95:1
+  [all Protocol_1 : this | (previous (some root)) => (previous (Protocol_1 in Protocol))] // final, tmp_TLSHandshakeProtocol_distributed.cfr:95:1
+}

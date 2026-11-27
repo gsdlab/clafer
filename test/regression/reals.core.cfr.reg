@@ -1,0 +1,5 @@
+//# OPTIONS --explicit --core
+0..* rate -> real 1..1 {}
+[rate.dref = 1.99]
+0..* interest -> real 1..1 {}
+[(some interest) => (interest.dref = (100 * rate.dref))] // =, reals.cfr:4:1

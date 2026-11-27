@@ -1,0 +1,38 @@
+//# OPTIONS --explicit --core
+abstract 1..1 root__Bluetooth 0..* {
+  0..* Bluetooth20 0..1 {}
+  0..* Bluetooth21 0..1 {}
+  0..* Bluetooth40 0..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  0..* Connectivity 1..1 {
+    1..1 Connectivity__Bluetooth : root__Bluetooth 1..1 {}
+    0..* GSM 1..1 {}
+    0..* LTE 0..1 {
+      [some this.parent.parent.Battery.LiBattery1400]
+    }
+    0..* WiFi 0..1 {}
+    0..* USB 0..1 {}
+  }
+  1..1 Battery 1..1 {
+    0..* LiBattery1150 0..1 {}
+    0..* LiBattery1400 0..1 {}
+  }
+}
+abstract 0..* LowEndPhone : MobilePhone 0..* {
+  [no this.Connectivity.WiFi]
+}
+abstract 0..* HighEndPhone : MobilePhone 0..* {
+  [(some this.Connectivity.USB) && (some this.Connectivity.WiFi)]
+  0..* QuadCPU 0..1 {}
+}
+0..* Phone1 : MobilePhone 1..1 {
+  [some this.Connectivity.WiFi]
+  [some this.Connectivity.LTE]
+  [some this.Connectivity.Connectivity__Bluetooth.Bluetooth21]
+}
+0..* Phone2 : HighEndPhone 1..1 {
+  [some this.Connectivity.LTE]
+  [some this.Connectivity.Connectivity__Bluetooth.Bluetooth21]
+  [some this.QuadCPU]
+}

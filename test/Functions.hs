@@ -35,7 +35,7 @@ getClafers dir = do
 
 checkClaferExt :: String -> Bool
 checkClaferExt "des.cfr" = True
-checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
+checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) `notElem` ["esd", "eroc"])
     where (txe, eman) = span (/='.') (reverse file')
 
 

@@ -21,7 +21,6 @@ sig b
 , var r_c : set c
 , var r_d : set d
 , var r_e : set e }
-{ always (this in alive_b and after this in alive_b implies (this.@r_e)' = this.@r_e) }
 fun alive_b : set b { a.@r_b }
 fact { always ~@r_b in @p_b
   always @r_b.univ in alive_a }
@@ -50,5 +49,8 @@ sig e
 fun alive_e : set e { b.@r_e }
 fact { always ~@r_e in @p_e
   always @r_e.univ in alive_b }
+
+fact { all self_ : e | always (self_ in alive_e implies (all  e_1 : (self_ & alive_e) | after (not some self_.(@p_e :> alive_b) or (e_1 in ((self_.(@p_e :> alive_b)).@r_e))))) }
+fact { all self_ : e | always (self_ in alive_e implies (all  e_1 : (self_ & alive_e) | (not before (some self_.(@p_e :> alive_b) and not (!(some self_.(@p_e :> alive_b))))) || (before (some self_.(@p_e :> alive_b) and (e_1 in ((self_.(@p_e :> alive_b)).@r_e)))))) }
 
 

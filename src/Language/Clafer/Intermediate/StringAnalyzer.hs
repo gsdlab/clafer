@@ -44,10 +44,10 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements') = do
+astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements' o) = do
     reference'' <- astrReference reference'
     elements'' <- astrElement `mapM` elements'
-    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements''
+    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements'' o
 
 astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
@@ -57,8 +57,9 @@ astrReference (Just (IReference isSet' mod' ref')) = Just <$> IReference isSet' 
 astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
+  IEConstraint' isHard' pexp o -> (\p' -> IEConstraint' isHard' p' o) `liftM` astrPExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk `liftM` astrPExp pexp
 
 astrPExp :: MonadState (Map.Map String Int) m => PExp -> m PExp
 astrPExp (PExp (Just TString) pid' pos' exp') =
@@ -73,7 +74,8 @@ astrIExp :: MonadState (Map.Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op' exps' -> IFunExp op' `liftM` mapM astrPExp exps'
   IStr str -> do
-    modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
+    -- a string keeps the index it got first
+    modify (\e -> Map.insertWith (\_ old -> old) str (Map.size e) e)
     st <- get
     return (IInt $ toInteger $ (Map.!) st str)
   _ -> return x

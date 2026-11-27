@@ -1,0 +1,19 @@
+//# OPTIONS --explicit --core --tl=10
+abstract 0..* UserRequest 0..* {} // enum, tmp_enum01.cfr:9:1
+0..* stop : UserRequest 1..1 { // enum, tmp_enum01.cfr:9:20
+  [all stop_1 : this | X (stop_1 in stop)] // final, tmp_enum01.cfr:9:20
+  [all stop_1 : this | (previous (some root)) => (previous (stop_1 in stop))] // final, tmp_enum01.cfr:9:20
+}
+0..* up : UserRequest 1..1 { // enum, tmp_enum01.cfr:9:27
+  [all up_1 : this | X (up_1 in up)] // final, tmp_enum01.cfr:9:27
+  [all up_1 : this | (previous (some root)) => (previous (up_1 in up))] // final, tmp_enum01.cfr:9:27
+}
+0..* down : UserRequest 1..1 { // enum, tmp_enum01.cfr:9:32
+  [all down_1 : this | X (down_1 in down)] // final, tmp_enum01.cfr:9:32
+  [all down_1 : this | (previous (some root)) => (previous (down_1 in down))] // final, tmp_enum01.cfr:9:32
+}
+0..* Elevator 1..1 {
+  0..* request -> UserRequest 1..1 {}
+  [((some this) && (!(previous (some this)))) => (this.request.dref = stop)]
+  [G ((this.request.dref = up) => (X (this.request.dref = stop)))] // always, tmp_enum01.cfr:14:7
+}

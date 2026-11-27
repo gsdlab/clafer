@@ -3,7 +3,7 @@
 a
  b ?
   initial c ?
-  /* desugars to
-  [no this && X some this => X some this . c0_c]
-  */
+  /* is the constraint of b in the core
+  [initially ((#this.c) >= 1)]
+  each instance of b has a c in the first state of its lifetime */
   d ?

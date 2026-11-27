@@ -28,6 +28,7 @@ module Language.Clafer.Intermediate.Desugarer where
 import Data.Data (Data, cast, gmapQ, gmapT)
 import Data.List (nub)
 import Data.Maybe (fromMaybe, mapMaybe)
+import Numeric (showEFloat, showFFloat)
 import Prelude hiding ((||))
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
@@ -45,7 +46,16 @@ desugarModule mURL (Module _ declarations) = if isDynamicModule staticModule
     staticModule = desugarWith False
     desugarWith dynamic' = IModule
       (fromMaybe "" mURL)
-      (declarations >>= desugarEnums dynamic' >>= desugarDeclaration dynamic')
+      (declarations >>= desugarTopDeclaration dynamic')
+
+-- | A declaration; the clafers of an enumeration are marked as such, so that the explicit model
+--   keeps the enumeration ('_enum').
+desugarTopDeclaration :: Bool -> Declaration -> [IElement]
+desugarTopDeclaration dynamic' decl@EnumDecl{} = map markEnum $ desugarEnums dynamic' decl >>= desugarDeclaration dynamic'
+  where
+  markEnum (IEClafer c) = IEClafer c{_modifiers = (_modifiers c){_enum = True}}
+  markEnum e = e
+desugarTopDeclaration dynamic' decl = desugarDeclaration dynamic' decl
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
@@ -87,6 +97,7 @@ sugarDeclaration (IEConstraint True constraint) =
 sugarDeclaration  (IEConstraint False assertion) =
       ElementDecl (_inPos assertion) $ SubAssertion (_inPos assertion) $ sugarAssertion assertion
 sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal isMaximize'
+sugarDeclaration  (IEInitializer _ _ _ pexp) = error $ "Desugarer.sugarDeclaration: an initializer outside a clafer at " ++ show (_inPos pexp)
 
 
 desugarClafer :: Bool -> Clafer -> [IElement]
@@ -134,19 +145,18 @@ desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' refer
   =  [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
                           crd'' (0, -1)
-                          elements'')]
-  ++ parentInit
+                          elements'' Nothing)]
   where
     iClaferModifiers = desugarModifiers abstract' tmods' reference'
     crd'' = desugarCard crd'
-    (ownInit, parentInit) = desugarInit dynamic' crd'' id' init'
+    ownInit = desugarInit crd'' id' init'
     -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
     -- as its parent, e.g., `on --> off` takes the traffic light from on to off
     elements'' = desugarElements dynamic' elements' ++ desugarClaferTrans claf' ++ ownInit
 
 desugarModifiers :: Abstract -> [TempModifier] -> Reference -> IClaferModifiers
 desugarModifiers    abstract'    tmods           reference' =
-  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods) inherited
+  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods) inherited False
   where
   -- finalref or finaltarget of a clafer that inherits its reference, e.g., `finalref motor : engine`
   inherited = case reference' of
@@ -176,9 +186,18 @@ getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements') =
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements' _) =
     Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
+      (sugarSuper super') (sugarReference reference') (sugarCard crd') init' (TransitionEmpty s) (sugarElements elements')
+  where
+    -- the initializer, with the value of its equation x = e
+    init' = case [ (k, setInit, clk, e) | IEInitializer k setInit clk PExp{_exp = IFunExp _ [_, e]} <- elements' ] of
+      (k, setInit, clk, e) : _ -> InitSome s (initHow k setInit clk) (sugarExp e)
+      [] -> InitEmpty s
+    initHow True _ _ = InitConstant s
+    initHow False _ False = InitDefault s
+    initHow False False True = InitEach s
+    initHow False True True = InitTogether s
 
 desugarSuper :: Super -> Maybe PExp
 desugarSuper (SuperEmpty _) = Nothing
@@ -201,47 +220,34 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
     AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
     _ -> Nothing
 
--- | The constraints of the initializer of the clafer @x@: those in the context of @x@, and those
---   in the context of its parent. All are hard constraints.
---
---   * @x -> T = e@ is @[ some x => x.dref = e ]@ in the context of the parent; in a dynamic
---     model, it holds in every state.
---   * @x -> T := e@ is the initial value of the reference. In a static model, which has a single
---     state, it is the same as @=@. In a dynamic model, every lifetime of @x@ starts with the
---     value: @[ initially this.dref = e ]@ in the context of @x@. The value @e@ is written in the
---     context of the parent, so the name resolver resolves it there ('iInitValue'): @this@
---     stays the parent, and a sibling @y@ stays the sibling even if @x@ has a child @y@. So
---     does a @final@ or @finalref@ reference: it keeps the value that @e@ has when its lifetime
---     starts, also when @e@ changes later, which @=@ would contradict.
---   * A set initializer, @xs -> T * := e@, whose cardinality allows more than one instance,
---     constrains the set of the instances under the parent, so it stays in the context of the
---     parent: @[ initially (some xs => xs.dref = e) ]@. The instances created later are not
---     initialized.
-desugarInit :: Bool -> Maybe Interval -> PosIdent -> Init -> ([IElement], [IElement])
-desugarInit _ _ _ (InitEmpty _) = ([], [])
-desugarInit dynamic' crd id' (InitSome s inithow exp') = case inithow of
-    InitDefault _ | dynamic' -> if isSet
-      then ([], [ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s implIExp ] ])
-      else ([ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s ownIExp ] ], [])
-    _ -> ([], [ IEConstraint True (pExpDefPid s implIExp) ])
+-- | The initializer of the clafer @x@, kept as written (see 'IEInitializer'): @x -> T = e@ or
+--   @x -> T := e@ is the equation @x = e@, which the name resolver and the type checker treat as a
+--   constraint of the parent, where @e@ is written. The clock of @:=@ is the written one, @:= each e@
+--   (each instance at its birth) or @:= together e@ (all the instances under a parent at its birth;
+--   kbak/clafer-semantics#194); without one, whether it is a set initializer depends on
+--   the multiplicity written for @x@, which is known only here: an abstract clafer has none, and
+--   its default (@0..*@) is not a written @*@ (kbak/clafer-semantics#170). The backends give it
+--   its meaning ("Language.Clafer.Intermediate.Initializers").
+desugarInit :: Maybe Interval -> PosIdent -> Init -> [IElement]
+desugarInit _ _ (InitEmpty _) = []
+desugarInit crd id' (InitSome s inithow exp') =
+    [ IEInitializer (isConstant' inithow) setInit explicitClock $ pExpDefPid s $ IFunExp iEq [cId, desugarExp exp'] ]
   where
-    -- this.dref = initvalue(<exp'>)
-    ownIExp :: IExp
-    ownIExp = IFunExp iEq
-      [ pExpDefPid s $ IFunExp iJoin [ mkPLClaferId s thisIdent False NoBind, mkPLClaferId s drefIdent False NoBind ]
-      , pExpDefPid s $ IFunExp iInitValue [ desugarExp exp' ] ]
-    -- more than one instance of x under a parent instance
-    isSet = case crd of
-      Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
-      Nothing -> False
+    isConstant' (InitConstant _) = True
+    isConstant' _ = False
+    explicitClock = case inithow of
+      InitEach _ -> True
+      InitTogether _ -> True
+      _ -> False
+    -- the written clock, or more than one instance of x under a parent instance
+    setInit = case inithow of
+      InitEach _ -> False
+      InitTogether _ -> True
+      _ -> case crd of
+        Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
+        Nothing -> False
     cId :: PExp
     cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
-    -- <id> = <exp'>
-    assignIExp :: IExp
-    assignIExp = (IFunExp "=" [cId, desugarExp exp'])
-    -- some <id> => <assignIExp>
-    implIExp :: IExp
-    implIExp = (IFunExp "=>" [ pExpDefPid s $ IDeclPExp ISome [] cId, pExpDefPid s assignIExp ])
     getIdent (PosIdent y) = y
 
 
@@ -251,46 +257,37 @@ desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
       TransitionEmpty _ -> []
       -- the constraint spans the clafer's name and its transition, e.g., green --> yellow; its
       -- source is the instance of the clafer
-      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' thisIdent) arrow e)]
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarExp $ TransitionExp s' (mkClaferIdExp s' thisIdent) arrow e)]
 
-desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
-desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
-
--- | The transitions as in Juodisius et al., Clafer: Lightweight Modeling of Structure,
---   Behaviour, and Variability (2019), section 6.1: if the precondition holds in a state,
---   the postcondition holds in the next state (-->), or the precondition and the context
---   instance last until the postcondition holds (-->>); a guard strengthens the precondition.
---
---   Change: a chain of transitions is a sequence, e.g., a scenario
---   @[ initially (green --> yellow --> red) ]@; only its first precondition is a condition,
---   so @a --> b --> c@ is @a => X (b && X c)@, not @a => X (b => X c)@.
-desugarTrans' :: Span -> Exp -> TransArrow -> Exp -> Exp
-desugarTrans' s e1 arrow e2 = EImplies s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
-
--- | The rest of a chain of transitions: the states follow each other.
-desugarSequence :: Exp -> Exp
-desugarSequence (TransitionExp s e1 arrow e2) = EAnd s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
-desugarSequence e = e
-
-precondition :: Span -> Exp -> TransArrow -> Exp
-precondition s e1 arrow = case arrow of
-      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
-      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
-      _ -> e1
-
--- | The step from the source @e1@ to the target @e2@.
-step :: Span -> Exp -> TransArrow -> Exp -> Exp
-step s e1 arrow e2 = case arrow of
-      SyncTransArrow _ -> multiStep
-      GuardedSyncTransArrow _ _ -> multiStep
-      NextTransArrow _ -> LtlX s e2
-      GuardedNextTransArrow _ _ -> LtlX s e2
+-- | A transition, which the IR keeps; "Language.Clafer.Intermediate.Core" gives its meaning.
+--   The arguments are the source, the guard, if any, and the target, which is a transition
+--   again in a chain, e.g., @a --> b --> c@. A transition @-->>@ whose source is not @this@ also
+--   has @this@, the context instance, which lasts with the source until the target holds.
+desugarTransition :: Span -> Exp -> TransArrow -> Exp -> IExp
+desugarTransition s e1 arrow e2 = case arrow of
+    NextTransArrow _ -> dop iTrans [e1, e2]
+    GuardedNextTransArrow _ (TransGuard _ g) -> dop iTransGuarded [e1, g, e2]
+    SyncTransArrow _ -> dop iTransSync $ [e1, e2] ++ this'
+    GuardedSyncTransArrow _ (TransGuard _ g) -> dop iTransSyncGuarded $ [e1, g, e2] ++ this'
   where
-    this' = mkClaferIdExp s thisIdent
-    -- the source of a clafer's transition is this
-    multiStep = LtlU s (if isThis e1 then this' else EAnd s this' e1) e2
+    dop = desugarOp desugarExp
+    this' = [ mkClaferIdExp s thisIdent | not (isThis e1) ]
     isThis (ClaferId _ (Path _ [ModIdIdent _ i])) = transIdent i == thisIdent
+    -- the explicit model writes the source as a formula, @some this@
+    isThis (EQuantExp _ (QuantSome _) e) = isThis e
     isThis _ = False
+
+-- | A behavioral pattern, which the IR keeps ('patternOp'); "Language.Clafer.Intermediate.Core"
+--   gives its meaning.
+desugarPattern :: String -> [Exp] -> PatternScope -> IExp
+desugarPattern kind args scope = desugarOp desugarExp (patternOp kind scopeName) (args ++ scopeArgs)
+  where
+    (scopeName, scopeArgs) = case scope of
+      PatScopeEmpty _ -> ("", [])
+      PatScopeBefore _ r -> ("before", [r])
+      PatScopeAfter _ q -> ("after", [q])
+      PatScopeBetweenAnd _ q r -> ("between", [q, r])
+      PatScopeAfterUntil _ q r -> ("after until", [q, r])
 
 
 desugarFinality :: [TempModifier] -> Bool
@@ -346,14 +343,14 @@ mkMinimizeMaximizePExp    isMaximize' s       exp' =
   IEGoal isMaximize' $ desugarPath $ PExp Nothing "" s $ IFunExp (if isMaximize' then iMaximize else iMinimize) [desugarExp exp']
 
 sugarConstraint :: PExp -> Constraint
-sugarConstraint pexp = Constraint (_inPos pexp)  $ map sugarExp [pexp]
+sugarConstraint pexp = Constraint (_inPos pexp)  [sugarExp pexp]
 
 sugarAssertion :: PExp -> Assertion
-sugarAssertion pexp = Assertion (_inPos pexp) $ map sugarExp [pexp]
+sugarAssertion pexp = Assertion (_inPos pexp) [sugarExp pexp]
 
 sugarGoal :: PExp -> Bool -> Goal
-sugarGoal PExp{_exp=IFunExp _ [pexp]} True  = GoalMaximize (_inPos pexp) $ map sugarExp [pexp]
-sugarGoal PExp{_exp=IFunExp _ [pexp]} False = GoalMinimize (_inPos pexp) $ map sugarExp [pexp]
+sugarGoal PExp{_exp=IFunExp _ [pexp]} True  = GoalMaximize (_inPos pexp) [sugarExp pexp]
+sugarGoal PExp{_exp=IFunExp _ [pexp]} False = GoalMinimize (_inPos pexp) [sugarExp pexp]
 sugarGoal goal                        _     = error $ "Desugarer.sugarGoal: malformed objective:\n" ++ show goal
 
 desugarAbstract :: Abstract -> Bool
@@ -372,7 +369,10 @@ desugarElements dynamic' (ElementsList _ es)  = es >>= desugarElement dynamic'
 
 
 sugarElements :: [IElement] -> Elements
-sugarElements x = ElementsList noSpan $ map sugarElement x
+sugarElements x = ElementsList noSpan $ map sugarElement [ e | e <- x, not (isInitializer e) ]
+  where
+  isInitializer IEInitializer{} = True
+  isInitializer _ = False
 
 
 desugarElement :: Bool -> Element -> [IElement]
@@ -394,6 +394,7 @@ sugarElement x = case x of
   IEConstraint True constraint -> Subconstraint noSpan $ sugarConstraint constraint
   IEConstraint False assertion -> SubAssertion noSpan $ sugarAssertion assertion
   IEGoal isMaximize' goal -> Subgoal noSpan $ sugarGoal goal isMaximize'
+  IEInitializer _ _ _ pexp -> error $ "Desugarer.sugarElement: an initializer is part of its clafer, at " ++ show (_inPos pexp)
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of
@@ -440,77 +441,15 @@ desugarExp :: Exp -> PExp
 desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
 
 
+-- | The temporal keywords that are LTL operators, e.g., @eventually@ for @F@.
 translateTmpPatterns :: Exp -> Exp
 translateTmpPatterns e = case e of
-  TmpPatNever _ p scope -> case scope of
-    PatScopeEmpty _ ->            g $ not' p
-    PatScopeBefore _ r ->         f r ==> (not' p `u` r)
-    PatScopeAfter _ q ->          g(q ==> g (not' p))
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (not' p `w` r))
-  TmpPatSometime _ p scope -> case scope of
-    PatScopeEmpty _ ->            f p
-    PatScopeBefore _ r ->         not' r `w` (p & not' r)
-    PatScopeAfter _ q ->          g (not' q) || f (q & f p)
-    PatScopeBetweenAnd _ q r ->   g ( (q & not' r) ==> (not' r `w` (p & not' r)) )
-    PatScopeAfterUntil _ q r ->   g ( (q & not' r) ==> (not' r `u` (p & not' r)) )
-  TmpPatLessOrOnce _ p scope -> case scope of
-                                  -- (!P W (P W []!P))
-    PatScopeEmpty _ ->            not' p `w` (p `w` g (not' p))
-                                  -- <> R -> ((!P & !R) U ((R | (P & !R)) U ( R | (!P U R))))
-    PatScopeBefore _ r ->         f r ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r)))))
-                                  -- <>Q -> (!Q U (Q & (!P W (P W []!P))))
-    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` (p `w` g (not' p))) ))
-                                  -- []((Q & <>R) -> ((!P & !R) U (R | ((P & !R) U (R | (!P U R))))))
-    PatScopeBetweenAnd _ q r ->   g((q & f r) ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r))))))
-                                  -- [](Q -> ((!P & !R) U (R | ((P & !R) U (R | (!P W R) | []P)))))
-    PatScopeAfterUntil _ q r ->   g(q ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `w` r) || g p)))))
-  TmpPatAlways _ p scope -> case scope of
-    PatScopeEmpty _ ->            g p
-    PatScopeBefore _ r ->         f r ==> (p `u` r)
-    PatScopeAfter _ q ->          g (q ==> g p)
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r ) ==> (p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (p `w` r))
-  TmpPatPrecede _ s p scope -> case scope of
-    PatScopeEmpty _ ->            not' p `w` s
-    PatScopeBefore _ r ->         f r ==> (not' p `u` (s || r))
-                                  -- from the first q: Dwyer's []!Q | <>(Q & (!P W S)) may pick a later q
-    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` s)))
-    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` (s || r)))
-    PatScopeAfterUntil _ q r ->   g ((q & not' r) ==> (not' p `w` (s || r)))
-  TmpPatFollow _ s p scope -> case scope of
-    PatScopeEmpty _ ->            g(p ==> f s)
-    PatScopeBefore _ r ->         f r ==> ((p ==> (not' r `u` (s & not' r))) `u` r)
-    PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
-                                  -- every p up to r: []((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))
-    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> ((p ==> (not' r `u` (s & not' r))) `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> ((p==> (not' r `u` (s & not' r))) `w` r))
-  {-TmpInitially s exp' -> -}
-    {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
-        {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
-    {-in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'-}
   TmpEventually s exp' -> LtlF s exp'
   TmpWUntil s exp0 exp1 -> LtlW s exp0 exp1
   TmpUntil s exp0 exp1 -> LtlU s exp0 exp1
   TmpGlobally s exp' -> LtlG s exp'
   TmpNext s exp' -> LtlX s exp'
-  TransitionExp s exp0 arrow exp1 -> desugarTrans' s exp0 arrow exp1
   _ -> e
-  where
-    infixr 4 `u`
-    infixr 4 `w`
-    infixl 3 &
-    infixl 2 ||
-    infixr 1 ==>
-    w = LtlW span'
-    u = LtlU span'
-    (==>) e1 e2 = EImplies span' e1 e2
-    e1 & e2 = EAnd span' e1 e2
-    e1 || e2 = EOr span' e1 e2
-    f = LtlF span'
-    g = LtlG span'
-    not' = ENeg span'
-    span' = getSpan e
 
 
 desugarExp' :: Exp -> IExp
@@ -535,6 +474,11 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   LtlG  _ exp'  -> dop iG  [exp']
   LtlX  _ exp'  -> dop iX  [exp']
   TmpInitially _ exp' -> dop iInitially [exp']
+  TmpPrevious _ exp' -> dop iPrevious [exp']
+  TmpOnce _ exp' -> dop iOnce [exp']
+  TmpHistorically _ exp' -> dop iHistorically [exp']
+  TmpSince _ exp0 exp' -> dop iSince [exp0, exp']
+  TmpTriggered _ exp0 exp' -> dop iTriggered [exp0, exp']
   TmpFinally _ exp' -> dop iFinally [exp']
   EQuantExp _ quant' exp' ->
       IDeclPExp (desugarQuant quant') [] (desugarExp exp')
@@ -571,14 +515,14 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   ERange _ exp0 exp'        -> dop iRange        [exp0, exp']
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
   ClaferId _ name  -> desugarName name
-  TransitionExp{} -> showPatErr
+  TransitionExp s e1 arrow e2 -> desugarTransition s e1 arrow e2
   LetExp _ vb e -> desugarExp' $ desugarLet vb e
-  TmpPatNever{} -> showPatErr
-  TmpPatSometime{} -> showPatErr
-  TmpPatLessOrOnce{} -> showPatErr
-  TmpPatAlways{} -> showPatErr
-  TmpPatPrecede{} -> showPatErr
-  TmpPatFollow{} -> showPatErr
+  TmpPatNever _ p scope -> desugarPattern "never" [p] scope
+  TmpPatSometime _ p scope -> desugarPattern "sometime" [p] scope
+  TmpPatLessOrOnce _ p scope -> desugarPattern "lonce" [p] scope
+  TmpPatAlways _ p scope -> desugarPattern "always" [p] scope
+  TmpPatPrecede _ s p scope -> desugarPattern "precede" [s, p] scope
+  TmpPatFollow _ s p scope -> desugarPattern "follow" [s, p] scope
   TmpUntil{} -> showPatErr
   TmpWUntil{} -> showPatErr
   TmpEventually{} -> showPatErr
@@ -647,7 +591,7 @@ desugarOp f op' exps' =
       else IFunExp op' $ map (trans.f) exps'
     where
       mappedList = map f exps'
-      trans = if op' `elem` ([iNot, iIfThenElse] ++ logBinOps ++ ltlUnOps)
+      trans = if op' `elem` ([iNot, iIfThenElse] ++ logBinOps ++ ltlUnOps ++ richTemporalOps)
           then desugarPath else id
 
 sugarExp :: PExp -> Exp
@@ -657,23 +601,23 @@ sugarExp x = sugarExp' $ _exp x
 sugarExp' :: IExp -> Exp
 sugarExp' x = case x of
   IDeclPExp quant' [] pexp -> EQuantExp noSpan (sugarQuant quant') (sugarExp pexp)
-  IDeclPExp IAll (decl@(IDecl True _ _):[]) pexp ->
+  IDeclPExp IAll [decl@(IDecl True _ _)] pexp ->
     EDeclAllDisj noSpan (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp IAll  (decl@(IDecl False _ _):[]) pexp ->
+  IDeclPExp IAll  [decl@(IDecl False _ _)] pexp ->
     EDeclAll noSpan (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp quant' (decl@(IDecl True _ _):[]) pexp ->
+  IDeclPExp quant' [decl@(IDecl True _ _)] pexp ->
     EDeclQuantDisj noSpan (sugarQuant quant') (sugarDecl decl) (sugarExp pexp)
-  IDeclPExp quant' (decl@(IDecl False _ _):[]) pexp ->
+  IDeclPExp quant' [decl@(IDecl False _ _)] pexp ->
     EDeclQuant noSpan (sugarQuant quant') (sugarDecl decl) (sugarExp pexp)
   IClaferId "" id' _ _ -> ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
   IClaferId modName' id' _ _ -> ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
-  IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
+  -- in the forms of the tokens: a double with an exponent, e.g., 1.2e2, and a real without
+  IDouble n -> EDouble noSpan $ PosDouble ((0, 0), showEFloat Nothing n "")
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
-  IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
+  IReal n -> EReal noSpan $ PosReal ((0, 0), showFFloat Nothing n "")
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
-  -- the value of an initializer, which keeps its context ('iInitValue')
-  IFunExp op' [value] | op' == iInitValue -> sugarExp' $ _exp value
+  IFunExp op' exps' | op' `elem` richTemporalOps -> sugarRich op' (map sugarExp exps')
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)
     else if op' `elem` binOps then (sugarOp op') (exps''!!0) (exps''!!1)
@@ -695,6 +639,9 @@ sugarExp' x = case x of
     | op'' == iX             = LtlX noSpan
     | op'' == iInitially     = TmpInitially noSpan
     | op'' == iFinally       = TmpFinally noSpan
+    | op'' == iPrevious      = TmpPrevious noSpan
+    | op'' == iOnce          = TmpOnce noSpan
+    | op'' == iHistorically  = TmpHistorically noSpan
     | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan
@@ -717,6 +664,8 @@ sugarExp' x = case x of
     | op'' == iRem           = ERem noSpan
     | op'' == iU             = LtlU noSpan
     | op'' == iW             = LtlW noSpan
+    | op'' == iSince         = TmpSince noSpan
+    | op'' == iTriggered     = TmpTriggered noSpan
     | op'' == iUnion         = EUnion noSpan
     | op'' == iDifference    = EDifference noSpan
     | op'' == iIntersection  = EIntersection noSpan
@@ -727,6 +676,29 @@ sugarExp' x = case x of
   sugarTerOp op''
     | op'' == iIfThenElse    = EImpliesElse noSpan
     | otherwise            = error $ show op'' ++ "is not an op"
+  sugarRich op'' args'
+    | op'' == iTrans, [a, b] <- args' = TransitionExp noSpan a (NextTransArrow noSpan) b
+    | op'' == iTransGuarded, [a, g, b] <- args' = TransitionExp noSpan a (GuardedNextTransArrow noSpan $ TransGuard noSpan g) b
+    | op'' == iTransSync, (a : b : _) <- args' = TransitionExp noSpan a (SyncTransArrow noSpan) b
+    | op'' == iTransSyncGuarded, (a : g : b : _) <- args' = TransitionExp noSpan a (GuardedSyncTransArrow noSpan $ TransGuard noSpan g) b
+    | Just (kind, scope) <- patternOf op'' = sugarPattern kind scope args'
+    | otherwise = error $ show op'' ++ " is not an op"
+  sugarPattern kind scope args' =
+    let (own, scopeArgs) = splitAt (if kind `elem` ["precede", "follow"] then 2 else 1) args'
+        scope' = case (scope, scopeArgs) of
+          ("before", [r]) -> PatScopeBefore noSpan r
+          ("after", [q]) -> PatScopeAfter noSpan q
+          ("between", [q, r]) -> PatScopeBetweenAnd noSpan q r
+          ("after until", [q, r]) -> PatScopeAfterUntil noSpan q r
+          _ -> PatScopeEmpty noSpan
+    in case (kind, own) of
+      ("never", [p]) -> TmpPatNever noSpan p scope'
+      ("sometime", [p]) -> TmpPatSometime noSpan p scope'
+      ("lonce", [p]) -> TmpPatLessOrOnce noSpan p scope'
+      ("always", [p]) -> TmpPatAlways noSpan p scope'
+      ("precede", [s, p]) -> TmpPatPrecede noSpan s p scope'
+      ("follow", [s, p]) -> TmpPatFollow noSpan s p scope'
+      _ -> error $ "Desugarer.sugarPattern: " ++ kind
 
 
 desugarPath :: PExp -> PExp

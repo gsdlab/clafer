@@ -1,0 +1,13 @@
+digraph "initializerClocks"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"xs" [label="xs -&gt;&gt; integer 2 := each 1" URL="#xs" tooltip="xs -&gt;&gt; integer 2 := each 1&#10;"];
+"ys" [label="ys -&gt;&gt; integer 2 := together 1, 2" URL="#ys" tooltip="ys -&gt;&gt; integer 2 := together 1, 2&#10;"];
+"Val" [label="abstract Val -&gt;&gt; integer 0..3  := each 5" URL="#Val" tooltip="abstract Val -&gt;&gt; integer 0..3  := each 5&#10;"];
+"V" [label="V : Val 2" URL="#V" tooltip="V : Val 2&#10;"];
+}

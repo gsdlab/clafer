@@ -1,10 +1,18 @@
 //# OPTIONS --explicit --tl=10
 0..* a 0..1 {
   1..1 b 1..1 {
-    [G (((#this.c) >= 1) => (G ((#this.d) = 0)))]
     0..* c 0..1 {}
     0..* d 0..1 {}
+    [never (some this.d) after (some this.c)]
+  }
+}
+final 0..* e 1..1 {
+  final 1..1 f 1..1 {
+    0..* g 0..1 {}
+    0..* h 0..1 {}
+    [never (some this.h) after (some this.g)]
   }
 }
 
-assert [all b1 : a.b | G (!(((#b1.c) >= 1) && (X ((#b1.d) >= 1))))]
+assert [all b1 : a.b | never ((some b1.c) && (X (some b1.d)))]
+assert [never (some e.f.h) after (some e.f.g)]

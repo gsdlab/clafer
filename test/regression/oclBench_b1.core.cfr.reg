@@ -1,0 +1,71 @@
+//# OPTIONS --explicit --core
+abstract 0..* Person 0..* {
+  0..* name -> string 1..1 {}
+  0..* civstat -> string 1..1 {}
+  0..* gender -> string 1..1 {}
+  0..* alive 0..1 {}
+  0..* husband -> Person 0..1 {
+    [this.parent in this.dref.wife.dref]
+  }
+  0..* wife -> Person 0..1 {
+    [this.parent in this.dref.husband.dref]
+  }
+  [(((this.civstat.dref = "single") || (this.civstat.dref = "married")) || (this.civstat.dref = "divorced")) || (this.civstat.dref = "widowed")]
+  [(this.gender.dref = "female") || (this.gender.dref = "male")]
+  [all p : Person | (this != p) => (this.name.dref != p.name.dref)]
+  [one p : Person | p.name.dref = this.name.dref]
+}
+0..* ada : Person 1..1 {
+  [(((((this.name.dref = "Ada") && (this.civstat.dref = "widowed")) && (this.gender.dref = "female")) && (some this.alive)) && (no this.husband)) && (no this.wife)]
+}
+0..* cyd : Person 1..1 {
+  [(((((this.name.dref = "Cyd") && (this.civstat.dref = "married")) && (this.gender.dref = "male")) && (no this.alive)) && (no this.husband)) && (no this.wife)]
+}
+0..* eve : Person 1..1 {
+  [(((((this.name.dref = "Eve") && (this.civstat.dref = "married")) && (this.gender.dref = "female")) && (some this.alive)) && (this.husband.dref = dan)) && (no this.wife)]
+}
+0..* bob : Person 1..1 {
+  [(((((this.name.dref = "Bob") && (this.civstat.dref = "divorced")) && (this.gender.dref = "male")) && (some this.alive)) && (no this.husband)) && (no this.wife)]
+}
+0..* dan : Person 1..1 {
+  [(((((this.name.dref = "Dan") && (this.civstat.dref = "married")) && (this.gender.dref = "male")) && (some this.alive)) && (no this.husband)) && (this.wife.dref = eve)]
+}
+[adaBobCyd.dref.name.dref = stringSet1.dref]
+[personWithUndefinedHusband1.dref.name.dref = stringSet2.dref]
+[personWithUndefinedHusband2.dref.name.dref = stringSet2.dref]
+[(possiblePairs.dref.first.dref.name.dref = "Ada") && (possiblePairs.dref.second.dref.name.dref = "Bob")]
+0..* adaBobCyd -> Person 0..* {
+  [this.dref.name.dref in stringSet1.dref]
+}
+[all p : Person | (p.name.dref in stringSet1.dref) => (p in adaBobCyd.dref)]
+0..* personWithUndefinedHusband1 -> Person 0..* {
+  [this.dref.husband.dref = emptyPersonSet1.dref]
+}
+[all p : Person | (p.husband.dref = emptyPersonSet1.dref) => (p in personWithUndefinedHusband1.dref)]
+0..* personWithUndefinedHusband2 -> Person 0..* {
+  [this.dref.husband.dref = emptyPersonSet2.dref]
+}
+[all p : Person | (p.husband.dref = emptyPersonSet2.dref) => (p in personWithUndefinedHusband2.dref)]
+0..* personWithNoWife -> Person 0..* {
+  [no this.dref.wife]
+}
+[all p : Person | (no p.wife) => (p in personWithNoWife.dref)]
+0..* emptyPersonSet1 -> Person 0..* {}
+[emptyPersonSet1.dref = personWithNoWife.dref.wife.dref]
+0..* emptyPersonSet2 -> Person 0..* {
+  [1 > 2]
+}
+0..* personPair 0..* {
+  0..* first -> Person 1..1 {}
+  0..* second -> Person 1..1 {}
+}
+0..* possiblePairs -> personPair 0..* {
+  [(((this.dref.first.dref.gender.dref = "female") && (some this.dref.first.dref.alive)) && (this.dref.first.dref.civstat.dref != "married")) && (((this.dref.second.dref.gender.dref = "male") && (some this.dref.second.dref.alive)) && (this.dref.second.dref.civstat.dref != "married"))]
+}
+[all p; q : Person | ((((((p.gender.dref = "female") && (some p.alive)) && (p.civstat.dref != "married")) && (q.gender.dref = "male")) && (some q.alive)) && (q.civstat.dref != "married")) => (one pair : personPair | ((pair.first.dref = p) && (pair.second.dref = q)) && (pair in possiblePairs.dref))]
+0..* stringSet1 -> string 3..3 {
+  [((this.dref = "Ada") || (this.dref = "Bob")) || (this.dref = "Cyd")]
+}
+0..* stringSet2 -> string 4..4 {
+  [(((this.dref = "Ada") || (this.dref = "Bob")) || (this.dref = "Cyd")) || (this.dref = "Dan")]
+}

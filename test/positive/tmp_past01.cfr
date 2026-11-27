@@ -1,0 +1,25 @@
+// The past-time operators (gsdlab/clafer#127): previous, once, historically, since and
+// triggered, at the top level, where they look back to the first state of the trace.
+
+go ?
+ready ?
+done ?
+
+// done only after a go, and only where ready has held since a go
+[ G (done => once go) ]
+[ G (done => (ready since go)) ]
+// a go never follows a go directly
+[ G (go => !(previous go)) ]
+
+[ initially (some go && no ready && no done) ]
+[ initially X (some ready && no go) ]
+[ initially X X (some ready && some done) ]
+
+// previous is false in the first state, and its negation holds there (the weak previous)
+assert [ initially !(previous go) ]
+// at the third state: go once, ready since the go, and not historically ready
+assert [ initially X X (once go) ]
+assert [ initially X X (ready since go) ]
+assert [ initially X X !(historically ready) ]
+// triggered is the dual of since: done has held since a ready, or always until now
+assert [ G ((!(once go)) => ((no done) triggered (no go))) ]

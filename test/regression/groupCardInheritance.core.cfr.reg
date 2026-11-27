@@ -1,0 +1,17 @@
+//# OPTIONS --explicit --core
+abstract 1..* Port 0..* {
+  0..* input 0..1 {}
+  0..* output 0..1 {}
+}
+abstract 1..1 RelayPort : Port 0..* {
+  0..* relay 0..1 {}
+}
+1..1 req : RelayPort 1..1 {
+  0..* flow 0..1 {}
+  [some this.flow]
+}
+
+assert [no req.input]
+assert [no req.output]
+assert [no req.relay]
+assert [one req.flow]

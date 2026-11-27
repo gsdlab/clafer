@@ -1,0 +1,5 @@
+//# OPTIONS --explicit --core
+0..* intVal ->> int 0..1 {}
+[(some intVal) => (intVal.dref = 1)] // =, optionalClaferInitializer.cfr:1:1
+0..* stringVal ->> string 0..1 {}
+[(some stringVal) => (stringVal.dref = "aaa")] // =, optionalClaferInitializer.cfr:2:1

@@ -1,11 +1,12 @@
 // Integer references inherited by a nested subclafer, and its own, had the parent-child relation missing in the output.
+// (The child of Contractor was named since, which is a keyword since 0.6.0, gsdlab/clafer#127.)
 
 abstract Person
     Age -> integer
 
 Team
     Contractor : Person
-        since -> integer
+        hiredIn -> integer
     Member -> Person 2..*
 
 Alice : Person

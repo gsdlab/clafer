@@ -197,6 +197,8 @@ instance Print InitHow where
   prt i e = case e of
     InitConstant _ -> prPrec i 0 (concatD [doc (showString "=")])
     InitDefault _ -> prPrec i 0 (concatD [doc (showString ":=")])
+    InitEach _ -> prPrec i 0 (concatD [doc (showString ":="), doc (showString "each")])
+    InitTogether _ -> prPrec i 0 (concatD [doc (showString ":="), doc (showString "together")])
 
 instance Print GCard where
   prt i e = case e of
@@ -253,6 +255,8 @@ instance Print Exp where
     EAnd _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "&&"), prt 8 exp2])
     LtlU _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "U"), prt 9 exp2])
     TmpUntil _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "until"), prt 9 exp2])
+    TmpSince _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "since"), prt 9 exp2])
+    TmpTriggered _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "triggered"), prt 9 exp2])
     LtlW _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "W"), prt 10 exp2])
     TmpWUntil _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "weakuntil"), prt 10 exp2])
     LtlF _ exp -> prPrec i 10 (concatD [doc (showString "F"), prt 10 exp])
@@ -261,6 +265,9 @@ instance Print Exp where
     TmpGlobally _ exp -> prPrec i 10 (concatD [doc (showString "globally"), prt 10 exp])
     LtlX _ exp -> prPrec i 10 (concatD [doc (showString "X"), prt 10 exp])
     TmpNext _ exp -> prPrec i 10 (concatD [doc (showString "next"), prt 10 exp])
+    TmpPrevious _ exp -> prPrec i 10 (concatD [doc (showString "previous"), prt 10 exp])
+    TmpOnce _ exp -> prPrec i 10 (concatD [doc (showString "once"), prt 10 exp])
+    TmpHistorically _ exp -> prPrec i 10 (concatD [doc (showString "historically"), prt 10 exp])
     ENeg _ exp -> prPrec i 11 (concatD [doc (showString "!"), prt 11 exp])
     ELt _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "<"), prt 16 exp2])
     EGt _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString ">"), prt 16 exp2])

@@ -1,7 +1,7 @@
 //# OPTIONS --explicit --tl=10
-[initially ((#x) >= 1)]
 0..* x -> int 0..1 {
   [initially (X (this.dref = 7))]
 }
+[initially (some x)]
 
-assert [initially (X ((#x) >= 1))]
+assert [initially (X (some x))]

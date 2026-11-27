@@ -33,5 +33,6 @@ $OutPort.refTo($Signal);
 $Controller__req.refToUnique($Request);
 $cmd.refToUnique($MotorCommand);
 $WinController__req.refToUnique($stop);
+$Controller.addConstraint(lessThanEqual(card(join($this(), $Controller__req)), constant(1)));
 assert(equal(joinRef(join(global($WinController), $cmd)), global($motorDown)));
 assert(equal(joinRef(join(global($Controller), $Controller__req)), global($stop)));

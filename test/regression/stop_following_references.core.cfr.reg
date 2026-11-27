@@ -1,0 +1,17 @@
+//# OPTIONS --explicit --core
+abstract 0..* A 0..* {
+  0..* A__b 0..1 {}
+}
+0..* A1 : A 1..1 {
+  [no this.A__b]
+}
+0..* C 1..1 {
+  0..* C__b 0..1 {}
+  [some C.C__b]
+  0..* a -> A 1..1 {
+    [some this.d.d__b]
+    0..* d 1..1 {
+      0..* d__b 0..1 {}
+    }
+  }
+}

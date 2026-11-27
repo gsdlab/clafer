@@ -1,0 +1,14 @@
+//# OPTIONS --explicit --core --tl=10
+1..1 s 1..1 {
+  0..* a 0..1 {
+    [(some this) => (X (some this.parent.b))] // -->, tmp_nested_assertions.cfr:4:13
+  }
+  0..* b 0..1 {
+    [(some this) => (X (some this.parent.a))] // -->, tmp_nested_assertions.cfr:5:5
+  }
+  [((some this) && (!(previous (some this)))) => (some this.a)] // initial, tmp_nested_assertions.cfr:4:5
+}
+
+assert [all this_ : s | (some this_.a) => (X (some this_.b))]
+assert [all this_ : s | (some this_.b) => (X (some this_.a))]
+assert [G (some s)] // always, tmp_nested_assertions.cfr:8:10

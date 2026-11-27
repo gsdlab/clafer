@@ -1,0 +1,19 @@
+// The multiplicity of an abstract clafer bounds the number of all its instances, of all its
+// subclafers together (gsdlab/clafer#129): 3..6 tools in all, whatever kind they are. A
+// subclafer may have more instances than the bound, e.g., saw 0..5.
+
+abstract Tools 3..6
+hammer : Tools 1..2
+saw : Tools 0..5
+
+// In a nested abstract clafer, the bound is per parent instance: each Bench has at most one
+// tool rack, a big or a small one.
+abstract Bench
+    abstract Rack ?
+Workbench : Bench 2
+    big : Bench.Rack ?
+    small : Bench.Rack ?
+
+assert [ #Tools >= 3 && #Tools <= 6 ]
+assert [ #saw <= 5 ]
+assert [ all w : Workbench | #w.big + #w.small <= 1 ]

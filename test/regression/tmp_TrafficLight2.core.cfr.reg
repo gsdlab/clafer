@@ -1,0 +1,41 @@
+//# OPTIONS --explicit --core --tl=10
+0..* feature_model 1..1 {
+  0..* EU 0..1 {
+    [all EU_1 : this | X (EU_1 in this.parent.EU)] // final, tmp_TrafficLight2.cfr:9:5
+    [all EU_1 : this | (previous (some this.parent)) => (previous (EU_1 in this.parent.EU))] // final, tmp_TrafficLight2.cfr:9:5
+  }
+  [all feature_model_1 : this | X (feature_model_1 in feature_model)] // final, tmp_TrafficLight2.cfr:8:1
+  [all feature_model_1 : this | (previous (some root)) => (previous (feature_model_1 in feature_model))] // final, tmp_TrafficLight2.cfr:8:1
+}
+abstract 1..1 TrafficLight_2 0..* {
+  1..1 on 0..1 {
+    1..1 normal 0..1 {
+      0..* green 0..1 {
+        [(some this) => (X (some this.parent.yellow))] // -->, tmp_TrafficLight2.cfr:14:21
+      }
+      0..* yellow 0..1 {
+        [(some this) => (X ((some this.parent.red) || ((some feature_model.EU) && (some this.parent.green))))] // -->, tmp_TrafficLight2.cfr:15:13
+      }
+      0..* red 0..1 {
+        [(some this) => (X ((some this.parent.green) || ((some feature_model.EU) && (some this.parent.yellow))))] // -->, tmp_TrafficLight2.cfr:16:13
+      }
+      [((some this) && (!(previous (some this)))) => (some this.green)] // initial, tmp_TrafficLight2.cfr:14:13
+    }
+    1..1 flashing 0..1 {
+      0..* yellow_on 0..1 {
+        [(some this) => (X (some this.parent.yellow_off))] // -->, tmp_TrafficLight2.cfr:18:21
+      }
+      0..* yellow_off 0..1 {
+        [(some this) => (X (some this.parent.yellow_on))] // -->, tmp_TrafficLight2.cfr:19:13
+      }
+      [(some this) => ((some this) U (some this.parent.normal))] // -->>, tmp_TrafficLight2.cfr:17:13
+      [((some this) && (!(previous (some this)))) => (some this.yellow_on)] // initial, tmp_TrafficLight2.cfr:18:13
+    }
+    [(some this) => ((some this) U (some this.parent.off))] // -->>, tmp_TrafficLight2.cfr:12:17
+    [((some this) && (!(previous (some this)))) => (some this.normal)] // initial, tmp_TrafficLight2.cfr:13:9
+  }
+  0..* off 0..1 {
+    [(some this) => (X (some this.parent.on))] // -->, tmp_TrafficLight2.cfr:20:5
+  }
+  [((some this) && (!(previous (some this)))) => (some this.on)] // initial, tmp_TrafficLight2.cfr:12:5
+}

@@ -1,0 +1,12 @@
+//# OPTIONS --explicit --core
+abstract 0..* x -> int 0..* {}
+0..* A : x 1..1 {}
+[(some A) => (A.dref = 1)] // =, gi49-setting-references-with-a-union.cfr:5:1
+0..* B : x 1..1 {}
+[(some B) => (B.dref = 2)] // =, gi49-setting-references-with-a-union.cfr:6:1
+0..* C : x 1..1 {}
+[(some C) => (C.dref = 3)] // =, gi49-setting-references-with-a-union.cfr:7:1
+0..* xs ->> x 0..* {}
+[xs.dref = ((A ++ B) ++ C)]
+[xs.dref = ((A ++ B) ++ C)]
+[xs.dref.dref = ((A.dref ++ B.dref) ++ C.dref)]

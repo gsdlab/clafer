@@ -1,0 +1,10 @@
+digraph "tmp_past02"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Shift" [label="Shift ?" URL="#Shift" tooltip="Shift ?&#10;  Worker ?&#10;    alarm ?&#10;    warned ?&#10;    [ warned <=> previous once alarm ]&#10;"];
+}

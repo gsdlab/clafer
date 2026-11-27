@@ -27,7 +27,6 @@ import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
-import Control.Applicative
 import Data.List (find)
 import qualified Data.Map as Map
 import Data.Maybe
@@ -63,7 +62,7 @@ graphSimpleElement :: Element
                       -> Bool
                       -> String
 graphSimpleElement (Subclafer _ clafer) topLevel irMap showRefs = graphSimpleClafer clafer topLevel irMap showRefs
-graphSimpleElement (ClaferUse s _ _ _)  topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId s irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
+graphSimpleElement (ClaferUse s _ _ _)  topLevel irMap _        = maybe "" (\p -> "\"" ++ p ++ "\" -> \"" ++ getUseId s irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];\n") (snd3 topLevel)
 graphSimpleElement _ _ _ _ = ""
 
 graphSimpleElements :: Elements
@@ -149,7 +148,7 @@ graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
            "\" -> \"" ++
            parent (graphSimpleExp setExp topLevel irMap) ++
            "\"" ++
-           " [" ++ if fst3 topLevel == True
+           " [" ++ if fst3 topLevel
              then "arrowhead=onormal constraint=true weight=100];\n"
              else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];\n"
 
@@ -172,7 +171,7 @@ graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
        refColour showRefs ++
        " fontcolor=" ++
        refColour showRefs ++
-       (if fst3 topLevel == True then "" else " label=\"" ++
+       (if fst3 topLevel then "" else " label=\"" ++
        (fromJust $ trd3 topLevel) ++ "\"") ++
        "];\n"
     _ -> ""
@@ -193,7 +192,7 @@ graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
         refColour showRefs ++
         " fontcolor=" ++
         refColour showRefs ++
-        (if fst3 topLevel == True then "" else " label=\"" ++
+        (if fst3 topLevel then "" else " label=\"" ++
         (fromJust $ trd3 topLevel) ++ "\"") ++ "];\n")
     _ -> ""
 refColour :: Bool -> String
@@ -251,7 +250,7 @@ graphCVLDeclaration _                          _        _     = ""
 graphCVLElement :: Element -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLElement (Subclafer _ clafer)  parent' irMap = graphCVLClafer clafer parent' irMap
 --graphCVLElement (ClaferUse _ name _ _) parent' irMap = if parent' == Nothing then "" else "?" ++ " -> " ++ graphCVLName name parent' irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
-graphCVLElement (ClaferUse s _ _ _) parent' irMap = if parent' == Nothing then "" else "?" ++ " -> " ++ getUseId s irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
+graphCVLElement (ClaferUse s _ _ _) parent' irMap = if isNothing parent' then "" else "?" ++ " -> " ++ getUseId s irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
 graphCVLElement (Subconstraint _ constraint) parent' irMap = graphCVLConstraint constraint parent' irMap
 graphCVLElement (Subgoal _ constraint) parent' irMap = graphCVLGoal constraint parent' irMap
 graphCVLElement (SubAssertion _ constraint) parent' irMap = graphCVLAssertion constraint parent' irMap
@@ -270,7 +269,7 @@ graphCVLClafer (Clafer s _ _ gCard _ super' reference' crd _ _ es) parent' irMap
      "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ nameIn irMap uid' ++ super'' ++ reference'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent' irMap ++ "]\"")
      ++ (if super'' == "" then "" else " shape=oval") ++ "];\n"
      ++ (if gcrd == "" then "" else "\"g" ++ uid' ++ "\" [label=\"" ++ gcrd ++ "\" fontsize=10 shape=triangle];\n\"g" ++ uid' ++ "\" -> \"" ++ uid' ++ "\" [weight=10];\n")
-     ++ (if parent'==Nothing then "" else "\"" ++ uid' ++ "\" -> \"" ++ fromJust parent' ++ "\"" ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n")
+     ++ maybe "" (\p -> "\"" ++ uid' ++ "\" -> \"" ++ p ++ "\"" ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n") parent'
      ++ graphCVLElements es (if gcrd == "" then (Just uid') else (Just $ "g" ++ uid')) irMap
 
 graphCVLSuper :: Super -> Maybe String -> Map.Map Span [Ir] -> String
@@ -295,13 +294,13 @@ graphCVLConstraint :: Constraint -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLConstraint (Constraint s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subconstraint s (Constraint s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
+                                                                      maybe "" (\p -> uid' ++ " -> \"" ++ p ++ "\";\n") parent'
 
 graphCVLAssertion :: Assertion -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLAssertion (Assertion s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (SubAssertion s (Assertion s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
+                                                                      maybe "" (\p -> uid' ++ " -> \"" ++ p ++ "\";\n") parent'
 
 graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLGoal goal parent' irMap = let
@@ -311,9 +310,7 @@ graphCVLGoal goal parent' irMap = let
   in
     uid' ++
     " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-    if parent' == Nothing
-    then ""
-    else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
+    maybe "" (\p -> uid' ++ " -> \"" ++ p ++ "\";\n") parent'
 
 graphCVLCard :: Card -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLCard  (CardEmpty _) _ _ = "1..1"
@@ -365,11 +362,10 @@ graphCVLEnumId (PosEnumIdIdent _ posident) parent irMap = graphCVLEnumId (EnumId
 choiceCard :: Card -> Bool
 choiceCard (CardEmpty _) = True
 choiceCard (CardLone _) = True
-choiceCard (CardInterval _ (NCard _ (PosInteger (_, low)) exInteger)) = if low == "0" || low == "1"
-                                    then case exInteger of
+choiceCard (CardInterval _ (NCard _ (PosInteger (_, low)) exInteger)) = (low == "0" || low == "1")
+                                    && case exInteger of
                                       (ExIntegerAst _) -> False
                                       (ExIntegerNum _ (PosInteger (_, high))) -> high == "0" || high == "1"
-                                    else False
 choiceCard _ = False
 
 lowerCard :: Card -> String
@@ -384,36 +380,32 @@ nameIn irMap uid' = case [ _ident c | IRClafer c <- concat (Map.elems irMap), _u
   []         -> uid'
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
-getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id'))) irMap == Nothing
-                        then id'
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup (getSpan (PosIdent (pos, id'))) irMap in
-                          findUid id' $ getIdentPExp pexp
-                          where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
-                                 getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
-                                 getIdentIExp (IClaferId _ id'' _ _) = [id''];
-                                 getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
-                                 getIdentIExp _ = [];
-                                 findUid _    [x]    = x;
-                                 findUid name xs     = fromMaybe name $ find ((== name) . nameIn irMap) xs}
+getUid (PosIdent (pos, id')) irMap = case Map.lookup (getSpan (PosIdent (pos, id'))) irMap of
+    Just (IRPExp pexp : _) -> findUid id' $ getIdentPExp pexp
+    _ -> id'
+  where
+    getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp'
+    getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps'
+    getIdentIExp (IClaferId _ id'' _ _) = [id'']
+    getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp
+    getIdentIExp _ = []
+    findUid _    [x]    = x
+    findUid name xs     = fromMaybe name $ find ((== name) . nameIn irMap) xs
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
-getDivId s irMap = if Map.lookup s irMap == Nothing
-                      then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        _uid iClaf
+getDivId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> _uid iClaf
+                      _ -> "Uid not Found"
 
 getUseId :: Span -> Map.Map Span [Ir] -> String
-getUseId s irMap = if Map.lookup s irMap == Nothing
-                      then "Uid not Found"
-                      else let
-                            IRClafer iClaf = head $ fromJust $ Map.lookup s irMap
-                           in
-                            fromMaybe "" $ _sident <$> _exp <$> _super iClaf
+getUseId s irMap = case Map.lookup s irMap of
+                      Just (IRClafer iClaf : _) -> maybe "" (_sident . _exp) (_super iClaf)
+                      _ -> "Uid not Found"
 
 getExpId :: Span -> Map.Map Span [Ir] -> String
-getExpId s irMap = if Map.lookup s irMap == Nothing
-                      then "Uid not Found"
-                      else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in _pid pexp
+getExpId s irMap = case Map.lookup s irMap of
+                      Just (IRPExp pexp : _) -> _pid pexp
+                      _ -> "Uid not Found"
 
 {-while :: Bool -> [IExp] -> [IExp]
 while bool exp' = if bool then exp' else []-}

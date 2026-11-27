@@ -1,0 +1,6 @@
+//# OPTIONS --explicit --core
+0..* A 1..1 {
+  0..* x 0..1 {}
+  0..* y 0..1 {}
+  [((some this.x) => (no this.y)) && ((some this.y) => (no this.x))]
+}

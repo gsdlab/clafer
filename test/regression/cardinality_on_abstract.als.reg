@@ -6,6 +6,7 @@ fact { #a = 0 }
 abstract sig a
 {}
 
+fact { (#a) = 0 }
 one sig b
 {}
 

@@ -38,13 +38,15 @@ import Language.Clafer.Front.AbsClafer (Span(..))
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (ClaferErr, CErr(..))
 
--- | Apply optimizations for unused abstract clafers and inheritance flattening
+-- | Compute the global cardinalities, and flatten the inheritance with @--flatten-inheritance@.
+-- The module keeps every clafer, with its multiplicity as written: removing the abstract clafers
+-- that nothing needs ('removeUnusedAbstracts') and giving those that nothing extends no instances
+-- ('zeroUnusedAbstracts') are optimizations for solving, which the backends choose.
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
-  imodule{_mDecls = em $ rm $ map (optimizeElement (1, 1)) $
+  imodule{_mDecls = em $ map (optimizeElement (1, 1)) $
                    markTopModule $ _mDecls imodule}
   where
-  rm = if keep_unused args then makeZeroUnusedAbs else remUnusedAbs
   em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
@@ -52,6 +54,7 @@ optimizeElement interval' x = case x of
   IEClafer c  -> IEClafer $ optimizeClafer interval' c
   IEConstraint _ _  -> x
   IEGoal _ _ -> x
+  IEInitializer{} -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
 optimizeClafer interval' c = c {_glCard = glCard',
@@ -70,6 +73,18 @@ multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
 
+-- | The module without the abstract clafers that nothing needs ('remUnusedAbs'), for a backend:
+-- they have no instances, so the meaning is the same, and the solver has less to encode. The
+-- explicit models keep them, since they print the model as written.
+removeUnusedAbstracts :: IModule -> IModule
+removeUnusedAbstracts imodule = imodule{_mDecls = remUnusedAbs $ _mDecls imodule}
+
+-- | The module in which the top-level abstract clafers that no concrete clafer extends have no
+-- instances (@0..0@), for a backend that needs it: in Alloy, an abstract signature that nothing
+-- extends has atoms of its own.
+zeroUnusedAbstracts :: IModule -> IModule
+zeroUnusedAbstracts imodule = imodule{_mDecls = makeZeroUnusedAbs $ _mDecls imodule}
+
 -- | Abstract clafers which no concrete clafer extends get no instances.
 makeZeroUnusedAbs :: [IElement] -> [IElement]
 makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (getIClafer x){_card = Just (0, 0)} else x) decls'
@@ -81,19 +96,21 @@ makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (get
   getIClafer _ = error "Function makeZeroUnusedAbs from Optimizer expected paramter of type IClafer got a differnt IElement" --This should never happen
 
 -- | Removes the abstract clafers which no concrete clafer extends, unless a
--- reference or a constraint names them: those are kept, without instances.
+-- reference or a constraint names them, or they have a lower bound: those are kept.
 remUnusedAbs :: [IElement] -> [IElement]
-remUnusedAbs decls' = makeZeroUnusedAbs $ decls' \\ unneededAbs
+remUnusedAbs decls' = decls' \\ unneededAbs
   where
   unneededAbs = map IEClafer $ findUnneededAbs clafers $ neededRoots decls'
   clafers     = toClafers decls'
 
--- | The clafers needed to begin with: the concrete clafers and the clafers
--- named in constraints.
+-- | The clafers needed to begin with: the concrete clafers, the clafers named in constraints,
+-- and the abstract clafers with a lower bound, which a model without their instances violates
+-- (#129).
 neededRoots :: [IElement] -> [String]
 neededRoots decls' =
   map _uid (filter (not . _isAbstract) $ toClafers decls')
   ++ [ sid | pexp <- constraints decls', IClaferId{_sident = sid} <- universeOn biplate pexp ]
+  ++ [ _uid c | c <- toClafers decls', _isAbstract c, maybe False ((> 0) . fst) (_card c) ]
   where
   constraints = concatMap constraint
   constraint (IEConstraint _ pexp) = [pexp]
@@ -147,6 +164,7 @@ expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
   IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
+  IEInitializer k s clk pexp -> IEInitializer k s clk `liftM` expPExp pexp
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
 expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp pos' exp'
@@ -186,8 +204,7 @@ expNav' pos' context x@(IClaferId modName' id' isTop' bind' ) = do
       let (impls', context') = maybe (impls, "")
            (\y -> ([[head y]], head y)) $
            find (\z -> context == (head.tail) z) impls
-      return (mkIFunExp pos' iUnion $ map (\u -> IClaferId modName' u isTop' bind') $
-              map head impls', context')
+      return (mkIFunExp pos' iUnion $ map ((\u -> IClaferId modName' u isTop' bind') . head) impls', context')
     else do
       return (x, id')
 expNav' pos' _ _ = error $ "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp, " ++ show pos'
@@ -198,7 +215,7 @@ split'(IFunExp _ (p:pexp:_)) f =
       [p {_exp = s}, pexp])
 split' (IClaferId modName' id' isTop' bind') f = do
     st <- gets stable
-    mapM f $ map (\y -> IClaferId modName' y isTop' bind') $ maybe [id'] (map head) $ Map.lookup id' st
+    mapM (f . (\y -> IClaferId modName' y isTop' bind')) $ maybe [id'] (map head) $ Map.lookup id' st
 split' _ _ = error "Function split' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
 -- -----------------------------------------------------------------------------
@@ -219,9 +236,10 @@ nonUidNames iModule = filter (\c -> '\'' `elem` _ident c || Map.findWithDefault 
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
-  IEClafer claf -> and $ map (checkConstraintElement idents) $ _elements claf
+  IEClafer claf -> all (checkConstraintElement idents) $ _elements claf
   IEConstraint _ pexp -> checkConstraintPExp idents pexp
   IEGoal _ _ ->  True
+  IEInitializer _ _ _ pexp -> checkConstraintPExp idents pexp
 
 checkConstraintPExp :: [String] -> PExp -> Bool
 checkConstraintPExp idents pexp = checkConstraintIExp idents $ _exp pexp
@@ -230,8 +248,9 @@ checkConstraintIExp :: [String] -> IExp -> Bool
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls' pexp ->
      checkConstraintPExp ((oDecls' >>= (checkConstraintIDecl idents)) ++ idents) pexp
-   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ (rootIdent : idents)) then True
-                          else error $ "optimizer: " ++ ident' ++ " not found"
+   IClaferId _ ident' _ _
+     | ident' `elem` (specialNames ++ (rootIdent : idents)) -> True
+     | otherwise -> error $ "optimizer: " ++ ident' ++ " not found"
    _ -> True
 
 checkConstraintIDecl :: [String] -> IDecl -> [String]
@@ -273,6 +292,7 @@ markTopElement clafers x = case x of
   IEClafer c  -> IEClafer $ markTopClafer clafers c
   IEConstraint isHard' pexp  -> IEConstraint isHard' $ markTopPExp clafers pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' $ markTopPExp clafers pexp
+  IEInitializer k s clk pexp -> IEInitializer k s clk $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
 markTopPExp clafers pexp =
